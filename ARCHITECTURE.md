@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 2b with complete core page functionality including authentication, service layer, dashboard, universe details, content details, discovery, and user profiles.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 3a with complete core page functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, and data management forms.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -29,6 +29,7 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │  │ content/    │  │             │  │             │             │
 │  │ discover/   │  │             │  │             │             │
 │  │ profile/    │  │             │  │             │             │
+│  │ Forms       │  │             │  │             │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                           │                │                    │
 ├───────────────────────────┼────────────────┼────────────────────┤
@@ -107,6 +108,18 @@ Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
   - Data Flow: AuthContext + URL params → UserService + UniverseService → User + Universes + Favourites → Profile UI
   - States: Loading, error (user not found), own vs other profile display
   - Features: Tabbed interface (franchises/favourites), public franchise display, profile stats, responsive design
+
+- **`app/universes/create/page.tsx`**: Universe creation form
+  - Responsibilities: Allow authenticated users to create new franchises with validation
+  - Data Flow: AuthContext + Form data → UniverseService.create → Redirect to new universe
+  - States: Loading, form validation, submission, error handling
+  - Features: Name/description fields, public/private toggle, source links, real franchise guidance
+
+- **`app/universes/[id]/content/create/page.tsx`**: Content creation form
+  - Responsibilities: Allow universe owners to add content (episodes, characters, etc.)
+  - Data Flow: AuthContext + URL params + Form data → ContentService.create → Redirect to new content
+  - States: Loading, permission checking, form validation, submission
+  - Features: Media type selection, viewable/non-viewable detection, owner permissions, content guidance
 
 #### Context Layer
 - **`lib/contexts/auth-context.tsx`**: Authentication state management
@@ -230,21 +243,30 @@ contentRelationships/ (Service implemented, not yet used by UI)
 
 ```
 canoncore/
+├── scripts/
+│   └── clear-firestore.js        # Development data clearing script
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── layout.tsx         # Root layout with AuthProvider
 │   │   ├── page.tsx           # Franchise dashboard (Phase 2a)
 │   │   ├── content/
 │   │   │   └── [id]/
-│   │   │       └── page.tsx   # Content detail pages (Phase 2b)
+│   │   │       ├── page.tsx   # Content detail pages (Phase 2b)
+│   │   │       └── edit/      # MISSING - Content edit form (Phase 3b)
 │   │   ├── discover/
 │   │   │   └── page.tsx       # Public discovery page (Phase 2b)
 │   │   ├── profile/
 │   │   │   └── [userId]/
 │   │   │       └── page.tsx   # User profile pages (Phase 2b)
 │   │   ├── universes/
+│   │   │   ├── create/
+│   │   │   │   └── page.tsx   # Universe creation form (Phase 3a)
 │   │   │   └── [id]/
-│   │   │       └── page.tsx   # Universe detail pages (Phase 2a)
+│   │   │       ├── page.tsx   # Universe detail pages (Phase 2a)
+│   │   │       ├── edit/      # MISSING - Universe edit form (Phase 3b)
+│   │   │       └── content/
+│   │   │           └── create/
+│   │   │               └── page.tsx # Content creation form (Phase 3a)
 │   │   └── globals.css        # Global styles
 │   ├── lib/
 │   │   ├── contexts/
@@ -337,10 +359,25 @@ canoncore/
 - Profile pages integrate UserService with franchise and favourite display
 - Navigation system connects all pages with consistent routing
 
-### Phase 3: Data Management
-- Forms will integrate with service layer
+### Phase 3a: Data Management - Forms & Content Creation (COMPLETE)
+- Universe creation form integrates with UniverseService for franchise creation
+- Content creation form uses ContentService for adding episodes, characters, etc.
+- Forms include validation, error handling, and authentication checks
+- Media type selection with automatic viewable/non-viewable detection
+
+### Phase 3b: Data Management - Edit & Delete Operations (PENDING)
+- Universe edit form (/universes/[id]/edit) using existing UniverseService.update()
+- Content edit form (/content/[id]/edit) using existing ContentService.update()
+- Universe delete functionality with confirmation using UniverseService.delete()
+- Content delete functionality with confirmation using ContentService.delete()
+- Owner permission checks and error handling for all operations
+
+### Phase 3c: Data Management - Progress & Hierarchies (PENDING)
 - Progress tracking will update Firestore directly
 - Hierarchical organisation will use ContentRelationship model
+
+### Phase 3d: Data Management - Visibility & Favourites (PENDING)
+- Public/private visibility system and favourites functionality
 
 ### Phase 4a: UI Components - Component Library
 - Establish design system foundation (colours, typography, spacing)
@@ -350,6 +387,8 @@ canoncore/
 - Standardised button, form, and component variations
 
 ### Phase 4b: UI Components - Navigation & Responsive
+CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
+
 - Build franchise navigation components with design system applied
 - Apply design system to: Discover page, Profile pages
 - Standardise navigation patterns across all 5 core pages
@@ -372,7 +411,26 @@ canoncore/
 - Firebase hosting configuration
 - End-to-end workflow validation
 
+### Phase 5d: Flow Optimisation & UX Review
+- Objective review and optimisation of user flows
+- Split content creation: separate viewable vs non-viewable flows
+- Analyse and improve navigation patterns across all pages
+- Optimise form flows and reduce user friction
+- Review content organisation and discovery patterns
+- Streamline universe-to-content creation workflow
+
+### Phase 6a: Advanced Content Hierarchies - Infinite Nesting
+- Implement infinite looping nested children support using RelationshipService
+- Build recursive content tree components with React performance optimisation
+- Add parent-child relationship management in content creation/edit forms
+- Create drag-and-drop content organisation interface with position updates
+- Implement circular reference detection and prevention in ContentRelationship model
+- Build nested content navigation with dynamic breadcrumbs and tree views
+- Add bulk operations for nested content structures (move, copy, delete hierarchies)
+- Optimise Firestore queries and component rendering for deep content hierarchies
+- Support complex franchise structures: Universe → Series → Episodes → Scenes → Characters
+
 ---
 
-**Last Updated**: Phase 2b Complete (Foundation + Service Layer + All Core Pages)  
-**Next Update**: After Phase 3a: Data Management - Forms & Content Creation
+**Last Updated**: Phase 3a Complete (Foundation + Service Layer + All Core Pages + Data Management Forms)  
+**Next Update**: After Phase 3b: Data Management - Edit & Delete Operations

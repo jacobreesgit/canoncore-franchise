@@ -25,7 +25,26 @@ npm run lint
 
 # Type checking
 npm run type-check
+
+# Clear development data (requires --force flag)
+npm run clear-data --force
 ```
+
+## Development Data Management
+
+The project includes a script to clear development data from Firestore:
+
+```bash
+npm run clear-data --force
+```
+
+**Important Notes:**
+- Requires `--force` flag to run as a safety measure
+- Clears collections: `universes`, `content`, `favorites`, `contentRelationships`
+- **Preserves user accounts** (users collection is untouched)
+- May encounter permission errors due to Firestore security rules (expected)
+- If script fails, manually delete collections via Firebase Console
+- Useful for testing from a clean state during development
 
 ## Architecture Overview
 
@@ -52,8 +71,13 @@ src/
 │   │   └── [userId]/
 │   │       └── page.tsx   # User profile pages with favourites
 │   └── universes/
+│       ├── create/
+│       │   └── page.tsx   # Universe creation form
 │       └── [id]/
-│           └── page.tsx   # Universe detail pages
+│           ├── page.tsx   # Universe detail pages
+│           └── content/
+│               └── create/
+│                   └── page.tsx # Content creation form
 ├── lib/
 │   ├── contexts/          # React contexts (AuthContext implemented)
 │   ├── services/          # Firebase service layer (all 4 services implemented)
@@ -65,7 +89,7 @@ src/
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b):**
+**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration
@@ -77,11 +101,15 @@ src/
 - **Content Detail Pages** - Individual content viewing with progress tracking, breadcrumb navigation
 - **Public Discovery** - Browse and search all public franchises with responsive interface
 - **User Profiles** - Display public franchises and favourites with tabbed interface
+- **Universe Creation Forms** - Complete form for creating new franchises with validation and Firebase integration
+- **Content Creation Forms** - Comprehensive forms for adding content with media type selection and permissions
 
 **Next Implementation Phases (see todo.md):**
-3. **Phase 3a-3c: Data Management** - Forms, progress tracking, hierarchies, visibility, favourites
-4. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
-5. **Phase 5a-5c: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup
+3. **Phase 3b: Edit & Delete Operations** - Universe/content edit forms, delete functionality with confirmation
+4. **Phase 3c-3d: Data Management** - Progress tracking, hierarchies, visibility, favourites
+5. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
+6. **Phase 5a-5d: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup, flow optimisation
+7. **Phase 6a: Advanced Content Hierarchies** - Infinite nesting, recursive trees, drag-and-drop organisation
 
 ## Data Model
 

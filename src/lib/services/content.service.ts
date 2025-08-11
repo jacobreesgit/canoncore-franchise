@@ -22,16 +22,21 @@ export class ContentService {
    */
   async create(userId: string, universeId: string, data: CreateContentData): Promise<Content> {
     const now = Timestamp.now();
-    const contentData = {
+    const contentData: any = {
       ...data,
       userId,
       universeId,
-      progress: data.isViewable ? 0 : undefined,
-      calculatedProgress: data.isViewable ? undefined : 0,
       isPublic: true, // Will be inherited from universe in practice
       createdAt: now,
       updatedAt: now
     };
+
+    // Only add progress fields if they have defined values
+    if (data.isViewable) {
+      contentData.progress = 0;
+    } else {
+      contentData.calculatedProgress = 0;
+    }
 
     const docRef = await addDoc(this.collection, contentData);
     

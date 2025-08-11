@@ -31,27 +31,34 @@
       public franchises)
     ☒ ✅ Build user profile pages with favourites
 
-**Phase 3a: Data Management - Forms & Content Creation**
-    ☐ Implement franchise creation form (Marvel,
+**Phase 3a: Data Management - Forms & Content Creation** ✅ COMPLETE
+    ☒ ✅ Implement franchise creation form (Marvel,
       Doctor Who, etc)
-    ☐ Build content creation (add episodes,
+    ☒ ✅ Build content creation (add episodes,
       movies, characters)
 
-**Phase 3b: Data Management - Progress & Hierarchies**
+**Phase 3b: Data Management - Edit & Delete Operations**
+    ☐ Build universe edit form (/universes/[id]/edit)
+    ☐ Build content edit form (/content/[id]/edit)
+    ☐ Add universe delete functionality with confirmation
+    ☐ Add content delete functionality with confirmation
+
+**Phase 3c: Data Management - Progress & Hierarchies**
     ☐ Create hierarchical content organisation
       (Phase 1 > Iron Man > Tony Stark)
-    ☐ Implement progress tracking for viewable
+    ☒ ✅ Implement progress tracking for viewable
       content only
     ☐ Build calculated progress for
       organisational holders
 
-**Phase 3c: Data Management - Visibility & Favourites**
+**Phase 3d: Data Management - Visibility & Favourites**
     ☐ Create public/private franchise visibility
       system
     ☐ Build favourites system for franchises and
       content
 
 **Phase 4a: UI Components - Component Library**
+CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
     ☐ Establish design system (colours, typography, spacing)
     ☐ Create reusable UI components (forms, cards, modals)
     ☐ Standardise button and form styles
@@ -85,4 +92,21 @@
     ☐ Set up production environment
     ☐ Configure Firebase hosting
     ☐ Test full end-to-end user workflows
-    
+
+**Phase 5d: Flow Optimisation & UX Review**
+    ☐ Review and optimise user flows objectively
+    ☐ Split content creation: separate viewable vs non-viewable flows
+    ☐ Analyse and improve navigation patterns
+    ☐ Optimise form flows and reduce friction
+    ☐ Review content organisation and discovery patterns
+    ☐ Streamline universe-to-content creation workflow
+
+**Phase 6a: Advanced Content Hierarchies - Infinite Nesting**
+    ☐ Implement infinite looping nested children support
+    ☐ Build recursive content tree components
+    ☐ Add parent-child relationship management in content forms
+    ☐ Create drag-and-drop content organisation interface
+    ☐ Implement circular reference detection and prevention
+    ☐ Build nested content navigation and breadcrumbs
+    ☐ Add bulk operations for nested content structures
+    ☐ Optimise performance for deep content hierarchies

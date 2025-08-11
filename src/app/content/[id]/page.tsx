@@ -176,8 +176,8 @@ export default function ContentPage() {
               <h3 className="text-lg font-medium text-gray-900 mb-3">Viewing Progress</h3>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Progress</span>
-                  <span>{Math.round(progressPercent)}% completed</span>
+                  <span>Status</span>
+                  <span>{progressPercent === 100 ? 'Completed' : 'Not Started'}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
                   <div
@@ -187,34 +187,24 @@ export default function ContentPage() {
                 </div>
                 
                 {isOwner && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex gap-3">
                     <button
                       onClick={() => handleProgressUpdate(0)}
-                      className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        progressPercent === 0 
+                          ? 'bg-gray-300 text-gray-800' 
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                      }`}
                     >
                       Not Started
                     </button>
                     <button
-                      onClick={() => handleProgressUpdate(25)}
-                      className="px-3 py-1 text-sm bg-yellow-200 hover:bg-yellow-300 text-yellow-800 rounded-lg transition-colors"
-                    >
-                      25%
-                    </button>
-                    <button
-                      onClick={() => handleProgressUpdate(50)}
-                      className="px-3 py-1 text-sm bg-blue-200 hover:bg-blue-300 text-blue-800 rounded-lg transition-colors"
-                    >
-                      50%
-                    </button>
-                    <button
-                      onClick={() => handleProgressUpdate(75)}
-                      className="px-3 py-1 text-sm bg-purple-200 hover:bg-purple-300 text-purple-800 rounded-lg transition-colors"
-                    >
-                      75%
-                    </button>
-                    <button
                       onClick={() => handleProgressUpdate(100)}
-                      className="px-3 py-1 text-sm bg-green-200 hover:bg-green-300 text-green-800 rounded-lg transition-colors"
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        progressPercent === 100 
+                          ? 'bg-green-300 text-green-800' 
+                          : 'bg-green-200 hover:bg-green-300 text-green-800'
+                      }`}
                     >
                       Completed
                     </button>
@@ -224,7 +214,7 @@ export default function ContentPage() {
             </div>
           )}
 
-          <div className="text-sm text-gray-500 border-t pt-4">
+          <div className="text-sm text-gray-500 pt-4">
             <div className="flex justify-between">
               <span>
                 Created {new Date(content.createdAt.toDate()).toLocaleDateString()}
