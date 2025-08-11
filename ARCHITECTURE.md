@@ -192,13 +192,24 @@ canoncore/
 │   ├── lib/
 │   │   ├── contexts/
 │   │   │   └── auth-context.tsx    # Authentication context
+│   │   ├── services/               # Service layer (Phase 1)
+│   │   │   ├── universe.service.ts # Franchise CRUD operations
+│   │   │   ├── content.service.ts  # Episodes/movies/characters
+│   │   │   ├── user.service.ts     # Favourites and profiles
+│   │   │   ├── relationship.service.ts # Content hierarchies
+│   │   │   └── index.ts            # Service exports
+│   │   ├── hooks/                  # Custom React hooks (empty)
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions
-│   ├── components/            # (Empty - Phase 4)
-│   └── styles/               # (Empty)
+│   ├── components/            # UI components (empty - Phase 4)
+│   └── styles/               # Additional styles (empty)
+├── ARCHITECTURE.md           # System architecture documentation
+├── CLAUDE.md                # Development guide for Claude Code
+├── LOVABLE_MVP_SPEC.md      # Complete MVP specification
 ├── package.json              # Dependencies
 ├── tsconfig.json            # TypeScript config
 ├── next.config.ts          # Next.js config
+├── postcss.config.mjs       # PostCSS configuration
 └── todo.md                # Implementation roadmap
 ```
 
