@@ -27,11 +27,15 @@ export class UserService {
     if (!docSnap.exists()) {
       return null;
     }
-    
-    return {
-      id: docSnap.id,
-      ...docSnap.data()
-    } as User;
+
+    return { id: docSnap.id, ...docSnap.data() } as User;
+  }
+
+  /**
+   * Get user by ID (alias for getProfile)
+   */
+  async getById(userId: string): Promise<User | null> {
+    return this.getProfile(userId);
   }
 
   /**

@@ -1,0 +1,266 @@
+'use client';
+
+import { useAuth } from '@/lib/contexts/auth-context';
+import { contentService, universeService } from '@/lib/services';
+import { Content, Universe } from '@/lib/types';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+export default function ContentPage() {
+  const { user, loading } = useAuth();
+  const params = useParams();
+  const router = useRouter();
+  const contentId = params.id as string;
+
+  const [content, setContent] = useState<Content | null>(null);
+  const [universe, setUniverse] = useState<Universe | null>(null);
+  const [contentLoading, setContentLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user && contentId) {
+      const fetchContentData = async () => {
+        try {
+          setContentLoading(true);
+          
+          const contentData = await contentService.getById(contentId);
+          if (!contentData) {
+            setError('Content not found');
+            return;
+          }
+
+          setContent(contentData);
+
+          const universeData = await universeService.getById(contentData.universeId);
+          if (!universeData) {
+            setError('Universe not found');
+            return;
+          }
+
+          if (!universeData.isPublic && universeData.userId !== user.id) {
+            setError('You do not have permission to view this content');
+            return;
+          }
+
+          setUniverse(universeData);
+        } catch (error) {
+          console.error('Error fetching content:', error);
+          setError('Error loading content data');
+        } finally {
+          setContentLoading(false);
+        }
+      };
+
+      fetchContentData();
+    }
+  }, [user, contentId]);
+
+  const handleProgressUpdate = async (newProgress: number) => {
+    if (!content || !content.isViewable || !user) return;
+    
+    try {
+      await contentService.updateProgress(contentId, user.id, { progress: newProgress });
+      setContent({ ...content, progress: newProgress });
+    } catch (error) {
+      console.error('Error updating progress:', error);
+    }
+  };
+
+  if (loading || contentLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/');
+    return null;
+  }
+
+  if (error || !content || !universe) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <Link href="/" className="text-xl font-bold text-gray-900">
+                CanonCore
+              </Link>
+            </div>
+          </div>
+        </nav>
+
+        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <div className="bg-white rounded-lg shadow p-8">
+              <h3 className="text-lg font-medium text-red-600 mb-2">
+                {error || 'Content not found'}
+              </h3>
+              <Link
+                href="/"
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                Back to Dashboard
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const isOwner = universe.userId === user.id;
+  const progressPercent = content.progress || 0;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2">
+              <Link href="/" className="text-xl font-bold text-gray-900">
+                CanonCore
+              </Link>
+              <span className="text-gray-400">/</span>
+              <Link href={`/universes/${universe.id}`} className="text-blue-600 hover:text-blue-800">
+                {universe.name}
+              </Link>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-600">{content.name}</span>
+            </div>
+            {isOwner && (
+              <Link
+                href={`/content/${content.id}/edit`}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                Edit Content
+              </Link>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{content.name}</h1>
+              <div className="flex items-center space-x-4">
+                <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full capitalize">
+                  {content.mediaType}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {content.isViewable ? 'Watchable Content' : 'Reference Material'}
+                </span>
+                {!universe.isPublic && (
+                  <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
+                    Private Universe
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {content.description && (
+            <div className="mb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Description</h3>
+              <p className="text-gray-700 whitespace-pre-wrap">{content.description}</p>
+            </div>
+          )}
+
+          {content.isViewable && (
+            <div className="mb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Viewing Progress</h3>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex justify-between text-sm text-gray-600 mb-2">
+                  <span>Progress</span>
+                  <span>{Math.round(progressPercent)}% completed</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                  <div
+                    className="bg-green-600 h-3 rounded-full transition-all"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                
+                {isOwner && (
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleProgressUpdate(0)}
+                      className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                    >
+                      Not Started
+                    </button>
+                    <button
+                      onClick={() => handleProgressUpdate(25)}
+                      className="px-3 py-1 text-sm bg-yellow-200 hover:bg-yellow-300 text-yellow-800 rounded-lg transition-colors"
+                    >
+                      25%
+                    </button>
+                    <button
+                      onClick={() => handleProgressUpdate(50)}
+                      className="px-3 py-1 text-sm bg-blue-200 hover:bg-blue-300 text-blue-800 rounded-lg transition-colors"
+                    >
+                      50%
+                    </button>
+                    <button
+                      onClick={() => handleProgressUpdate(75)}
+                      className="px-3 py-1 text-sm bg-purple-200 hover:bg-purple-300 text-purple-800 rounded-lg transition-colors"
+                    >
+                      75%
+                    </button>
+                    <button
+                      onClick={() => handleProgressUpdate(100)}
+                      className="px-3 py-1 text-sm bg-green-200 hover:bg-green-300 text-green-800 rounded-lg transition-colors"
+                    >
+                      Completed
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="text-sm text-gray-500 border-t pt-4">
+            <div className="flex justify-between">
+              <span>
+                Created {new Date(content.createdAt.toDate()).toLocaleDateString()}
+              </span>
+              {content.updatedAt && (
+                <span>
+                  Last updated {new Date(content.updatedAt.toDate()).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            {content.lastAccessedAt && (
+              <div className="mt-1">
+                Last accessed {new Date(content.lastAccessedAt.toDate()).toLocaleDateString()}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Universe Context</h3>
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div>
+              <h4 className="font-medium text-gray-900">{universe.name}</h4>
+              {universe.description && (
+                <p className="text-sm text-gray-600 mt-1">{universe.description}</p>
+              )}
+            </div>
+            <Link
+              href={`/universes/${universe.id}`}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              View Universe
+            </Link>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

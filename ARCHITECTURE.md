@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently in foundational phase with authentication and basic UI implemented.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 2b with complete core page functionality including authentication, service layer, dashboard, universe details, content details, discovery, and user profiles.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -25,7 +25,10 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │  │ page.tsx    │  │ (Empty)     │  │ AuthContext │             │
 │  │ (Dashboard) │  │             │  │ - User mgmt │             │
 │  │ layout.tsx  │  │             │  │ - Sign in/  │             │
-│  │ (Auth wrap) │  │             │  │   out       │             │
+│  │ universes/  │  │             │  │   out       │             │
+│  │ content/    │  │             │  │             │             │
+│  │ discover/   │  │             │  │             │             │
+│  │ profile/    │  │             │  │             │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                           │                │                    │
 ├───────────────────────────┼────────────────┼────────────────────┤
@@ -75,10 +78,35 @@ Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
   - Data Flow: Wraps entire app with auth state
 
 #### Pages Layer  
-- **`app/page.tsx`**: Main dashboard/landing page
-  - Responsibilities: Authentication gate, dashboard placeholder
-  - Data Flow: AuthContext → UI state → conditional rendering
-  - States: Loading, unauthenticated (sign-in), authenticated (dashboard)
+- **`app/page.tsx`**: Franchise dashboard
+  - Responsibilities: Authentication gate, display user's universes, navigation to franchise detail
+  - Data Flow: AuthContext → UniverseService → Universe list → Responsive grid UI
+  - States: Loading, unauthenticated (sign-in), authenticated (dashboard with universes)
+  - Features: Universe cards, progress bars, create/edit actions, private/public indicators, navigation links
+
+- **`app/universes/[id]/page.tsx`**: Universe detail pages
+  - Responsibilities: Display franchise details, content organisation, owner permissions
+  - Data Flow: AuthContext + URL params → UniverseService + ContentService → Universe + Content data → Detailed UI
+  - States: Loading, error (not found/unauthorized), universe display
+  - Features: Universe overview, content categorisation (viewable vs organisational), progress tracking, owner actions
+
+- **`app/content/[id]/page.tsx`**: Content detail pages
+  - Responsibilities: Display individual content (episodes, characters), progress tracking, universe context
+  - Data Flow: AuthContext + URL params → ContentService + UniverseService → Content + Universe data → Detail UI
+  - States: Loading, error (not found/unauthorized), content display
+  - Features: Content details, progress updates, breadcrumb navigation, universe context, owner actions
+
+- **`app/discover/page.tsx`**: Public discovery page
+  - Responsibilities: Browse and search all public franchises, community discovery
+  - Data Flow: UniverseService → Public universes → Search filtering → Grid display
+  - States: Loading, empty state, search results
+  - Features: Search functionality, public franchise grid, responsive design, navigation
+
+- **`app/profile/[userId]/page.tsx`**: User profile pages
+  - Responsibilities: Display user's public franchises and favourites, profile information
+  - Data Flow: AuthContext + URL params → UserService + UniverseService → User + Universes + Favourites → Profile UI
+  - States: Loading, error (user not found), own vs other profile display
+  - Features: Tabbed interface (franchises/favourites), public franchise display, profile stats, responsive design
 
 #### Context Layer
 - **`lib/contexts/auth-context.tsx`**: Authentication state management
@@ -132,20 +160,38 @@ AuthContextType: { user, loading, signIn, signOut }
 FranchiseContextType: { universes, loading, createUniverse, ... }
 ```
 
-### Firebase Collections (Defined but not used yet)
+### Firebase Collections (Phase 1 Services Ready, Phase 2a Pages Consuming)
 
 ```
-users/
+users/ (Used by AuthContext)
 ├── {userId}/
     ├── id: string
     ├── displayName: string | null
     ├── email: string | null  
     └── createdAt: Timestamp
 
-universes/ (Not implemented)
-content/ (Not implemented)
-favorites/ (Not implemented)
-contentRelationships/ (Not implemented)
+universes/ (Service implemented, consumed by dashboard and detail pages)
+├── {universeId}/
+    ├── id: string
+    ├── name: string
+    ├── description: string
+    ├── userId: string
+    ├── isPublic: boolean
+    ├── progress?: number
+    └── createdAt, updatedAt: Timestamp
+
+content/ (Service implemented, consumed by universe detail pages)
+├── {contentId}/
+    ├── id: string
+    ├── name: string
+    ├── universeId: string
+    ├── isViewable: boolean
+    ├── mediaType: string
+    ├── progress?: number
+    └── createdAt, updatedAt: Timestamp
+
+favorites/ (Service implemented, not yet used by UI)
+contentRelationships/ (Service implemented, not yet used by UI)
 ```
 
 ## Current Data Flows
@@ -187,7 +233,18 @@ canoncore/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── layout.tsx         # Root layout with AuthProvider
-│   │   ├── page.tsx           # Dashboard/landing page
+│   │   ├── page.tsx           # Franchise dashboard (Phase 2a)
+│   │   ├── content/
+│   │   │   └── [id]/
+│   │   │       └── page.tsx   # Content detail pages (Phase 2b)
+│   │   ├── discover/
+│   │   │   └── page.tsx       # Public discovery page (Phase 2b)
+│   │   ├── profile/
+│   │   │   └── [userId]/
+│   │   │       └── page.tsx   # User profile pages (Phase 2b)
+│   │   ├── universes/
+│   │   │   └── [id]/
+│   │   │       └── page.tsx   # Universe detail pages (Phase 2a)
 │   │   └── globals.css        # Global styles
 │   ├── lib/
 │   │   ├── contexts/
@@ -201,16 +258,25 @@ canoncore/
 │   │   ├── hooks/                  # Custom React hooks (empty)
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions
-│   ├── components/            # UI components (empty - Phase 4)
-│   └── styles/               # Additional styles (empty)
-├── ARCHITECTURE.md           # System architecture documentation
-├── CLAUDE.md                # Development guide for Claude Code
-├── LOVABLE_MVP_SPEC.md      # Complete MVP specification
-├── package.json              # Dependencies
-├── tsconfig.json            # TypeScript config
-├── next.config.ts          # Next.js config
-├── postcss.config.mjs       # PostCSS configuration
-└── todo.md                # Implementation roadmap
+│   ├── components/                 # UI components (empty - Phase 4)
+│   └── styles/                     # Additional styles (empty)
+├── public/                         # Static assets (Firebase hosting files)
+│   ├── 404.html                   # Firebase 404 page
+│   └── index.html                 # Firebase default page
+├── ARCHITECTURE.md                 # System architecture documentation
+├── CLAUDE.md                      # Development guide for Claude Code
+├── LOVABLE_MVP_SPEC.md           # Complete MVP specification
+├── firebase.json                  # Firebase configuration
+├── firestore.rules               # Firestore security rules
+├── firestore.indexes.json       # Firestore database indexes
+├── next-env.d.ts                 # Next.js TypeScript declarations
+├── next.config.ts               # Next.js config
+├── package.json                 # Dependencies and scripts
+├── package-lock.json           # Dependency lock file
+├── postcss.config.mjs          # PostCSS configuration
+├── todo.md                     # Implementation roadmap
+├── tsconfig.json              # TypeScript config
+└── tsconfig.tsbuildinfo       # TypeScript build cache
 ```
 
 ## Security Model (Current)
@@ -259,27 +325,54 @@ canoncore/
 - Firebase operations will use existing `db` instance
 - Type definitions already prepared for service methods
 
-### Phase 2: Core Pages  
-- Will consume AuthContext for authentication state
-- Will use future service layer for data operations
-- Will extend current layout structure
+### Phase 2a: Core Pages - Dashboard & Universe (COMPLETE)
+- Dashboard page consumes AuthContext and UniverseService for franchise listing
+- Universe detail pages consume AuthContext, UniverseService, and ContentService
+- Extended layout structure with dynamic routing
+- Responsive grid layouts with progress visualization
+
+### Phase 2b: Core Pages - Content & Discovery (COMPLETE)
+- Content detail pages consume ContentService and UniverseService for individual content display
+- Discovery page uses UniverseService for public franchise browsing and search
+- Profile pages integrate UserService with franchise and favourite display
+- Navigation system connects all pages with consistent routing
 
 ### Phase 3: Data Management
 - Forms will integrate with service layer
 - Progress tracking will update Firestore directly
 - Hierarchical organisation will use ContentRelationship model
 
-### Phase 4: UI Components
+### Phase 4a: UI Components - Component Library
+- Establish design system foundation (colours, typography, spacing)
 - Components will consume service layer and contexts
-- Reusable components will be built for franchise-specific needs
-- Responsive design will be implemented across all components
+- Apply consistent design to: Dashboard, Universe Detail, Content Detail pages
+- Reusable components built with consistent styling patterns
+- Standardised button, form, and component variations
 
-### Phase 5: Testing & Deployment
+### Phase 4b: UI Components - Navigation & Responsive
+- Build franchise navigation components with design system applied
+- Apply design system to: Discover page, Profile pages
+- Standardise navigation patterns across all 5 core pages
+- Progress tracking components with consistent styling
+- Responsive design implemented across all pages and screen sizes
+
+### Phase 5a: Testing
 - Comprehensive testing of all implemented features
+- Service layer unit tests and component integration tests
+- Firestore security rules validation
+
+### Phase 5b: Code Optimisation & Cleanup
+- Remove unused files, components, and service methods
+- Consolidate duplicate UI patterns and optimise imports
+- Clean up Firebase features and improve code organisation
+- Bundle size optimisation and performance improvements
+
+### Phase 5c: Deployment
 - Production environment setup and deployment
+- Firebase hosting configuration
 - End-to-end workflow validation
 
 ---
 
-**Last Updated**: Phase 1 Complete (Foundation + Service Layer)  
-**Next Update**: After Phase 2a: Core Pages - Dashboard & Universe
+**Last Updated**: Phase 2b Complete (Foundation + Service Layer + All Core Pages)  
+**Next Update**: After Phase 3a: Data Management - Forms & Content Creation

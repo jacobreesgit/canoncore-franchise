@@ -42,10 +42,21 @@ npm run type-check
 src/
 ├── app/                    # Next.js App Router pages
 │   ├── layout.tsx         # Root layout with AuthProvider
-│   └── page.tsx           # Dashboard/landing page
+│   ├── page.tsx           # Franchise dashboard (lists user's universes)
+│   ├── content/
+│   │   └── [id]/
+│   │       └── page.tsx   # Content detail pages (episodes, characters)
+│   ├── discover/
+│   │   └── page.tsx       # Public franchise discovery page
+│   ├── profile/
+│   │   └── [userId]/
+│   │       └── page.tsx   # User profile pages with favourites
+│   └── universes/
+│       └── [id]/
+│           └── page.tsx   # Universe detail pages
 ├── lib/
 │   ├── contexts/          # React contexts (AuthContext implemented)
-│   ├── services/          # Firebase service layer (not yet implemented)
+│   ├── services/          # Firebase service layer (all 4 services implemented)
 │   ├── hooks/             # Custom React hooks (empty)
 │   ├── firebase.ts        # Firebase configuration
 │   └── types.ts           # TypeScript interfaces
@@ -54,19 +65,23 @@ src/
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1):**
+**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b):**
 - Next.js 15 + React 19 + TypeScript setup
-- Firebase Auth + Firestore configuration  
+- Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration
 - Complete TypeScript interfaces for franchise data
 - Basic app layout with sign-in/dashboard flow
 - **Service Layer** - All 4 core services implemented (UniverseService, ContentService, UserService, RelationshipService)
+- **Franchise Dashboard** - Lists user's universes with progress tracking, responsive grid layout, navigation
+- **Universe Detail Pages** - Shows universe details, content by type (viewable/organisational), owner permissions
+- **Content Detail Pages** - Individual content viewing with progress tracking, breadcrumb navigation
+- **Public Discovery** - Browse and search all public franchises with responsive interface
+- **User Profiles** - Display public franchises and favourites with tabbed interface
 
 **Next Implementation Phases (see todo.md):**
-2. **Phase 2a-2b: Core Pages** - Dashboard, universe detail, content detail, discovery, profiles
 3. **Phase 3a-3c: Data Management** - Forms, progress tracking, hierarchies, visibility, favourites
-4. **Phase 4a-4b: UI Components** - Component library, navigation, responsive design
-5. **Phase 5a-5b: Testing & Deployment** - Tests, production setup
+4. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
+5. **Phase 5a-5c: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup
 
 ## Data Model
 

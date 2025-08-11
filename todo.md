@@ -18,18 +18,18 @@
     ☒ ✅ Create RelationshipService for content
       hierarchies
 
-**Phase 2a: Core Pages - Dashboard & Universe**
-    ☐ Build franchise dashboard (list user's
+**Phase 2a: Core Pages - Dashboard & Universe** ✅ COMPLETE
+    ☒ ✅ Build franchise dashboard (list user's
       universes)
-    ☐ Create universe detail page (Marvel, Doctor
+    ☒ ✅ Create universe detail page (Marvel, Doctor
       Who, etc)
 
-**Phase 2b: Core Pages - Content & Discovery**
-    ☐ Build content detail pages (episodes,
+**Phase 2b: Core Pages - Content & Discovery** ✅ COMPLETE
+    ☒ ✅ Build content detail pages (episodes,
       characters)
-    ☐ Create public discovery page (browse all
+    ☒ ✅ Create public discovery page (browse all
       public franchises)
-    ☐ Build user profile pages with favourites
+    ☒ ✅ Build user profile pages with favourites
 
 **Phase 3a: Data Management - Forms & Content Creation**
     ☐ Implement franchise creation form (Marvel,
@@ -52,20 +52,37 @@
       content
 
 **Phase 4a: UI Components - Component Library**
-    ☐ Create reusable UI components (forms,
-      cards, modals)
+    ☐ Establish design system (colours, typography, spacing)
+    ☐ Create reusable UI components (forms, cards, modals)
+    ☐ Standardise button and form styles
+    ☐ Apply consistent design to: Dashboard, Universe Detail, Content Detail
+    ☐ Ensure consistent loading and error states
 
 **Phase 4b: UI Components - Navigation & Responsive**
     ☐ Build franchise navigation components
     ☐ Create progress tracking components
-    ☐ Implement responsive design for mobile
+    ☐ Apply design system to: Discover page, Profile pages
+    ☐ Standardise navigation across all 5 core pages
+    ☐ Implement responsive design for mobile (all pages)
+    ☐ Ensure consistent design across all screen sizes
 
 **Phase 5a: Testing**
     ☐ Add service layer unit tests
     ☐ Create component integration tests
     ☐ Test Firestore security rules
 
-**Phase 5b: Deployment**
+**Phase 5b: Code Optimisation & Cleanup**
+    ☐ Remove unused files and directories
+    ☐ Clean up redundant code and components
+    ☐ Remove unused service methods and hooks
+    ☐ Optimise imports and dependencies
+    ☐ Consolidate duplicate UI patterns
+    ☐ Review and improve code organisation
+    ☐ Remove unused Firebase features/collections
+    ☐ Optimise bundle size and performance
+
+**Phase 5c: Deployment**
     ☐ Set up production environment
     ☐ Configure Firebase hosting
     ☐ Test full end-to-end user workflows
+    
