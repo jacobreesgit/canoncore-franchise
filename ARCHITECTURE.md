@@ -121,6 +121,18 @@ Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
   - States: Loading, permission checking, form validation, submission
   - Features: Media type selection, viewable/non-viewable detection, owner permissions, content guidance
 
+- **`app/universes/[id]/edit/page.tsx`**: Universe edit form (Phase 3b)
+  - Responsibilities: Allow universe owners to edit franchise details with pre-populated data
+  - Data Flow: AuthContext + URL params → UniverseService.getById → Form population → UniverseService.update
+  - States: Loading, permission checking, form validation, submission, error handling
+  - Features: Pre-populated form fields, validation, owner permissions, proper navigation
+
+- **`app/content/[id]/edit/page.tsx`**: Content edit form (Phase 3b)
+  - Responsibilities: Allow content owners to edit content details with automatic media type detection
+  - Data Flow: AuthContext + URL params → ContentService.getById → Form population → ContentService.update
+  - States: Loading, permission checking, form validation, submission, error handling
+  - Features: Pre-populated form, media type selection, automatic isViewable detection, breadcrumb navigation
+
 #### Context Layer
 - **`lib/contexts/auth-context.tsx`**: Authentication state management
   - Responsibilities: 
@@ -263,7 +275,8 @@ canoncore/
 │   │   ├── content/
 │   │   │   └── [id]/
 │   │   │       ├── page.tsx   # Content detail pages (Phase 2b)
-│   │   │       └── edit/      # MISSING - Content edit form (Phase 3b)
+│   │   │       └── edit/
+│   │   │           └── page.tsx # Content edit form (Phase 3b)
 │   │   ├── discover/
 │   │   │   └── page.tsx       # Public discovery page (Phase 2b)
 │   │   ├── profile/
@@ -274,7 +287,8 @@ canoncore/
 │   │   │   │   └── page.tsx   # Universe creation form (Phase 3a)
 │   │   │   └── [id]/
 │   │   │       ├── page.tsx   # Universe detail pages (Phase 2a)
-│   │   │       ├── edit/      # MISSING - Universe edit form (Phase 3b)
+│   │   │       ├── edit/
+│   │   │       │   └── page.tsx # Universe edit form (Phase 3b)
 │   │   │       └── content/
 │   │   │           └── create/
 │   │   │               └── page.tsx # Content creation form (Phase 3a)
@@ -376,12 +390,12 @@ canoncore/
 - Forms include validation, error handling, and authentication checks
 - Media type selection with automatic viewable/non-viewable detection
 
-### Phase 3b: Data Management - Edit & Delete Operations (PENDING)
-- Universe edit form (/universes/[id]/edit) using existing UniverseService.update()
-- Content edit form (/content/[id]/edit) using existing ContentService.update()
-- Universe delete functionality with confirmation using UniverseService.delete()
-- Content delete functionality with confirmation using ContentService.delete()
-- Owner permission checks and error handling for all operations
+### Phase 3b: Data Management - Edit & Delete Operations (COMPLETE)
+- Universe edit form (/universes/[id]/edit) using UniverseService.update() with pre-populated data
+- Content edit form (/content/[id]/edit) using ContentService.update() with media type selection
+- Universe delete functionality with confirmation modal and cascade deletion
+- Content delete functionality with confirmation modal and proper navigation
+- Owner permission checks, error handling, loading states, and proper redirects
 
 ### Phase 3c: Data Management - Progress & Hierarchies (PENDING)
 - **Individual user progress tracking**: Create UserProgress collection/subcollection for per-user progress states
@@ -446,5 +460,5 @@ CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
 
 ---
 
-**Last Updated**: Phase 3a Complete (Foundation + Service Layer + All Core Pages + Data Management Forms)  
-**Next Update**: After Phase 3b: Data Management - Edit & Delete Operations
+**Last Updated**: Phase 3b Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations)  
+**Next Update**: After Phase 3c: Data Management - Individual User Progress & Hierarchies

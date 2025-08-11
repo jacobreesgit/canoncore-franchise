@@ -17,6 +17,8 @@ export default function UniversePage() {
   const [content, setContent] = useState<Content[]>([]);
   const [universeLoading, setUniverseLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (user && universeId) {
@@ -50,6 +52,21 @@ export default function UniversePage() {
       fetchUniverseData();
     }
   }, [user, universeId]);
+
+  const handleDeleteUniverse = async () => {
+    if (!universe || !user) return;
+    
+    setIsDeleting(true);
+    try {
+      await universeService.delete(universe.id, user.id);
+      router.push('/');
+    } catch (error) {
+      console.error('Error deleting universe:', error);
+      setError('Failed to delete universe');
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   if (loading || universeLoading) {
     return (
@@ -126,6 +143,12 @@ export default function UniversePage() {
                 >
                   Edit Universe
                 </Link>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Delete
+                </button>
               </div>
             )}
           </div>
@@ -138,11 +161,13 @@ export default function UniversePage() {
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-gray-900">{universe.name}</h1>
               <div className="flex items-center space-x-2">
-                {!universe.isPublic && (
-                  <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-                    Private
-                  </span>
-                )}
+                <span className={`text-sm px-3 py-1 rounded-full ${
+                  universe.isPublic 
+                    ? 'bg-green-100 text-green-600' 
+                    : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {universe.isPublic ? 'Public' : 'Private'}
+                </span>
                 <span className="text-sm text-gray-500">
                   {isOwner ? 'Your universe' : `By ${universe.userId}`}
                 </span>
@@ -151,6 +176,25 @@ export default function UniversePage() {
             
             {universe.description && (
               <p className="text-gray-600 mb-4">{universe.description}</p>
+            )}
+
+            {universe.sourceLink && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <svg className="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 2l6 6m0 0l-3-3m3 3l-3 3" />
+                  </svg>
+                  <span className="text-sm text-blue-800 font-medium">Source Reference</span>
+                </div>
+                <a 
+                  href={universe.sourceLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline mt-1 block"
+                >
+                  {universe.sourceLinkName || universe.sourceLink}
+                </a>
+              </div>
             )}
 
             {typeof universe.progress === 'number' && (
@@ -253,6 +297,36 @@ export default function UniversePage() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Delete Universe
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to delete "{universe?.name}"? This action cannot be undone and will also delete all associated content.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteUniverse}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Universe'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

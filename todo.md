@@ -37,11 +37,11 @@
     ☒ ✅ Build content creation (add episodes,
       movies, characters)
 
-**Phase 3b: Data Management - Edit & Delete Operations**
-    ☐ Build universe edit form (/universes/[id]/edit)
-    ☐ Build content edit form (/content/[id]/edit)
-    ☐ Add universe delete functionality with confirmation
-    ☐ Add content delete functionality with confirmation
+**Phase 3b: Data Management - Edit & Delete Operations** ✅ COMPLETE
+    ☒ ✅ Build universe edit form (/universes/[id]/edit)
+    ☒ ✅ Build content edit form (/content/[id]/edit)
+    ☒ ✅ Add universe delete functionality with confirmation
+    ☒ ✅ Add content delete functionality with confirmation
 
 **Phase 3c: Data Management - Progress & Hierarchies**
     ☐ Create hierarchical content organisation

@@ -42,7 +42,7 @@ Create a content management platform for organising REAL existing fictional fran
 
 ## 2. Snapshot of Current System
 
-The repository contains a fully-featured fictional universe organisation system built with Next.js 15, React 19, TypeScript, and Firebase. The system includes Google OAuth authentication, universe creation/management for franchises like Doctor Who or Marvel, hierarchical content organisation for series/movies/characters, progress tracking for viewable content, public discovery of fan-curated universes, and comprehensive testing (798 tests across 47 suites). The codebase demonstrates production-ready architecture with service layer abstraction, error boundaries, and extensive UI component library with Storybook integration.
+The repository contains a fully-featured fictional universe organisation system built with Next.js 15, React 19, TypeScript, and Firebase. The system includes Google OAuth authentication, universe creation/management for franchises like Doctor Who or Marvel, complete CRUD operations with edit forms and delete functionality, hierarchical content organisation for series/movies/characters, progress tracking for viewable content, public discovery of fan-curated universes, and comprehensive testing (798 tests across 47 suites). The codebase demonstrates production-ready architecture with service layer abstraction, error boundaries, and extensive UI component library with Storybook integration.
 
 ```
 canoncore2/

@@ -17,6 +17,8 @@ export default function ContentPage() {
   const [universe, setUniverse] = useState<Universe | null>(null);
   const [contentLoading, setContentLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (user && contentId) {
@@ -64,6 +66,21 @@ export default function ContentPage() {
       setContent({ ...content, progress: newProgress });
     } catch (error) {
       console.error('Error updating progress:', error);
+    }
+  };
+
+  const handleDeleteContent = async () => {
+    if (!content || !user) return;
+    
+    setIsDeleting(true);
+    try {
+      await contentService.delete(content.id, user.id);
+      router.push(`/universes/${content.universeId}`);
+    } catch (error) {
+      console.error('Error deleting content:', error);
+      setError('Failed to delete content');
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -132,12 +149,20 @@ export default function ContentPage() {
               <span className="text-gray-600">{content.name}</span>
             </div>
             {isOwner && (
-              <Link
-                href={`/content/${content.id}/edit`}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors"
-              >
-                Edit Content
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link
+                  href={`/content/${content.id}/edit`}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Edit Content
+                </Link>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -251,6 +276,36 @@ export default function ContentPage() {
           </div>
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Delete Content
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to delete "{content?.name}"? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteContent}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Content'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

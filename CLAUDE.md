@@ -89,7 +89,7 @@ src/
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a):**
+**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration
@@ -103,13 +103,15 @@ src/
 - **User Profiles** - Display public franchises and favourites with tabbed interface
 - **Universe Creation Forms** - Complete form for creating new franchises with validation and Firebase integration
 - **Content Creation Forms** - Comprehensive forms for adding content with media type selection and permissions
+- **Universe Edit Forms** - Complete edit functionality for updating franchise details with pre-populated data
+- **Content Edit Forms** - Full content editing with media type selection and automatic viewable detection
+- **Delete Operations** - Universe and content deletion with confirmation modals and proper error handling
 
 **Next Implementation Phases (see todo.md):**
-3. **Phase 3b: Edit & Delete Operations** - Universe/content edit forms, delete functionality with confirmation
-4. **Phase 3c-3d: Data Management** - Progress tracking, hierarchies, visibility, favourites
-5. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
-6. **Phase 5a-5d: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup, flow optimisation
-7. **Phase 6a: Advanced Content Hierarchies** - Infinite nesting, recursive trees, drag-and-drop organisation
+3. **Phase 3c-3d: Data Management** - Individual user progress, hierarchies, visibility, favourites
+4. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
+5. **Phase 5a-5d: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup, flow optimisation
+6. **Phase 6a: Advanced Content Hierarchies** - Infinite nesting, recursive trees, drag-and-drop organisation
 
 ## Data Model
 
