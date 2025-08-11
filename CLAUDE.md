@@ -64,20 +64,27 @@ src/
 │   ├── page.tsx           # Franchise dashboard (lists user's universes)
 │   ├── content/
 │   │   └── [id]/
-│   │       └── page.tsx   # Content detail pages (episodes, characters)
+│   │       └── page.tsx   # Content detail pages (viewable/organisational content)
 │   ├── discover/
 │   │   └── page.tsx       # Public franchise discovery page
 │   ├── profile/
 │   │   └── [userId]/
-│   │       └── page.tsx   # User profile pages with favourites
+│   │       ├── page.tsx   # User profile pages with favourites
+│   │       └── edit/
+│   │           └── page.tsx # Profile edit form
 │   └── universes/
 │       ├── create/
 │       │   └── page.tsx   # Universe creation form
 │       └── [id]/
 │           ├── page.tsx   # Universe detail pages
+│           ├── edit/
+│           │   └── page.tsx # Universe edit form
 │           └── content/
-│               └── create/
-│                   └── page.tsx # Content creation form
+│               ├── create/
+│               │   └── page.tsx # Content creation form
+│               └── [contentId]/
+│                   └── edit/
+│                       └── page.tsx # Content edit form
 ├── lib/
 │   ├── contexts/          # React contexts (AuthContext implemented)
 │   ├── services/          # Firebase service layer (all 4 services implemented)
@@ -87,31 +94,85 @@ src/
 └── components/            # UI components (empty)
 ```
 
+## Routing Conventions
+
+The application follows **hierarchical routing** that mirrors the data relationships and user navigation patterns. All routes use Next.js 15 App Router with consistent patterns:
+
+### **Route Structure**
+
+```
+/                                                    # Dashboard (user's universes)
+/discover                                            # Public universe discovery
+
+# Universe Operations (grouped by universe ownership)
+/universes/create                                    # Create new universe
+/universes/[id]                                      # View universe details
+/universes/[id]/edit                                 # Edit universe
+/universes/[id]/content/create                       # Add content to universe
+/universes/[id]/content/[contentId]/edit             # Edit universe content
+
+# Direct Content Access
+/content/[id]                                        # View any content directly
+
+# Profile Operations (grouped by user)
+/profile/[userId]                                    # View user profile
+/profile/[userId]/edit                               # Edit own profile (permission-gated)
+```
+
+### **Routing Principles**
+
+1. **Hierarchical Organisation**: Edit operations are nested under their parent resources
+   - Universe edits: `/universes/[id]/edit` 
+   - Content edits: `/universes/[id]/content/[contentId]/edit` (grouped with universe)
+   - Profile edits: `/profile/[userId]/edit` (grouped with profile)
+
+2. **Permission Context**: Route structure reflects permission boundaries
+   - Universe routes require universe ownership for edit operations
+   - Content routes inherit universe permissions
+   - Profile routes require user authentication and ownership verification
+
+3. **Navigation Flow**: Routes match natural user navigation patterns
+   - Dashboard → Universe → Content → Edit
+   - Dashboard → Profile → Edit
+   - Direct content access via `/content/[id]` for cross-universe linking
+
+4. **Consistency**: All resource edit operations follow pattern: `/{resource}/[id]/edit`
+
+### **Parameter Conventions**
+
+- `[id]` - Primary resource identifier (universe ID, content ID)
+- `[userId]` - User identifiers for profiles 
+- `[contentId]` - Content identifiers when nested under universe context
+- Route parameters are extracted via `useParams()` with TypeScript casting
+
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b):**
+**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b + Phase 3c + Phase 6a):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
-- AuthContext with Google OAuth integration
-- Complete TypeScript interfaces for franchise data
+- AuthContext with Google OAuth integration and account selection
+- Complete TypeScript interfaces for franchise data including UserProgress
 - Basic app layout with sign-in/dashboard flow
-- **Service Layer** - All 4 core services implemented (UniverseService, ContentService, UserService, RelationshipService)
-- **Franchise Dashboard** - Lists user's universes with progress tracking, responsive grid layout, navigation
-- **Universe Detail Pages** - Shows universe details, content by type (viewable/organisational), owner permissions
-- **Content Detail Pages** - Individual content viewing with progress tracking, breadcrumb navigation
+- **Service Layer** - All 5 core services implemented (UniverseService, ContentService, UserService, RelationshipService, UserProgressService)
+- **Franchise Dashboard** - Lists user's universes with user-specific progress tracking, responsive grid layout, navigation
+- **Universe Detail Pages** - Shows universe details, content by type (viewable/organisational), owner permissions, tree/grid view toggle, hierarchical navigation
+- **Content Detail Pages** - Individual content viewing with user-specific progress tracking, breadcrumb navigation
 - **Public Discovery** - Browse and search all public franchises with responsive interface
-- **User Profiles** - Display public franchises and favourites with tabbed interface
+- **User Profiles** - Display public franchises and favourites with tabbed interface (favourites functionality disabled pending Phase 3d)
 - **Universe Creation Forms** - Complete form for creating new franchises with validation and Firebase integration
-- **Content Creation Forms** - Comprehensive forms for adding content with media type selection and permissions
+- **Content Creation Forms** - Comprehensive forms for adding content with media type selection, parent selection for hierarchies, and permissions
 - **Universe Edit Forms** - Complete edit functionality for updating franchise details with pre-populated data
 - **Content Edit Forms** - Full content editing with media type selection and automatic viewable detection
 - **Delete Operations** - Universe and content deletion with confirmation modals and proper error handling
+- **Individual User Progress** - Per-user progress tracking with UserProgress collection, same content shows different progress per user
+- **Advanced Hierarchical Content Organisation** - Infinite depth parent-child relationships, recursive tree building, expandable tree navigation, calculated progress for organisational content
+- **Polished UI & Progress Indicators** - Consistent progress bar colors (green for viewable, blue for organisational), smart progress display logic, consistent ordering across grid/tree views, conditional progress text colors
 
 **Next Implementation Phases (see todo.md):**
-3. **Phase 3c-3d: Data Management** - Individual user progress, hierarchies, visibility, favourites
+3. **Phase 3d: Data Management** - Visibility & favourites functionality
 4. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
 5. **Phase 5a-5d: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup, flow optimisation
-6. **Phase 6a: Advanced Content Hierarchies** - Infinite nesting, recursive trees, drag-and-drop organisation
+6. **Phase 6a: Advanced Content Hierarchies** (remaining) - Drag-and-drop organisation, circular reference detection, breadcrumbs (core functionality complete)
 
 ## Data Model
 
@@ -119,7 +180,7 @@ The system uses a hierarchical franchise organisation model:
 
 ### Core Entities
 - **Universe**: Top-level franchise container (e.g., "Marvel Cinematic Universe")
-- **Content**: Episodes, movies, characters, locations within a franchise
+- **Content**: Viewable content (episodes, movies, books) and organisational content (characters, locations, collections) within a franchise
 - **User**: Fan accounts with Google OAuth
 - **Favourite**: User bookmarks for franchises/content
 - **ContentRelationship**: Hierarchical links between content items
@@ -138,12 +199,12 @@ interface Universe {
   // ... timestamps
 }
 
-// Franchise elements (episodes, characters, etc.)
+// Franchise elements (viewable and organisational content)
 interface Content {
   id: string;
   name: string;
   universeId: string;
-  isViewable: boolean;          // true for episodes/movies, false for characters
+  isViewable: boolean;          // true for viewable content, false for organisational content
   mediaType: 'video' | 'audio' | 'text' | 'character' | 'location' | ...;
   progress?: number;            // Only for viewable content
   calculatedProgress?: number;  // For organisational holders
@@ -171,7 +232,7 @@ interface Content {
 - Auth operations use AuthContext
 
 ### Progress Tracking Rules
-- **ONLY viewable content** (episodes, movies, books) can be directly marked as watched
+- **ONLY viewable content** (movies, episodes, books, audio) can be directly marked as watched
 - **Individual per user**: Same public content can have different progress for each user (100% for User A, 0% for User B)
 - **Organisational holders** (series, phases) show calculated progress based on contained viewable content
 - Progress propagates up hierarchies: viewable content → organisational holders → franchise progress
@@ -180,6 +241,12 @@ interface Content {
 ### British English
 - Use British English spelling throughout (organisation, cataloguing, favourites, optimise)
 - This applies to UI text, comments, and documentation
+
+### Content Terminology
+- Use **"Viewable Content"** for movies, episodes, books, audio (content that can be watched/consumed)
+- Use **"Organisational Content"** for characters, locations, collections, series (content that helps organise)
+- Never use old terms: ~~"Watchable Content"~~, ~~"Characters & Locations"~~, ~~"Reference Material"~~
+- This terminology must be consistent across all UI, documentation, and code comments
 
 ## Franchise Content Rules
 
@@ -198,20 +265,22 @@ interface Content {
 All services are implemented in `src/lib/services/` and exported via index:
 
 ```typescript
-import { universeService, contentService, userService, relationshipService } from '@/lib/services';
+import { universeService, contentService, userService, relationshipService, userProgressService } from '@/lib/services';
 
 // Example usage:
-const universes = await universeService.getUserUniverses(userId);
-const content = await contentService.getByUniverse(universeId);
+const universes = await universeService.getUserUniversesWithProgress(userId);
+const content = await contentService.getByUniverseWithUserProgress(universeId, userId);
 await userService.addToFavourites(userId, universeId, 'universe');
 const hierarchy = await relationshipService.buildHierarchyTree(universeId);
+await userProgressService.setUserProgress(userId, { contentId, universeId, progress: 100 });
 ```
 
 **Service Capabilities:**
-- **UniverseService**: Full CRUD, public/private, progress tracking, search
-- **ContentService**: Episodes/characters, viewable/organisational distinction, progress updates
+- **UniverseService**: Full CRUD, public/private, user-specific progress calculation, search
+- **ContentService**: Viewable/organisational content management, user-specific progress updates, calculated progress for organisational content
 - **UserService**: Profile management, favourites system, activity tracking
-- **RelationshipService**: Hierarchical organisation, tree building, path navigation
+- **RelationshipService**: Hierarchical organisation, tree building, path navigation, parent-child relationships
+- **UserProgressService**: Individual user progress tracking, per-user progress states, organisational progress calculation
 
 ## Firebase Security
 

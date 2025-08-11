@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Content, CreateContentData, UpdateContentProgressData } from '@/lib/types';
+import { userProgressService } from './user-progress.service';
 
 export class ContentService {
   private collection = collection(db, 'content');
@@ -152,7 +153,8 @@ export class ContentService {
   }
 
   /**
-   * Update progress for viewable content (episodes, movies)
+   * Update progress for viewable content (episodes, movies) - DEPRECATED
+   * Use updateUserProgress instead for individual user progress tracking
    */
   async updateProgress(id: string, userId: string, progressData: UpdateContentProgressData): Promise<void> {
     const content = await this.getById(id);
@@ -178,6 +180,29 @@ export class ContentService {
     }
 
     await updateDoc(docRef, updateData);
+  }
+
+  /**
+   * Update user-specific progress for viewable content (NEW METHOD)
+   */
+  async updateUserProgress(contentId: string, userId: string, progress: number): Promise<void> {
+    // Get content to verify it exists and is viewable
+    const content = await this.getById(contentId);
+    
+    if (!content) {
+      throw new Error('Content not found');
+    }
+
+    if (!content.isViewable) {
+      throw new Error('Cannot update progress on non-viewable content');
+    }
+
+    // Set user-specific progress using UserProgressService
+    await userProgressService.setUserProgress(userId, {
+      contentId,
+      universeId: content.universeId,
+      progress
+    });
   }
 
   /**
@@ -211,15 +236,20 @@ export class ContentService {
       throw new Error('Content not found or access denied');
     }
 
+    // Delete the content document
     const docRef = doc(this.collection, id);
     await deleteDoc(docRef);
+    
+    // Clean up all user progress for this content
+    await userProgressService.deleteUserProgressByContent(id);
     
     // Note: Related relationships should be cleaned up in a transaction
     // or Cloud Function for data consistency
   }
 
   /**
-   * Get content with progress tracking info for a user
+   * Get content with progress tracking info for a user - DEPRECATED
+   * Use getByUniverseWithUserProgress instead
    */
   async getWithProgress(universeId: string, userId: string): Promise<Content[]> {
     const q = query(
@@ -234,6 +264,81 @@ export class ContentService {
       id: doc.id,
       ...doc.data()
     } as Content));
+  }
+
+  /**
+   * Get universe content combined with user-specific progress (NEW METHOD)
+   */
+  async getByUniverseWithUserProgress(universeId: string, currentUserId: string): Promise<Content[]> {
+    // Get all content in the universe
+    const content = await this.getByUniverse(universeId);
+    
+    // Get user's progress for this universe
+    const userProgressList = await userProgressService.getUserProgressByUniverse(currentUserId, universeId);
+    const progressMap = new Map(userProgressList.map(p => [p.contentId, p]));
+    
+    // Get hierarchy for calculating organisational progress
+    const { relationshipService } = await import('./index');
+    const relationships = await relationshipService.getUniverseHierarchy(universeId);
+    
+    // Combine content with user-specific progress and calculated progress for organisational content
+    const contentWithProgress = await Promise.all(content.map(async item => {
+      const userProgress = progressMap.get(item.id);
+      let calculatedProgress: number | null | undefined;
+      
+      // Calculate progress for organisational content based on children
+      if (!item.isViewable) {
+        // Get child viewable content for this organisational item
+        const childRelationships = relationships.filter(rel => rel.parentId === item.id);
+        const childViewableContentIds = childRelationships
+          .map(rel => rel.contentId)
+          .filter(childId => {
+            const childContent = content.find(c => c.id === childId);
+            return childContent?.isViewable;
+          });
+        
+        if (childViewableContentIds.length > 0) {
+          calculatedProgress = await userProgressService.calculateOrganisationalProgress(
+            currentUserId,
+            item.id,
+            childViewableContentIds
+          );
+        }
+      }
+      
+      return {
+        ...item,
+        // Override content.progress with user-specific progress for viewable content
+        progress: userProgress?.progress || (item.isViewable ? 0 : undefined),
+        // Set calculated progress for organisational content (null/undefined means no viewable children)
+        calculatedProgress: calculatedProgress !== null ? calculatedProgress : undefined,
+        lastAccessedAt: userProgress?.lastAccessedAt || item.lastAccessedAt
+      };
+    }));
+    
+    return contentWithProgress;
+  }
+
+  /**
+   * Get single content item with user-specific progress (NEW METHOD)
+   */
+  async getByIdWithUserProgress(contentId: string, currentUserId: string): Promise<Content | null> {
+    // Get the base content
+    const content = await this.getById(contentId);
+    if (!content) {
+      return null;
+    }
+    
+    // Get user-specific progress
+    const userProgress = await userProgressService.getUserProgress(currentUserId, contentId);
+    
+    // Combine content with user-specific progress
+    return {
+      ...content,
+      // Override content.progress with user-specific progress
+      progress: userProgress?.progress || (content.isViewable ? 0 : undefined),
+      lastAccessedAt: userProgress?.lastAccessedAt || content.lastAccessedAt
+    };
   }
 
   /**

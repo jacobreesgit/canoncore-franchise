@@ -15,7 +15,14 @@ export default function DiscoverPage() {
   useEffect(() => {
     const fetchPublicUniverses = async () => {
       try {
-        const universes = await universeService.getPublicUniverses();
+        let universes;
+        if (user) {
+          // Fetch with user progress for authenticated users
+          universes = await universeService.getPublicUniversesWithUserProgress(user.id);
+        } else {
+          // Fetch without progress for non-authenticated users
+          universes = await universeService.getPublicUniverses();
+        }
         setPublicUniverses(universes);
       } catch (error) {
         console.error('Error fetching public universes:', error);
@@ -25,7 +32,7 @@ export default function DiscoverPage() {
     };
 
     fetchPublicUniverses();
-  }, []);
+  }, [user]);
 
   const filteredUniverses = publicUniverses.filter(universe => 
     universe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -174,17 +181,15 @@ export default function DiscoverPage() {
                         Public
                       </span>
                     </div>
-
                     {universe.description && (
                       <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                         {universe.description}
                       </p>
                     )}
-
                     {typeof universe.progress === 'number' && (
-                      <div className="mb-4">
-                        <div className="flex justify-between text-xs text-gray-600 mb-1">
-                          <span>Community Progress</span>
+                      <div className="mb-3">
+                        <div className="flex justify-between text-sm text-gray-600 mb-1">
+                          <span>Progress</span>
                           <span>{Math.round(universe.progress)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -195,35 +200,8 @@ export default function DiscoverPage() {
                         </div>
                       </div>
                     )}
-
-                    {universe.contentProgress && (
-                      <div className="mb-4">
-                        <div className="grid grid-cols-2 gap-4 text-xs">
-                          <div className="text-center">
-                            <div className="font-medium text-gray-900">
-                              {universe.contentProgress.total}
-                            </div>
-                            <div className="text-gray-500">Total Items</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="font-medium text-green-600">
-                              {universe.contentProgress.completed}
-                            </div>
-                            <div className="text-gray-500">Completed</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between items-center text-xs text-gray-500">
-                      <span>
-                        Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
-                      </span>
-                      {universe.sourceLink && universe.sourceLinkName && (
-                        <span className="text-blue-600">
-                          {universe.sourceLinkName}
-                        </span>
-                      )}
+                    <div className="text-xs text-gray-500">
+                      Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
                     </div>
                   </div>
                 </Link>

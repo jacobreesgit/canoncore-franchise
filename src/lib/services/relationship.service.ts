@@ -29,18 +29,27 @@ export class RelationshipService {
     contextDescription?: string
   ): Promise<ContentRelationship> {
     // Verify both content items exist and belong to the user
-    await this.verifyContentOwnership(parentId, userId);
+    const parentContent = await this.verifyContentOwnership(parentId, userId);
     await this.verifyContentOwnership(contentId, userId);
 
-    const relationshipData = {
+    // Validate hierarchy rules: only organisational content can be parents
+    if (parentContent.isViewable) {
+      throw new Error('Viewable content (movies, episodes, books) cannot have children. Only organisational content (collections, series, phases) can be parents.');
+    }
+
+    const relationshipData: any = {
       contentId,
       parentId,
       universeId,
       userId,
       displayOrder: displayOrder ?? 0,
-      contextDescription,
       createdAt: Timestamp.now()
     };
+
+    // Only add contextDescription if it's not undefined
+    if (contextDescription !== undefined) {
+      relationshipData.contextDescription = contextDescription;
+    }
 
     const docRef = await addDoc(this.collection, relationshipData);
     
@@ -160,6 +169,15 @@ export class RelationshipService {
   async buildHierarchyTree(universeId: string): Promise<HierarchyNode[]> {
     const relationships = await this.getUniverseHierarchy(universeId);
     
+    // Get all content to sort by creation time
+    const contentDocs = await getDocs(query(
+      collection(db, 'content'),
+      where('universeId', '==', universeId)
+    ));
+    const contentMap = new Map(
+      contentDocs.docs.map(doc => [doc.id, { id: doc.id, ...doc.data() } as any])
+    );
+    
     // Group relationships by parent
     const childrenMap = new Map<string, ContentRelationship[]>();
     const allContentIds = new Set<string>();
@@ -173,11 +191,41 @@ export class RelationshipService {
       allContentIds.add(rel.contentId);
     });
 
+    // Sort children by content creation time (newest last)
+    childrenMap.forEach((children, parentId) => {
+      children.sort((a, b) => {
+        const contentA = contentMap.get(a.contentId);
+        const contentB = contentMap.get(b.contentId);
+        if (!contentA || !contentB) return 0;
+        
+        // First sort by displayOrder (default to 0 if undefined)
+        const orderA = a.displayOrder ?? 0;
+        const orderB = b.displayOrder ?? 0;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        
+        // Then by content creation time (oldest first, so newest appears last)
+        const timeA = contentA.createdAt?.toDate?.() || new Date(contentA.createdAt);
+        const timeB = contentB.createdAt?.toDate?.() || new Date(contentB.createdAt);
+        return timeA.getTime() - timeB.getTime();
+      });
+    });
+
     // Find root nodes (content that are parents but not children)
     const childIds = new Set(relationships.map(rel => rel.contentId));
-    const rootIds = relationships
-      .map(rel => rel.parentId)
-      .filter(id => !childIds.has(id));
+    const rootIds = [...new Set(relationships.map(rel => rel.parentId))]
+      .filter(id => !childIds.has(id))
+      .sort((a, b) => {
+        // Sort root nodes by content creation time (oldest first, newest last)
+        const contentA = contentMap.get(a);
+        const contentB = contentMap.get(b);
+        if (!contentA || !contentB) return 0;
+        
+        const timeA = contentA.createdAt?.toDate?.() || new Date(contentA.createdAt);
+        const timeB = contentB.createdAt?.toDate?.() || new Date(contentB.createdAt);
+        return timeA.getTime() - timeB.getTime();
+      });
 
     // Build tree recursively
     const buildNode = (contentId: string): HierarchyNode => {
@@ -261,7 +309,7 @@ export class RelationshipService {
   /**
    * Verify content ownership before creating relationships
    */
-  private async verifyContentOwnership(contentId: string, userId: string): Promise<void> {
+  private async verifyContentOwnership(contentId: string, userId: string): Promise<Content> {
     const contentDoc = await getDoc(doc(db, 'content', contentId));
     
     if (!contentDoc.exists()) {
@@ -272,6 +320,8 @@ export class RelationshipService {
     if (content.userId !== userId) {
       throw new Error(`Access denied to content ${contentId}`);
     }
+    
+    return { ...content, id: contentDoc.id };
   }
 }
 

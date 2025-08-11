@@ -54,6 +54,18 @@ export interface Favorite {
   createdAt: Timestamp;
 }
 
+// Individual User Progress interface (per user, per content)
+export interface UserProgress {
+  id: string;
+  userId: string;
+  contentId: string;
+  universeId: string;
+  progress: number; // 0 or 100 (binary: not started/completed)
+  lastAccessedAt: Timestamp;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
 // Content Relationships interface (for hierarchies)
 export interface ContentRelationship {
   id: string;
@@ -87,12 +99,23 @@ export interface UpdateContentProgressData {
   lastAccessedAt?: Timestamp;
 }
 
+export interface CreateUserProgressData {
+  contentId: string;
+  universeId: string;
+  progress: number;
+}
+
+export interface UpdateUserProgressData {
+  progress: number;
+}
+
 // Context interfaces
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  updateDisplayName: (newDisplayName: string) => Promise<void>;
 }
 
 export interface FranchiseContextType {

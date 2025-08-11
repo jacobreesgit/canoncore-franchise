@@ -1,8 +1,8 @@
 'use client';
 
 import { useAuth } from '@/lib/contexts/auth-context';
-import { universeService, contentService } from '@/lib/services';
-import { Universe, Content } from '@/lib/types';
+import { universeService, contentService, relationshipService, userService } from '@/lib/services';
+import { Universe, Content, User } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -14,11 +14,14 @@ export default function UniversePage() {
   const universeId = params.id as string;
 
   const [universe, setUniverse] = useState<Universe | null>(null);
+  const [universeOwner, setUniverseOwner] = useState<User | null>(null);
   const [content, setContent] = useState<Content[]>([]);
   const [universeLoading, setUniverseLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'tree'>('grid');
+  const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
 
   useEffect(() => {
     if (user && universeId) {
@@ -26,7 +29,7 @@ export default function UniversePage() {
         try {
           setUniverseLoading(true);
           
-          const universeData = await universeService.getById(universeId);
+          const universeData = await universeService.getByIdWithUserProgress(universeId, user.id);
           if (!universeData) {
             setError('Universe not found');
             return;
@@ -39,8 +42,18 @@ export default function UniversePage() {
 
           setUniverse(universeData);
 
-          const universeContent = await contentService.getByUniverse(universeId);
+          // Fetch universe owner information if not the current user
+          if (universeData.userId !== user.id) {
+            const ownerData = await userService.getById(universeData.userId);
+            setUniverseOwner(ownerData);
+          }
+
+          const universeContent = await contentService.getByUniverseWithUserProgress(universeId, user.id);
           setContent(universeContent);
+
+          // Load hierarchy tree for tree view
+          const hierarchy = await relationshipService.buildHierarchyTree(universeId);
+          setHierarchyTree(hierarchy);
         } catch (error) {
           console.error('Error fetching universe:', error);
           setError('Error loading universe data');
@@ -169,7 +182,7 @@ export default function UniversePage() {
                   {universe.isPublic ? 'Public' : 'Private'}
                 </span>
                 <span className="text-sm text-gray-500">
-                  {isOwner ? 'Your universe' : `By ${universe.userId}`}
+                  {isOwner ? 'Your Universe' : `By ${universeOwner?.displayName || 'Unknown User'}`}
                 </span>
               </div>
             </div>
@@ -242,9 +255,38 @@ export default function UniversePage() {
           </div>
         ) : (
           <div className="space-y-8">
-            {viewableContent.length > 0 && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Watchable Content</h2>
+            {/* View Mode Toggle */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">Content</h2>
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'grid' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Grid View
+                </button>
+                <button
+                  onClick={() => setViewMode('tree')}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'tree' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Tree View
+                </button>
+              </div>
+            </div>
+
+            {viewMode === 'grid' ? (
+              <>
+                {viewableContent.length > 0 && (
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-4">Viewable Content</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {viewableContent.map((item) => (
                     <Link
@@ -277,7 +319,7 @@ export default function UniversePage() {
 
             {organisationalContent.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Characters & Locations</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Organisational Content</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {organisationalContent.map((item) => (
                     <Link
@@ -286,12 +328,76 @@ export default function UniversePage() {
                       className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
                     >
                       <div className="p-4">
-                        <h3 className="font-medium text-gray-900 mb-1">{item.name}</h3>
-                        <span className="text-sm text-gray-600 capitalize">{item.mediaType}</span>
+                        <h3 className="font-medium text-gray-900 mb-2">{item.name}</h3>
+                        <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                          <span className="capitalize">{item.mediaType}</span>
+                          {typeof item.calculatedProgress === 'number' && (
+                            <span>{Math.round(item.calculatedProgress)}% complete</span>
+                          )}
+                        </div>
+                        {typeof item.calculatedProgress === 'number' && (
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full"
+                              style={{ width: `${item.calculatedProgress}%` }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </Link>
                   ))}
                 </div>
+                </div>
+                )}
+              </>
+            ) : (
+              /* Tree View */
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Content Hierarchy</h2>
+                {hierarchyTree.length > 0 ? (
+                  <div className="space-y-2">
+                    {hierarchyTree.map((node, index) => (
+                      <TreeNode key={`root-${node.contentId}-${index}`} node={node} content={content} depth={0} />
+                    ))}
+                    
+                    {/* Show unorganized content (no parent relationships) */}
+                    {content.filter(item => {
+                      const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
+                      return !hasParent;
+                    }).length > 0 && (
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">Unorganized Content</h3>
+                        <div className="space-y-1">
+                          {content.filter(item => {
+                            const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
+                            return !hasParent;
+                          }).map((item) => (
+                            <Link
+                              key={item.id}
+                              href={`/content/${item.id}`}
+                              className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                            >
+                              <span className="text-sm text-gray-600 capitalize mr-2">{item.mediaType}</span>
+                              <span className="font-medium text-gray-900">{item.name}</span>
+                              {typeof item.progress === 'number' && item.isViewable && (
+                                <span className={`ml-auto text-xs ${item.progress > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {Math.round(item.progress)}% watched
+                                </span>
+                              )}
+                              {typeof item.calculatedProgress === 'number' && !item.isViewable && (
+                                <span className={`ml-auto text-xs ${item.calculatedProgress > 0 ? 'text-blue-600' : 'text-gray-500'}`}>
+                                  {Math.round(item.calculatedProgress)}% complete
+                                </span>
+                              )}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No hierarchical relationships defined yet. Create relationships by setting parent content when adding new items.</p>
+                )}
               </div>
             )}
           </div>
@@ -329,4 +435,87 @@ export default function UniversePage() {
       )}
     </div>
   );
+}
+
+// Tree node component for hierarchical content display
+function TreeNode({ node, content, depth }: { node: any; content: Content[]; depth: number }) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const nodeContent = content.find(c => c.id === node.contentId);
+  
+  if (!nodeContent) {
+    return null;
+  }
+  
+  const hasChildren = node.children && node.children.length > 0;
+  const indentation = depth * 24;
+  
+  return (
+    <div>
+      <div 
+        className="flex items-center hover:bg-gray-50 rounded-lg transition-colors"
+        style={{ paddingLeft: `${indentation}px` }}
+      >
+        {hasChildren && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-1 mr-1 hover:bg-gray-200 rounded transition-colors"
+          >
+            <svg 
+              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
+        {!hasChildren && <div className="w-6" />}
+        
+        <Link
+          href={`/content/${nodeContent.id}`}
+          className="flex items-center flex-1 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <span className="text-sm text-gray-600 capitalize mr-2">{nodeContent.mediaType}</span>
+          <span className="font-medium text-gray-900">{nodeContent.name}</span>
+          {typeof nodeContent.progress === 'number' && nodeContent.isViewable && (
+            <span className={`ml-auto text-xs ${nodeContent.progress > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+              {Math.round(nodeContent.progress)}% watched
+            </span>
+          )}
+          {typeof nodeContent.calculatedProgress === 'number' && !nodeContent.isViewable && (
+            <span className={`ml-auto text-xs ${nodeContent.calculatedProgress > 0 ? 'text-blue-600' : 'text-gray-500'}`}>
+              {Math.round(nodeContent.calculatedProgress)}% complete
+            </span>
+          )}
+        </Link>
+      </div>
+      
+      {hasChildren && isExpanded && (
+        <div>
+          {node.children.map((childNode: any, index: number) => (
+            <TreeNode 
+              key={`${depth}-${childNode.contentId}-${index}`} 
+              node={childNode} 
+              content={content} 
+              depth={depth + 1} 
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Helper function to check if content exists in tree
+function hasContentInTree(node: any, contentId: string): boolean {
+  if (node.contentId === contentId) {
+    return true;
+  }
+  
+  if (node.children) {
+    return node.children.some((child: any) => hasContentInTree(child, contentId));
+  }
+  
+  return false;
 }

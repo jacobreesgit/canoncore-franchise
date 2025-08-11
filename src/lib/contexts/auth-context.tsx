@@ -6,6 +6,7 @@ import {
   signInWithPopup, 
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
+  updateProfile,
   User as FirebaseUser
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
@@ -56,8 +57,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateDisplayName = async (newDisplayName: string) => {
+    if (!auth.currentUser) {
+      throw new Error('No authenticated user');
+    }
+
+    try {
+      // Update Firebase Auth profile
+      await updateProfile(auth.currentUser, {
+        displayName: newDisplayName
+      });
+
+      // Update user document in Firestore
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      await setDoc(userRef, {
+        displayName: newDisplayName
+      }, { merge: true });
+
+      // Update local user state
+      if (user) {
+        setUser({
+          ...user,
+          displayName: newDisplayName
+        });
+      }
+    } catch (error) {
+      console.error('Update display name error:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, updateDisplayName }}>
       {children}
     </AuthContext.Provider>
   );

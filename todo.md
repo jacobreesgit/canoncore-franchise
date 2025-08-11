@@ -39,18 +39,18 @@
 
 **Phase 3b: Data Management - Edit & Delete Operations** ✅ COMPLETE
     ☒ ✅ Build universe edit form (/universes/[id]/edit)
-    ☒ ✅ Build content edit form (/content/[id]/edit)
+    ☒ ✅ Build content edit form (/universes/[id]/content/[contentId]/edit)
     ☒ ✅ Add universe delete functionality with confirmation
     ☒ ✅ Add content delete functionality with confirmation
 
-**Phase 3c: Data Management - Progress & Hierarchies**
-    ☐ Create hierarchical content organisation
+**Phase 3c: Data Management - Progress & Hierarchies** ✅ COMPLETE
+    ☒ ✅ Create hierarchical content organisation
       (Phase 1 > Iron Man > Tony Stark)
     ☒ ✅ Implement progress tracking for viewable
       content only
-    ☐ Make progress tracking individual per user 
+    ☒ ✅ Make progress tracking individual per user 
       (same public content can be 100% for one user, 0% for another)
-    ☐ Build calculated progress for
+    ☒ ✅ Build calculated progress for
       organisational holders
 
 **Phase 3d: Data Management - Visibility & Favourites**
@@ -58,6 +58,8 @@
       system
     ☐ Build favourites system for franchises and
       content
+    ☐ Re-enable favourites functionality in profile page
+      (currently disabled due to missing implementation)
 
 **Phase 4a: UI Components - Component Library**
 CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
@@ -102,13 +104,17 @@ CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
     ☐ Optimise form flows and reduce friction
     ☐ Review content organisation and discovery patterns
     ☐ Streamline universe-to-content creation workflow
+    ☐ Add grid and list view toggle for organisational content pages showing their children
+    ☐ Add "Universe Context" section to viewable content pages showing all parent hierarchies
+    ☐ Add add content button to organisational content pages
 
-**Phase 6a: Advanced Content Hierarchies - Infinite Nesting**
-    ☐ Implement infinite looping nested children support
-    ☐ Build recursive content tree components
-    ☐ Add parent-child relationship management in content forms
+**Phase 6a: Advanced Content Hierarchies - Infinite Nesting** (Partial ✅)
+    ☒ ✅ Implement infinite looping nested children support
+    ☒ ✅ Build recursive content tree components
+    ☒ ✅ Add parent-child relationship management in content forms
     ☐ Create drag-and-drop content organisation interface
-    ☐ Implement circular reference detection and prevention
     ☐ Build nested content navigation and breadcrumbs
     ☐ Add bulk operations for nested content structures
     ☐ Optimise performance for deep content hierarchies
+
+**Phase 6b: Scan old project for more ideas***

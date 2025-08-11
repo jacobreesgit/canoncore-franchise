@@ -6,6 +6,7 @@ import { User, Universe, Favorite } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { auth } from '@/lib/firebase';
 
 export default function ProfilePage() {
   const { user: currentUser, loading } = useAuth();
@@ -25,8 +26,11 @@ export default function ProfilePage() {
     const fetchProfileData = async () => {
       try {
         setProfileLoading(true);
+        setError(null);
+        
         
         const userData = await userService.getById(userId);
+        
         if (!userData) {
           setError('User not found');
           return;
@@ -40,18 +44,13 @@ export default function ProfilePage() {
         setUserUniverses(publicUniverses);
 
         // Get user's favorites if viewing own profile
+        // TODO: Implement favorites system in Phase 3d
         if (currentUser && currentUser.id === userId) {
-          const userFavorites = await userService.getFavourites(userId);
-          setFavorites(userFavorites);
-
-          // Get favorite universes details
-          const favoriteUniversePromises = userFavorites
-            .filter((fav: Favorite) => fav.targetType === 'universe')
-            .map((fav: Favorite) => universeService.getById(fav.targetId));
-          
-          const favoriteUniverseResults = await Promise.all(favoriteUniversePromises);
-          const validFavoriteUniverses = favoriteUniverseResults.filter((u: Universe | null) => u !== null) as Universe[];
-          setFavoriteUniverses(validFavoriteUniverses);
+          // Temporarily disabled until Phase 3d implementation
+          // const userFavorites = await userService.getFavourites(userId);
+          // setFavorites(userFavorites);
+          setFavorites([]);
+          setFavoriteUniverses([]);
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -61,10 +60,20 @@ export default function ProfilePage() {
       }
     };
 
-    if (userId) {
-      fetchProfileData();
+    // Only fetch when we have userId, auth is not loading, and user is authenticated
+    if (userId && !loading && currentUser) {
+      // Add a small delay to ensure Firebase auth is fully initialized
+      const timer = setTimeout(() => {
+        fetchProfileData();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    } else if (userId && !loading && !currentUser) {
+      // User is not authenticated, redirect to home
+      setError('Authentication required');
+      setProfileLoading(false);
     }
-  }, [userId, currentUser]);
+  }, [userId, currentUser, loading]);
 
   if (loading || profileLoading) {
     return (
@@ -140,6 +149,14 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {isOwnProfile && (
+                <Link
+                  href={`/profile/${userId}/edit`}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Edit Profile
+                </Link>
+              )}
               <span className="text-gray-700">
                 {currentUser.displayName || currentUser.email}
               </span>
@@ -159,6 +176,11 @@ export default function ProfilePage() {
               <p className="text-gray-600">
                 {isOwnProfile ? 'Your Profile' : 'User Profile'}
               </p>
+              {isOwnProfile && profileUser.email && (
+                <p className="text-sm text-gray-500 mt-1">
+                  {profileUser.email}
+                </p>
+              )}
               <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
                 <div>
                   <span className="font-medium text-gray-900">{totalUniverses}</span>

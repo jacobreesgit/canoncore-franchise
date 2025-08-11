@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Universe, CreateUniverseData } from '@/lib/types';
+import { userProgressService } from './user-progress.service';
 
 export class UniverseService {
   private collection = collection(db, 'universes');
@@ -76,6 +77,44 @@ export class UniverseService {
       id: doc.id,
       ...doc.data()
     } as Universe));
+  }
+
+  /**
+   * Get all public universes with user-specific progress
+   */
+  async getPublicUniversesWithUserProgress(userId: string): Promise<Universe[]> {
+    const universes = await this.getPublicUniverses();
+    
+    // Calculate user-specific progress for each public universe
+    const universesWithProgress = await Promise.all(
+      universes.map(async (universe) => {
+        try {
+          // Import ContentService here to avoid circular dependency
+          const { contentService } = await import('./index');
+          const viewableContent = await contentService.getViewableContent(universe.id);
+          const viewableContentIds = viewableContent.map(c => c.id);
+          
+          const progressStats = await userProgressService.calculateUniverseProgress(
+            userId, 
+            universe.id, 
+            viewableContentIds
+          );
+          
+          return {
+            ...universe,
+            progress: progressStats.progressPercentage
+          };
+        } catch (error) {
+          console.error(`Error calculating progress for universe ${universe.id}:`, error);
+          return {
+            ...universe,
+            progress: 0
+          };
+        }
+      })
+    );
+    
+    return universesWithProgress;
   }
 
   /**
@@ -158,5 +197,83 @@ export class UniverseService {
       universe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       universe.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  }
+
+  /**
+   * Get universes owned by a user with user-specific progress (NEW METHOD)
+   */
+  async getUserUniversesWithProgress(userId: string): Promise<Universe[]> {
+    const universes = await this.getUserUniverses(userId);
+    
+    // Calculate user-specific progress for each universe
+    const universesWithProgress = await Promise.all(
+      universes.map(async (universe) => {
+        try {
+          // Import ContentService here to avoid circular dependency
+          const { contentService } = await import('./index');
+          const viewableContent = await contentService.getViewableContent(universe.id);
+          const viewableContentIds = viewableContent.map(c => c.id);
+          
+          const progressStats = await userProgressService.calculateUniverseProgress(
+            userId, 
+            universe.id, 
+            viewableContentIds
+          );
+          
+          return {
+            ...universe,
+            progress: progressStats.progressPercentage,
+            contentProgress: {
+              total: progressStats.totalViewable,
+              completed: progressStats.completed,
+              inProgress: 0, // Not tracking in-progress with binary system
+              unstarted: progressStats.totalViewable - progressStats.completed
+            }
+          };
+        } catch (error) {
+          console.error(`Error calculating progress for universe ${universe.id}:`, error);
+          return universe; // Return original universe if progress calculation fails
+        }
+      })
+    );
+    
+    return universesWithProgress;
+  }
+
+  /**
+   * Get single universe with user-specific progress (NEW METHOD)
+   */
+  async getByIdWithUserProgress(universeId: string, currentUserId: string): Promise<Universe | null> {
+    const universe = await this.getById(universeId);
+    if (!universe) {
+      return null;
+    }
+    
+    try {
+      // Import ContentService here to avoid circular dependency
+      const { contentService } = await import('./index');
+      const viewableContent = await contentService.getViewableContent(universeId);
+      const viewableContentIds = viewableContent.map(c => c.id);
+      
+      const progressStats = await userProgressService.calculateUniverseProgress(
+        currentUserId, 
+        universeId, 
+        viewableContentIds
+      );
+      
+      return {
+        ...universe,
+        progress: progressStats.progressPercentage,
+        contentProgress: {
+          total: progressStats.totalViewable,
+          completed: progressStats.completed,
+          inProgress: 0, // Not tracking in-progress with binary system
+          unstarted: progressStats.totalViewable - progressStats.completed
+        }
+      };
+    } catch (error) {
+      console.error(`Error calculating progress for universe ${universeId}:`, error);
+      return universe; // Return original universe if progress calculation fails
+    }
   }
 }

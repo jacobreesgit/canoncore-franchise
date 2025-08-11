@@ -15,7 +15,7 @@ export default function Home() {
     if (user) {
       const fetchUniverses = async () => {
         try {
-          const userUniverses = await universeService.getUserUniverses(user.id);
+          const userUniverses = await universeService.getUserUniversesWithProgress(user.id);
           setUniverses(userUniverses);
         } catch (error) {
           console.error('Error fetching universes:', error);

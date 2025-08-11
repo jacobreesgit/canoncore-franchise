@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 3a with complete core page functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, and data management forms.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 3c plus Phase 6a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, and advanced hierarchical content organisation with infinite depth support and polished UI with consistent progress indicators.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -43,10 +43,10 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │  │  - Public/Private  - Progress Track - Profiles         │   │
 │  │  - Search          - Viewable/Org   - Activity         │   │
 │  │                                                         │   │
-│  │  RelationshipService + Type Definitions                │   │
-│  │  - Hierarchies     User, Universe, Content, etc.       │   │
-│  │  - Tree Building   CreateData interfaces               │   │
-│  │  - Path Navigation AuthContextType, etc.               │   │
+│  │  RelationshipService + UserProgressService             │   │
+│  │  - Hierarchies     - Individual Progress               │   │
+│  │  - Tree Building   - Progress Calculation              │   │
+│  │  - Path Navigation - Cross-User Isolation              │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                           │                                     │
 ├───────────────────────────┼─────────────────────────────────────┤
@@ -127,11 +127,11 @@ Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
   - States: Loading, permission checking, form validation, submission, error handling
   - Features: Pre-populated form fields, validation, owner permissions, proper navigation
 
-- **`app/content/[id]/edit/page.tsx`**: Content edit form (Phase 3b)
-  - Responsibilities: Allow content owners to edit content details with automatic media type detection
-  - Data Flow: AuthContext + URL params → ContentService.getById → Form population → ContentService.update
+- **`app/universes/[id]/content/[contentId]/edit/page.tsx`**: Content edit form (Phase 3b)
+  - Responsibilities: Allow content owners to edit content details with automatic media type detection and parent selection
+  - Data Flow: AuthContext + URL params → ContentService.getById + UniverseService.getById → Form population → ContentService.update + RelationshipService updates
   - States: Loading, permission checking, form validation, submission, error handling
-  - Features: Pre-populated form, media type selection, automatic isViewable detection, breadcrumb navigation
+  - Features: Pre-populated form, media type selection, parent content selection, automatic isViewable detection, hierarchical navigation
 
 #### Context Layer
 - **`lib/contexts/auth-context.tsx`**: Authentication state management
@@ -219,13 +219,22 @@ content/ (Service implemented, consumed by universe detail pages)
     └── createdAt, updatedAt: Timestamp
 
 favorites/ (Service implemented, not yet used by UI)
-contentRelationships/ (Service implemented, not yet used by UI)
+contentRelationships/ (Service implemented, used by hierarchical content organisation - Phase 3c)
+├── {relationshipId}/
+    ├── contentId: string (child content)
+    ├── parentId: string (parent content)
+    ├── universeId: string
+    ├── userId: string
+    ├── displayOrder?: number
+    ├── contextDescription?: string
+    └── createdAt: Timestamp
 
-userProgress/ (FUTURE: Phase 3c - Individual user progress tracking)
+userProgress/ (Phase 3c - Individual user progress tracking - IMPLEMENTED)
 ├── {userProgressId}/
     ├── userId: string
     ├── contentId: string
-    ├── progress: number (0 or 100)
+    ├── universeId: string
+    ├── progress: number (0 or 100 - binary: not started/completed)
     ├── lastAccessedAt: Timestamp
     └── createdAt, updatedAt: Timestamp
 ```
@@ -271,40 +280,44 @@ canoncore/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── layout.tsx         # Root layout with AuthProvider
-│   │   ├── page.tsx           # Franchise dashboard (Phase 2a)
+│   │   ├── page.tsx           # Franchise dashboard with user-specific progress (Phase 2a/3c)
 │   │   ├── content/
 │   │   │   └── [id]/
-│   │   │       ├── page.tsx   # Content detail pages (Phase 2b)
-│   │   │       └── edit/
-│   │   │           └── page.tsx # Content edit form (Phase 3b)
+│   │   │       └── page.tsx   # Content detail pages with user progress (Phase 2b/3c)
 │   │   ├── discover/
 │   │   │   └── page.tsx       # Public discovery page (Phase 2b)
 │   │   ├── profile/
 │   │   │   └── [userId]/
-│   │   │       └── page.tsx   # User profile pages (Phase 2b)
+│   │   │       ├── page.tsx   # User profile pages (Phase 2b)
+│   │   │       └── edit/
+│   │   │           └── page.tsx # Profile edit form (Phase 3b)
 │   │   ├── universes/
 │   │   │   ├── create/
 │   │   │   │   └── page.tsx   # Universe creation form (Phase 3a)
 │   │   │   └── [id]/
-│   │   │       ├── page.tsx   # Universe detail pages (Phase 2a)
+│   │   │       ├── page.tsx   # Universe detail with tree/grid views (Phase 2a/3c)
 │   │   │       ├── edit/
 │   │   │       │   └── page.tsx # Universe edit form (Phase 3b)
 │   │   │       └── content/
-│   │   │           └── create/
-│   │   │               └── page.tsx # Content creation form (Phase 3a)
+│   │   │           ├── create/
+│   │   │           │   └── page.tsx # Content creation with parent selection (Phase 3a/3c)
+│   │   │           └── [contentId]/
+│   │   │               └── edit/
+│   │   │                   └── page.tsx # Content edit form (Phase 3b)
 │   │   └── globals.css        # Global styles
 │   ├── lib/
 │   │   ├── contexts/
-│   │   │   └── auth-context.tsx    # Authentication context
-│   │   ├── services/               # Service layer (Phase 1)
-│   │   │   ├── universe.service.ts # Franchise CRUD operations
-│   │   │   ├── content.service.ts  # Episodes/movies/characters
+│   │   │   └── auth-context.tsx    # Authentication context with account selection
+│   │   ├── services/               # Service layer (Phase 1/3c)
+│   │   │   ├── universe.service.ts # Franchise CRUD + user-specific progress
+│   │   │   ├── content.service.ts  # Episodes/movies/characters + user progress
 │   │   │   ├── user.service.ts     # Favourites and profiles
-│   │   │   ├── relationship.service.ts # Content hierarchies
+│   │   │   ├── relationship.service.ts # Content hierarchies + tree building
+│   │   │   ├── user-progress.service.ts # Individual user progress tracking (Phase 3c)
 │   │   │   └── index.ts            # Service exports
 │   │   ├── hooks/                  # Custom React hooks (empty)
 │   │   ├── firebase.ts             # Firebase config
-│   │   └── types.ts                # TypeScript definitions
+│   │   └── types.ts                # TypeScript definitions + UserProgress interface
 │   ├── components/                 # UI components (empty - Phase 4)
 │   └── styles/                     # Additional styles (empty)
 ├── public/                         # Static assets (Firebase hosting files)
@@ -314,7 +327,7 @@ canoncore/
 ├── CLAUDE.md                      # Development guide for Claude Code
 ├── LOVABLE_MVP_SPEC.md           # Complete MVP specification
 ├── firebase.json                  # Firebase configuration
-├── firestore.rules               # Firestore security rules
+├── firestore.rules               # Firestore security rules + UserProgress collection
 ├── firestore.indexes.json       # Firestore database indexes
 ├── next-env.d.ts                 # Next.js TypeScript declarations
 ├── next.config.ts               # Next.js config
@@ -392,17 +405,19 @@ canoncore/
 
 ### Phase 3b: Data Management - Edit & Delete Operations (COMPLETE)
 - Universe edit form (/universes/[id]/edit) using UniverseService.update() with pre-populated data
-- Content edit form (/content/[id]/edit) using ContentService.update() with media type selection
+- Content edit form (/universes/[id]/content/[contentId]/edit) using ContentService.update() with media type and parent selection
 - Universe delete functionality with confirmation modal and cascade deletion
 - Content delete functionality with confirmation modal and proper navigation
 - Owner permission checks, error handling, loading states, and proper redirects
 
-### Phase 3c: Data Management - Progress & Hierarchies (PENDING)
-- **Individual user progress tracking**: Create UserProgress collection/subcollection for per-user progress states
-- Same public content can show different progress for each user (100% for User A, 0% for User B)
-- Migrate from content.progress to userId+contentId based progress storage
-- Hierarchical organisation will use ContentRelationship model
-- Calculated progress for organisational holders based on user-specific viewable content progress
+### Phase 3c: Data Management - Progress & Hierarchies (COMPLETE)
+- **Individual user progress tracking**: UserProgress collection implemented for per-user progress states
+- Same public content shows different progress for each user (100% for User A, 0% for User B)
+- Migrated from content.progress to userId+contentId based progress storage via UserProgressService
+- **Hierarchical organisation**: ContentRelationship model fully implemented with tree building
+- **Tree navigation**: Grid/tree view toggle with expandable hierarchical content display
+- **Parent-child creation**: Content forms include parent selection for hierarchical relationships
+- **Calculated progress**: Organisational holders show progress based on user-specific child viewable content
 
 ### Phase 3d: Data Management - Visibility & Favourites (PENDING)
 - Public/private visibility system and favourites functionality
@@ -460,5 +475,5 @@ CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
 
 ---
 
-**Last Updated**: Phase 3b Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations)  
-**Next Update**: After Phase 3c: Data Management - Individual User Progress & Hierarchies
+**Last Updated**: Phase 3c + Partial Phase 6a Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Advanced Hierarchical Content Organisation with Infinite Depth Support)  
+**Next Update**: After Phase 3d: Data Management - Visibility & Favourites

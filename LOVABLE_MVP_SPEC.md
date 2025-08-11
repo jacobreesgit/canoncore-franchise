@@ -124,7 +124,7 @@ Fan discovers public "Doctor Who Universe" (cataloguing REAL Doctor Who episodes
 - Franchise owners can catalogue EXISTING content: real series, actual movies, released episodes, established characters
 - Content supports hierarchical organisation: MCU Phase 1 > Iron Man (2008 film) > Tony Stark (existing character profile)
 - Content respects catalogue privacy (public franchise databases visible to all, private only to owner)
-- Multiple content types with appropriate badges (viewable real content vs reference material for existing characters)
+- Multiple content types with appropriate badges (viewable real content vs organisational content for existing characters)
 
 #### Progress Tracking (Viewing Progress)
 - **ONLY viewable content (episodes, movies, books) can be directly ticked/marked as watched**

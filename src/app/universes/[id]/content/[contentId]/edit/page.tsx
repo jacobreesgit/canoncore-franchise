@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/contexts/auth-context';
-import { contentService, universeService } from '@/lib/services';
+import { contentService, universeService, relationshipService } from '@/lib/services';
 import { Content, Universe } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -22,10 +22,13 @@ export default function EditContentPage() {
   const { user, loading } = useAuth();
   const params = useParams();
   const router = useRouter();
-  const contentId = params.id as string;
+  const universeId = params.id as string;
+  const contentId = params.contentId as string;
 
   const [content, setContent] = useState<Content | null>(null);
   const [universe, setUniverse] = useState<Universe | null>(null);
+  const [existingContent, setExistingContent] = useState<Content[]>([]);
+  const [selectedParentId, setSelectedParentId] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -68,10 +71,21 @@ export default function EditContentPage() {
             mediaType: contentData.mediaType,
           });
 
-          // Fetch universe data for navigation
-          const universeData = await universeService.getById(contentData.universeId);
+          // Fetch universe data for navigation  
+          const universeData = await universeService.getById(universeId);
           if (universeData) {
             setUniverse(universeData);
+          }
+
+          // Load existing content for parent selection
+          const allContent = await contentService.getByUniverse(universeId);
+          setExistingContent(allContent.filter(c => c.id !== contentId)); // Exclude current content
+
+          // Find current parent relationship
+          const relationships = await relationshipService.getParents(contentId);
+          const parentRelationship = relationships.find((rel: any) => rel.contentId === contentId);
+          if (parentRelationship) {
+            setSelectedParentId(parentRelationship.parentId);
           }
         } catch (error) {
           console.error('Error fetching content:', error);
@@ -83,7 +97,7 @@ export default function EditContentPage() {
 
       fetchContentAndUniverse();
     }
-  }, [user, contentId]);
+  }, [user, contentId, universeId]);
 
   if (loading || contentLoading) {
     return (
@@ -125,6 +139,33 @@ export default function EditContentPage() {
       }
 
       await contentService.update(contentId, user.id, formData);
+
+      // Handle parent relationship updates if content exists
+      if (content) {
+        // Get current parent relationship
+        const currentRelationships = await relationshipService.getParents(contentId);
+        const currentParentRelationship = currentRelationships.find((rel: any) => rel.contentId === contentId);
+        const currentParentId = currentParentRelationship?.parentId || '';
+
+        // If parent changed, update relationship
+        if (selectedParentId !== currentParentId) {
+          // Remove old relationship if exists
+          if (currentParentRelationship) {
+            await relationshipService.removeRelationship(currentParentRelationship.id, user.id);
+          }
+
+          // Create new relationship if parent is selected
+          if (selectedParentId) {
+            await relationshipService.createRelationship(
+              user.id,
+              universeId,
+              selectedParentId,
+              contentId
+            );
+          }
+        }
+      }
+
       router.push(`/content/${contentId}`);
     } catch (error) {
       console.error('Error updating content:', error);
@@ -216,6 +257,21 @@ export default function EditContentPage() {
             </div>
 
             <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows={4}
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Describe this content, its role in the franchise, key details..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
               <label htmlFor="mediaType" className="block text-sm font-medium text-gray-700 mb-1">
                 Content Type *
               </label>
@@ -236,25 +292,35 @@ export default function EditContentPage() {
                 <p className="mt-1 text-sm text-gray-500">
                   {isViewableContent ? 
                     'This content can be marked as watched and will contribute to progress tracking.' :
-                    'This is reference material that helps organize the franchise but cannot be marked as watched.'
+                    'This is organisational content that helps organize the franchise but cannot be marked as watched.'
                   }
                 </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+              <label htmlFor="parentId" className="block text-sm font-medium text-gray-700 mb-1">
+                Parent Content (Optional)
               </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe this content, its role in the franchise, key details..."
+              <select
+                id="parentId"
+                name="parentId"
+                value={selectedParentId}
+                onChange={(e) => setSelectedParentId(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+              >
+                <option value="">No parent (top-level content)</option>
+                {existingContent
+                  .filter(content => !content.isViewable) // Only organisational content can be parents
+                  .map((content) => (
+                    <option key={content.id} value={content.id}>
+                      {content.name} ({content.mediaType})
+                    </option>
+                  ))}
+              </select>
+              <p className="mt-1 text-sm text-gray-500">
+                Choose a parent organisational item to organise this content.
+              </p>
             </div>
 
             <div className="flex items-center justify-between pt-4">

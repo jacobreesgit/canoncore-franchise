@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/contexts/auth-context';
-import { contentService, universeService } from '@/lib/services';
+import { contentService, universeService, relationshipService } from '@/lib/services';
 import { CreateContentData, Universe, Content } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -26,6 +26,8 @@ export default function CreateContentPage() {
 
   const [universe, setUniverse] = useState<Universe | null>(null);
   const [universeLoading, setUniverseLoading] = useState(true);
+  const [existingContent, setExistingContent] = useState<Content[]>([]);
+  const [selectedParentId, setSelectedParentId] = useState<string>('');
   const [formData, setFormData] = useState<CreateContentData>({
     name: '',
     description: '',
@@ -60,6 +62,10 @@ export default function CreateContentPage() {
           }
 
           setUniverse(universeData);
+
+          // Load existing content for parent selection
+          const content = await contentService.getByUniverse(universeId);
+          setExistingContent(content);
         } catch (error) {
           console.error('Error fetching universe:', error);
           setError('Error loading universe data');
@@ -132,6 +138,17 @@ export default function CreateContentPage() {
         universeId,
         formData
       );
+
+      // Create hierarchical relationship if parent is selected
+      if (selectedParentId) {
+        await relationshipService.createRelationship(
+          user.id,
+          universeId,
+          selectedParentId,
+          newContent.id
+        );
+      }
+
       router.push(`/content/${newContent.id}`);
     } catch (error) {
       console.error('Error creating content:', error);
@@ -199,33 +216,6 @@ export default function CreateContentPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="mediaType" className="block text-sm font-medium text-gray-700 mb-1">
-                Content Type *
-              </label>
-              <select
-                id="mediaType"
-                name="mediaType"
-                value={formData.mediaType}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {mediaTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label} - {option.description}
-                  </option>
-                ))}
-              </select>
-              {selectedMediaType && (
-                <p className="mt-1 text-sm text-gray-500">
-                  {isViewableContent ? 
-                    'This content can be marked as watched and will contribute to progress tracking.' :
-                    'This is reference material that helps organize the franchise but cannot be marked as watched.'
-                  }
-                </p>
-              )}
-            </div>
-
-            <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Content Name *
               </label>
@@ -261,6 +251,57 @@ export default function CreateContentPage() {
               />
             </div>
 
+            <div>
+              <label htmlFor="mediaType" className="block text-sm font-medium text-gray-700 mb-1">
+                Content Type *
+              </label>
+              <select
+                id="mediaType"
+                name="mediaType"
+                value={formData.mediaType}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {mediaTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label} - {option.description}
+                  </option>
+                ))}
+              </select>
+              {selectedMediaType && (
+                <p className="mt-1 text-sm text-gray-500">
+                  {isViewableContent ? 
+                    'This content can be marked as watched and will contribute to progress tracking.' :
+                    'This is organisational content that helps organize the franchise but cannot be marked as watched.'
+                  }
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="parentId" className="block text-sm font-medium text-gray-700 mb-1">
+                Parent Content (Optional)
+              </label>
+              <select
+                id="parentId"
+                name="parentId"
+                value={selectedParentId}
+                onChange={(e) => setSelectedParentId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">No parent (top-level content)</option>
+                {existingContent
+                  .filter(content => !content.isViewable) // Only organisational content can be parents
+                  .map((content) => (
+                    <option key={content.id} value={content.id}>
+                      {content.name} ({content.mediaType})
+                    </option>
+                  ))}
+              </select>
+              <p className="mt-1 text-sm text-gray-500">
+                Choose a parent organisational item to organise this content.
+              </p>
+            </div>
 
             <div className="flex items-center justify-between pt-4">
               <Link

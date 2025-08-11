@@ -26,7 +26,7 @@ export default function ContentPage() {
         try {
           setContentLoading(true);
           
-          const contentData = await contentService.getById(contentId);
+          const contentData = await contentService.getByIdWithUserProgress(contentId, user.id);
           if (!contentData) {
             setError('Content not found');
             return;
@@ -62,7 +62,7 @@ export default function ContentPage() {
     if (!content || !content.isViewable || !user) return;
     
     try {
-      await contentService.updateProgress(contentId, user.id, { progress: newProgress });
+      await contentService.updateUserProgress(contentId, user.id, newProgress);
       setContent({ ...content, progress: newProgress });
     } catch (error) {
       console.error('Error updating progress:', error);
@@ -151,7 +151,7 @@ export default function ContentPage() {
             {isOwner && (
               <div className="flex items-center space-x-2">
                 <Link
-                  href={`/content/${content.id}/edit`}
+                  href={`/universes/${content.universeId}/content/${content.id}/edit`}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   Edit Content
@@ -178,7 +178,7 @@ export default function ContentPage() {
                   {content.mediaType}
                 </span>
                 <span className="text-sm text-gray-500">
-                  {content.isViewable ? 'Watchable Content' : 'Reference Material'}
+                  {content.isViewable ? 'Viewable Content' : 'Organisational Content'}
                 </span>
                 {!universe.isPublic && (
                   <span className="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
@@ -211,30 +211,28 @@ export default function ContentPage() {
                   />
                 </div>
                 
-                {isOwner && (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleProgressUpdate(0)}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        progressPercent === 0 
-                          ? 'bg-gray-300 text-gray-800' 
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                      }`}
-                    >
-                      Not Started
-                    </button>
-                    <button
-                      onClick={() => handleProgressUpdate(100)}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        progressPercent === 100 
-                          ? 'bg-green-300 text-green-800' 
-                          : 'bg-green-200 hover:bg-green-300 text-green-800'
-                      }`}
-                    >
-                      Completed
-                    </button>
-                  </div>
-                )}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleProgressUpdate(0)}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      progressPercent === 0 
+                        ? 'bg-gray-300 text-gray-800' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    }`}
+                  >
+                    Not Started
+                  </button>
+                  <button
+                    onClick={() => handleProgressUpdate(100)}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      progressPercent === 100 
+                        ? 'bg-green-300 text-green-800' 
+                        : 'bg-green-200 hover:bg-green-300 text-green-800'
+                    }`}
+                  >
+                    Completed
+                  </button>
+                </div>
               </div>
             </div>
           )}
