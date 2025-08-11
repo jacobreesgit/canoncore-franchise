@@ -1,4 +1,10 @@
 // Service layer exports for CanonCore franchise organisation platform
+import { UniverseService } from './universe.service';
+import { ContentService } from './content.service';
+import { UserService } from './user.service';
+import { RelationshipService } from './relationship.service';
+
+// Export service classes
 export { UniverseService } from './universe.service';
 export { ContentService } from './content.service';
 export { UserService } from './user.service';
