@@ -22,7 +22,7 @@ export default function Home() {
               CanonCore
             </h1>
             <p className="text-gray-600 mb-8">
-              Organize and track your progress through real fictional franchises like Marvel, Doctor Who, Star Wars, and more.
+              Organise and track your progress through real fictional franchises like Marvel, Doctor Who, Star Wars, and more.
             </p>
             <button
               onClick={signIn}
@@ -65,7 +65,7 @@ export default function Home() {
             Your Franchise Dashboard
           </h2>
           <p className="text-gray-600 mb-8">
-            Start organizing your favorite franchises like Marvel, Doctor Who, or Star Wars.
+            Start organising your favourite franchises like Marvel, Doctor Who, or Star Wars.
           </p>
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-gray-500">

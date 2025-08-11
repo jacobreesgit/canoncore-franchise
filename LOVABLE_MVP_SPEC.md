@@ -1,21 +1,21 @@
-# Lovable MVP Specification - CanonCore
+# Claude Code MVP Specification - CanonCore
 
 ## 1. Product Context
 
 ### Product goal
-Create a content management platform for organizing REAL existing fictional franchises (Marvel, Doctor Who, Star Wars, DC, LOTR, etc.) ONLY. No original content creation - purely for cataloging and tracking progress through established franchise universes.
+Create a content management platform for organising REAL existing fictional franchises (Marvel, Doctor Who, Star Wars, DC, LOTR, etc.) ONLY. No original content creation - purely for cataloguing and tracking progress through established franchise universes.
 
 ### Primary users and jobs to be done
-- **Franchise fans** - Catalog REAL franchises like MCU phases, Doctor Who spinoffs, Star Wars eras with proper hierarchical relationships (NO original content)
+- **Franchise fans** - Catalogue REAL franchises like MCU phases, Doctor Who spinoffs, Star Wars eras with proper hierarchical relationships (NO original content)
 - **Content consumers** - Track viewing progress through existing shows/movies, discover chronological watch orders for real franchises
-- **Fandom organizers** - Create comprehensive databases of EXISTING characters, locations, events from established franchises (Marvel, DC, Doctor Who, etc.)
+- **Fandom organisers** - Create comprehensive databases of EXISTING characters, locations, events from established franchises (Marvel, DC, Doctor Who, etc.)
 
 ### Non goals for MVP
 - **ABSOLUTELY NO original fictional content or story creation**
 - **ABSOLUTELY NO tools for creating new characters, stories, or fictional content**
-- Real-time collaboration on franchise organization
+- Real-time collaboration on franchise organisation
 - Rich media file hosting or streaming capabilities  
-- Payment or monetization systems
+- Payment or monetisation systems
 - Advanced user roles beyond owner/public access
 - Mobile native applications
 - AI-powered content recommendations
@@ -33,15 +33,15 @@ Create a content management platform for organizing REAL existing fictional fran
 - **Constraint**: NEW Firebase project to be created for fresh franchise-focused deployment
 
 ### Key assumptions
-- **CRITICAL ASSUMPTION**: Users ONLY organize REAL existing fictional franchises (MCU, Doctor Who, Star Wars, DC, LOTR) - NEVER creating original content
-- **Assumption**: Users are cataloging established movies/shows/books that already exist (Iron Man 2008, The Eleventh Hour, A New Hope)
-- **Assumption**: Hierarchical organization (franchise > series/phases > episodes/movies > existing characters) meets cataloging needs for real properties
+- **CRITICAL ASSUMPTION**: Users ONLY organise REAL existing fictional franchises (MCU, Doctor Who, Star Wars, DC, LOTR) - NEVER creating original content
+- **Assumption**: Users are cataloguing established movies/shows/books that already exist (Iron Man 2008, The Eleventh Hour, A New Hope)
+- **Assumption**: Hierarchical organisation (franchise > series/phases > episodes/movies > existing characters) meets cataloguing needs for real properties
 - **Assumption**: Progress tracking applies ONLY to viewable content (existing episodes, movies, books) with automatic calculation for organisational holders (series, phases show progress based on contained viewable content)
 - **Assumption**: Current comprehensive test suite (798 tests per CLAUDE.md) indicates production-ready codebase maturity
 
 ## 2. Snapshot of Current System
 
-The repository contains a fully-featured fictional universe organization system built with Next.js 15, React 19, TypeScript, and Firebase. The system includes Google OAuth authentication, universe creation/management for franchises like Doctor Who or Marvel, hierarchical content organization for series/movies/characters, progress tracking for viewable content, public discovery of fan-curated universes, and comprehensive testing (798 tests across 47 suites). The codebase demonstrates production-ready architecture with service layer abstraction, error boundaries, and extensive UI component library with Storybook integration.
+The repository contains a fully-featured fictional universe organisation system built with Next.js 15, React 19, TypeScript, and Firebase. The system includes Google OAuth authentication, universe creation/management for franchises like Doctor Who or Marvel, hierarchical content organisation for series/movies/characters, progress tracking for viewable content, public discovery of fan-curated universes, and comprehensive testing (798 tests across 47 suites). The codebase demonstrates production-ready architecture with service layer abstraction, error boundaries, and extensive UI component library with Storybook integration.
 
 ```
 canoncore2/
@@ -70,19 +70,19 @@ canoncore2/
 ## 3. MVP Definition
 
 ### The smallest end to end slice that delivers core value
-Fan discovers public "Doctor Who Universe" (cataloging REAL Doctor Who episodes) → creates account → catalogs own "Marvel Cinematic Universe" → adds REAL Phase 1 movies (Iron Man 2008, Hulk 2008, etc.) → catalogs EXISTING characters like Tony Stark from the actual MCU → tracks viewing progress through REAL MCU phases → makes franchise catalog public for other Marvel fans to discover and reference.
+Fan discovers public "Doctor Who Universe" (cataloguing REAL Doctor Who episodes) → creates account → catalogues own "Marvel Cinematic Universe" → adds REAL Phase 1 movies (Iron Man 2008, Hulk 2008, etc.) → catalogues EXISTING characters like Tony Stark from the actual MCU → tracks viewing progress through REAL MCU phases → makes franchise catalogue public for other Marvel fans to discover and reference.
 
 ### Features split into three buckets
 
 #### Must have
 - Google OAuth authentication with Firebase Auth
-- Franchise catalog CRUD for REAL major franchises (MCU, Doctor Who, Star Wars, DC, LOTR, etc.)
-- Content cataloging for EXISTING franchise elements: real series, actual movies, existing episodes, established characters
+- Franchise catalogue CRUD for REAL major franchises (MCU, Doctor Who, Star Wars, DC, LOTR, etc.)
+- Content cataloguing for EXISTING franchise elements: real series, actual movies, existing episodes, established characters
 - Content hierarchy system: Real Franchise > Actual Series/Phases > Real Episodes/Movies > Existing Characters/Locations
 - Progress tracking on REAL viewable content (actual episodes, released movies, published books)
-- Public franchise discovery for fans to share comprehensive catalogs of EXISTING franchises
-- User profiles with favorites for real franchise universes and specific existing content
-- Responsive web interface optimized for cataloging established franchise content
+- Public franchise discovery for fans to share comprehensive catalogues of EXISTING franchises
+- User profiles with favourites for real franchise universes and specific existing content
+- Responsive web interface optimised for cataloguing established franchise content
 
 #### Nice to have later
 - Content variations for different continuities (comics vs movies vs TV)
@@ -113,16 +113,16 @@ Fan discovers public "Doctor Who Universe" (cataloging REAL Doctor Who episodes)
 - Protected routes redirect unauthenticated users to sign-in
 - Users can sign out from any page with immediate auth state update
 
-#### Franchise Cataloging (Real Franchise Organization)
-- Authenticated users can create catalogs for REAL major franchises (MCU, Doctor Who, Star Wars)
-- Franchise owners can edit catalog details, add source links to official sites/wikis (IMDb, official franchise sites)
-- Public franchise catalogs allow other fans to browse comprehensive databases of EXISTING franchises
-- Catalog list shows user's organized REAL franchises with privacy status and viewing progress summaries
+#### Franchise Cataloguing (Real Franchise Organisation)
+- Authenticated users can create catalogues for REAL major franchises (MCU, Doctor Who, Star Wars)
+- Franchise owners can edit catalogue details, add source links to official sites/wikis (IMDb, official franchise sites)
+- Public franchise catalogues allow other fans to browse comprehensive databases of EXISTING franchises
+- Catalogue list shows user's organised REAL franchises with privacy status and viewing progress summaries
 
 #### Content System (Real Franchise Elements)
-- Franchise owners can catalog EXISTING content: real series, actual movies, released episodes, established characters
-- Content supports hierarchical organization: MCU Phase 1 > Iron Man (2008 film) > Tony Stark (existing character profile)
-- Content respects catalog privacy (public franchise databases visible to all, private only to owner)
+- Franchise owners can catalogue EXISTING content: real series, actual movies, released episodes, established characters
+- Content supports hierarchical organisation: MCU Phase 1 > Iron Man (2008 film) > Tony Stark (existing character profile)
+- Content respects catalogue privacy (public franchise databases visible to all, private only to owner)
 - Multiple content types with appropriate badges (viewable real content vs reference material for existing characters)
 
 #### Progress Tracking (Viewing Progress)
@@ -135,7 +135,7 @@ Fan discovers public "Doctor Who Universe" (cataloging REAL Doctor Who episodes)
 
 #### Discovery and Sharing (Franchise Databases)
 - Anonymous users can browse public franchise databases created by other fans
-- Authenticated users can favorite well-organized franchise universes
+- Authenticated users can favourite well-organised franchise universes
 - User profiles display public franchise databases and allow community browsing
 - Public franchise browsing includes search for specific series/characters across universes
 
@@ -194,7 +194,7 @@ Auth Check → Firebase Auth → Security Rules → Franchise Data Access
 ```
 
 ### Key decisions
-- **Client-side rendering**: Next.js App Router optimized for complex franchise navigation with real-time updates
+- **Client-side rendering**: Next.js App Router optimised for complex franchise navigation with real-time updates
 - **Authentication**: Firebase Auth with Google OAuth for fan community access
 - **Data storage**: Firestore NoSQL perfect for flexible franchise schemas (Marvel vs Doctor Who structures)
 - **State management**: React Context for auth/franchise state, local component state for UI interactions
@@ -202,7 +202,7 @@ Auth Check → Firebase Auth → Security Rules → Franchise Data Access
 - **No server-side rendering**: Client-rendered for real-time franchise updates and progress tracking
 - **Service layer pattern**: Abstraction over Firebase for testable franchise data operations
 
-## 5. Exact Deliverables for Lovable AI to Build
+## 5. Exact Deliverables for Claude Code to Build
 
 ### Target runtime versions
 - Node.js: 22.x (latest LTS)
@@ -250,7 +250,7 @@ mvp/
 ├── tsconfig.json                # TypeScript configuration
 ├── tailwind.config.ts           # Tailwind CSS configuration
 ├── jest.config.js               # Jest test configuration
-└── README.md                    # Franchise organization setup instructions
+└── README.md                    # Franchise organisation setup instructions
 ```
 
 ### Dependency list with version ranges
@@ -280,7 +280,7 @@ mvp/
 - **TypeScript**: Strict mode enabled, no any types, explicit return types for functions
 - **ESLint**: Next.js configuration with React hooks rules, no unused variables
 - **Prettier**: Integrated with ESLint for consistent formatting (assumption)
-- **Import organization**: External libraries first, internal modules second, relative imports last
+- **Import organisation**: External libraries first, internal modules second, relative imports last
 - **Component patterns**: Functional components with hooks, proper prop typing, error boundaries
 - **Commit messages**: Conventional commits format for consistency (assumption)
 
@@ -446,7 +446,7 @@ const favorites = await userService.getFavorites("user123", "universe");
 - **Relations**: Many-to-one with content (both parent and child), many-to-one with universe
 
 ### Migration notes
-No data migration needed - this is a fresh MVP implementation for franchise organization. A NEW Firebase project will be created specifically for this franchise cataloging system, replacing any existing Firebase configuration.
+No data migration needed - this is a fresh MVP implementation for franchise organisation. A NEW Firebase project will be created specifically for this franchise cataloguing system, replacing any existing Firebase configuration.
 
 ## 8. Environment Variables
 
@@ -531,7 +531,7 @@ NODE_ENV=development
 4. **Progress Tracking**: Mark Iron Man as watched, verify progress propagates to MCU universe
 5. **Public Discovery**: Browse public franchise databases anonymously, verify privacy rules
 6. **Franchise Navigation**: Navigate complex hierarchies (MCU > Phase 1 > Iron Man > Characters)
-7. **Favorites System**: Bookmark well-organized Doctor Who database, verify persistence
+7. **Favourites System**: Bookmark well-organised Doctor Who database, verify persistence
 8. **Cross-References**: Link character across multiple movies/episodes within franchise
 9. **Responsive Design**: Basic mobile layout for franchise browsing on phones
 10. **Performance**: Large franchise trees (all Marvel movies + characters) load reasonably
@@ -554,10 +554,10 @@ NODE_ENV=development
 - **Risk**: Dependency licensing conflicts for franchise management features
 - **Mitigation**: All specified dependencies use permissive licenses (MIT/Apache)
 
-## 12. Handoff Checklist for Lovable AI
+## 12. Handoff Checklist for Claude Code
 
 1. **Project Setup**
-   - Create mvp/ directory structure as specified for franchise organization
+   - Create mvp/ directory structure as specified for franchise organisation
    - Initialize npm project with package.json dependencies for React/Firebase
    - Set up TypeScript configuration with strict mode for franchise data types
    - Configure Tailwind CSS with franchise-friendly theme customization
@@ -575,10 +575,10 @@ NODE_ENV=development
    - Set up error boundaries and loading states for franchise page navigation
 
 4. **UI Implementation**
-   - Create reusable component library optimized for franchise data (forms, cards, trees, modals)
+   - Create reusable component library optimised for franchise data (forms, cards, trees, modals)
    - Implement main pages (home dashboard, franchise detail, content detail, fan profiles)
    - Build franchise navigation components with hierarchical browsing
-   - Add responsive design with franchise theming and mobile optimization
+   - Add responsive design with franchise theming and mobile optimisation
 
 5. **Testing Setup**
    - Configure Jest with jsdom environment for franchise component testing
@@ -595,7 +595,7 @@ NODE_ENV=development
 7. **Success Criteria Verification**
    - Fan can sign in with Google OAuth and create franchise account
    - Fan can create comprehensive franchise database (Marvel, Doctor Who, etc.)
-   - Fan can organize complex content hierarchies with episodes/movies/characters
+   - Fan can organise complex content hierarchies with episodes/movies/characters
    - Public franchise discovery works for sharing databases with other fans
    - Progress tracking functions correctly for viewing episodes/movies across franchises
    - Test suite passes with good coverage for franchise functionality

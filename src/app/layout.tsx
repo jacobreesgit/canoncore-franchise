@@ -3,8 +3,8 @@ import './globals.css';
 import { AuthProvider } from '@/lib/contexts/auth-context';
 
 export const metadata: Metadata = {
-  title: 'CanonCore - Franchise Organization',
-  description: 'Organize and track your progress through real fictional franchises like Marvel, Doctor Who, Star Wars, and more.',
+  title: 'CanonCore - Franchise Organisation',
+  description: 'Organise and track your progress through real fictional franchises like Marvel, Doctor Who, Star Wars, and more.',
 };
 
 export default function RootLayout({

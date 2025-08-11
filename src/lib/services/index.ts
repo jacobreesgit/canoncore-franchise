@@ -1,0 +1,11 @@
+// Service layer exports for CanonCore franchise organisation platform
+export { UniverseService } from './universe.service';
+export { ContentService } from './content.service';
+export { UserService } from './user.service';
+export { RelationshipService } from './relationship.service';
+
+// Create service instances for easy import
+export const universeService = new UniverseService();
+export const contentService = new ContentService();
+export const userService = new UserService();
+export const relationshipService = new RelationshipService();

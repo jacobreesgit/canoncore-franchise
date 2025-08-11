@@ -2,7 +2,9 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organization platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently in foundational phase with authentication and basic UI implemented.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently in foundational phase with authentication and basic UI implemented.
+
+**Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
 ## Technology Stack
 
@@ -27,14 +29,20 @@ CanonCore is a franchise organization platform built with Next.js 15, React 19, 
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                           │                │                    │
 ├───────────────────────────┼────────────────┼────────────────────┤
-│         Data Layer        │                │                    │
-│                           ▼                ▼                    │
+│      Service Layer        │                │                    │
+│     (IMPLEMENTED)         ▼                ▼                    │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │                Type Definitions                         │   │
+│  │              Franchise Services                         │   │
 │  │                                                         │   │
-│  │  User, Universe, Content, Favorite, ContentRelationship│   │
-│  │  CreateUniverseData, CreateContentData                  │   │
-│  │  AuthContextType, FranchiseContextType                 │   │
+│  │  UniverseService   ContentService   UserService        │   │
+│  │  - CRUD ops        - Episodes/Chars - Favourites       │   │
+│  │  - Public/Private  - Progress Track - Profiles         │   │
+│  │  - Search          - Viewable/Org   - Activity         │   │
+│  │                                                         │   │
+│  │  RelationshipService + Type Definitions                │   │
+│  │  - Hierarchies     User, Universe, Content, etc.       │   │
+│  │  - Tree Building   CreateData interfaces               │   │
+│  │  - Path Navigation AuthContextType, etc.               │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                           │                                     │
 ├───────────────────────────┼─────────────────────────────────────┤
@@ -47,13 +55,14 @@ CanonCore is a franchise organization platform built with Next.js 15, React 19, 
 │  │ OAuth       │  │ - users     │                              │
 │  │ User mgmt   │  │ - universes │                              │
 │  │ JWT tokens  │  │ - content   │                              │
-│  │             │  │ - favorites │                              │
+│  │             │  │ - favourites│                              │
 │  │             │  │ - relations │                              │
 │  └─────────────┘  └─────────────┘                              │
 └─────────────────────────────────────────────────────────────────┘
 
 Current Data Flow:
-User Action → AuthContext → Firebase Auth → User State → UI Update
+User Action → AuthContext → Service Layer → Firestore → UI Update
+Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
 ```
 
 ## Component Structure (Current State)
@@ -80,13 +89,21 @@ User Action → AuthContext → Firebase Auth → User State → UI Update
     - User document creation/retrieval
   - Data Flow: Firebase Auth → onAuthStateChanged → User state → Context consumers
 
-### Not Yet Implemented
+### Implemented Services (Phase 1 Complete)
 
-#### Service Layer (Planned - Phase 1: Core Services Foundation)
-- **UniverseService**: Franchise CRUD operations
-- **ContentService**: Episodes/movies/characters management  
-- **UserService**: Favorites and profiles
-- **RelationshipService**: Content hierarchies
+#### Service Layer (`src/lib/services/`)
+- **UniverseService**: Complete franchise CRUD operations, public/private management, progress tracking, search
+- **ContentService**: Episodes/movies/characters management, viewable vs organisational content, progress tracking  
+- **UserService**: User profiles, favourites system, activity summaries, bulk operations
+- **RelationshipService**: Hierarchical content organisation, tree building, path navigation, reordering
+
+All services include:
+- Firebase Firestore integration with error handling
+- User authentication and ownership verification
+- British English spelling throughout
+- Full TypeScript type safety
+
+### Not Yet Implemented
 
 #### Component Library (Planned - Phase 4: UI Components)
 - **Forms**: Universe creation, content creation
@@ -213,15 +230,15 @@ canoncore/
 
 ## Performance Considerations (Current)
 
-### Optimizations In Place
+### Optimisations In Place
 - React 19 with concurrent features
-- Next.js App Router with automatic optimization
+- Next.js App Router with automatic optimisation
 - Tailwind CSS for minimal bundle size
 
-### Future Optimizations (Planned)
-- Firestore query optimization for large franchise datasets
+### Future Optimisations (Planned)
+- Firestore query optimisation for large franchise datasets
 - Component lazy loading for large franchise trees
-- Image optimization for franchise media
+- Image optimisation for franchise media
 - Service worker for offline capability
 
 ## Next Phase Integration Points
@@ -239,7 +256,7 @@ canoncore/
 ### Phase 3: Data Management
 - Forms will integrate with service layer
 - Progress tracking will update Firestore directly
-- Hierarchical organization will use ContentRelationship model
+- Hierarchical organisation will use ContentRelationship model
 
 ### Phase 4: UI Components
 - Components will consume service layer and contexts
@@ -253,5 +270,5 @@ canoncore/
 
 ---
 
-**Last Updated**: Foundation Phase Complete (Auth + Types)
-**Next Update**: After Phase 1: Core Services Foundation
+**Last Updated**: Phase 1 Complete (Foundation + Service Layer)  
+**Next Update**: After Phase 2a: Core Pages - Dashboard & Universe

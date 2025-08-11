@@ -38,7 +38,7 @@ export interface Content {
   isViewable: boolean; // true for episodes/movies, false for characters/locations
   mediaType: 'video' | 'audio' | 'text' | 'character' | 'location' | 'item' | 'event' | 'collection';
   progress?: number; // 0-100, only for viewable content
-  calculatedProgress?: number; // calculated from contained viewable content for organizational holders
+  calculatedProgress?: number; // calculated from contained viewable content for organisational holders
   lastAccessedAt?: Timestamp;
   isPublic: boolean; // inherited from universe
   createdAt: Timestamp;
