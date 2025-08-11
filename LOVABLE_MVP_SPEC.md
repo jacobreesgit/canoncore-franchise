@@ -430,7 +430,7 @@ const favorites = await userService.getFavorites("user123", "universe");
 - userId: string (fan reference)
 - targetId: string (universeId or contentId - favorited franchise or specific content)
 - targetType: string (universe|content)
-- createdAt: Timestamp (favorite date)
+- createdAt: Timestamp (favourite date)
 - **Indexes**: userId + targetType + createdAt (user favorites listing)
 - **Relations**: Many-to-one with users, references to universes or content
 

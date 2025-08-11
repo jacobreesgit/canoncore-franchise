@@ -5,6 +5,7 @@ import { universeService } from '@/lib/services';
 import { Universe } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FavouriteButton } from '@/components';
 
 export default function Home() {
   const { user, loading, signIn, signOut } = useAuth();
@@ -151,35 +152,40 @@ export default function Home() {
                 className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-medium text-gray-900 truncate">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-lg font-medium text-gray-900 truncate mr-2">
                       {universe.name}
                     </h3>
-                    {!universe.isPublic && (
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                        Private
-                      </span>
-                    )}
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                      <FavouriteButton 
+                        targetId={universe.id} 
+                        targetType="universe"
+                        className="text-gray-400 hover:text-red-500"
+                      />
+                      {!universe.isPublic && (
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                          Private
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {universe.description && (
                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                       {universe.description}
                     </p>
                   )}
-                  {typeof universe.progress === 'number' && (
-                    <div className="mb-3">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Progress</span>
-                        <span>{Math.round(universe.progress)}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full transition-all"
-                          style={{ width: `${universe.progress}%` }}
-                        />
-                      </div>
+                  <div className="mb-3">
+                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                      <span>Progress</span>
+                      <span>{Math.round(universe.progress || 0)}%</span>
                     </div>
-                  )}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        style={{ width: `${universe.progress || 0}%` }}
+                      />
+                    </div>
+                  </div>
                   <div className="text-xs text-gray-500">
                     Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
                   </div>

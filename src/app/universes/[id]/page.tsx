@@ -6,6 +6,7 @@ import { Universe, Content, User } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FavouriteButton } from '@/components';
 
 export default function UniversePage() {
   const { user, loading } = useAuth();
@@ -174,6 +175,12 @@ export default function UniversePage() {
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-gray-900">{universe.name}</h1>
               <div className="flex items-center space-x-2">
+                <FavouriteButton 
+                  targetId={universe.id} 
+                  targetType="universe"
+                  className="text-gray-600 hover:text-red-500"
+                  showText={true}
+                />
                 <span className={`text-sm px-3 py-1 rounded-full ${
                   universe.isPublic 
                     ? 'bg-green-100 text-green-600' 
@@ -210,20 +217,18 @@ export default function UniversePage() {
               </div>
             )}
 
-            {typeof universe.progress === 'number' && (
-              <div className="mb-4">
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Overall Progress</span>
-                  <span>{Math.round(universe.progress)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div
-                    className="bg-blue-600 h-3 rounded-full transition-all"
-                    style={{ width: `${universe.progress}%` }}
-                  />
-                </div>
+            <div className="mb-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Overall Progress</span>
+                <span>{Math.round(universe.progress || 0)}%</span>
               </div>
-            )}
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-blue-600 h-3 rounded-full transition-all"
+                  style={{ width: `${universe.progress || 0}%` }}
+                />
+              </div>
+            </div>
 
             <div className="text-sm text-gray-500">
               Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
@@ -298,18 +303,24 @@ export default function UniversePage() {
                         <h3 className="font-medium text-gray-900 mb-2">{item.name}</h3>
                         <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                           <span className="capitalize">{item.mediaType}</span>
-                          {typeof item.progress === 'number' && (
-                            <span>{Math.round(item.progress)}% watched</span>
-                          )}
+                          <span>
+                            {item.isViewable 
+                              ? `${Math.round(item.progress || 0)}% watched`
+                              : `${Math.round(item.calculatedProgress || 0)}% complete`
+                            }
+                          </span>
                         </div>
-                        {typeof item.progress === 'number' && (
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-green-600 h-2 rounded-full"
-                              style={{ width: `${item.progress}%` }}
-                            />
-                          </div>
-                        )}
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${item.isViewable ? 'bg-green-600' : 'bg-blue-600'}`}
+                            style={{ 
+                              width: `${item.isViewable 
+                                ? (item.progress || 0)
+                                : (item.calculatedProgress || 0)
+                              }%` 
+                            }}
+                          />
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -331,18 +342,14 @@ export default function UniversePage() {
                         <h3 className="font-medium text-gray-900 mb-2">{item.name}</h3>
                         <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                           <span className="capitalize">{item.mediaType}</span>
-                          {typeof item.calculatedProgress === 'number' && (
-                            <span>{Math.round(item.calculatedProgress)}% complete</span>
-                          )}
+                          <span>{Math.round(item.calculatedProgress || 0)}% complete</span>
                         </div>
-                        {typeof item.calculatedProgress === 'number' && (
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${item.calculatedProgress}%` }}
-                            />
-                          </div>
-                        )}
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{ width: `${item.calculatedProgress || 0}%` }}
+                          />
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -379,14 +386,13 @@ export default function UniversePage() {
                             >
                               <span className="text-sm text-gray-600 capitalize mr-2">{item.mediaType}</span>
                               <span className="font-medium text-gray-900">{item.name}</span>
-                              {typeof item.progress === 'number' && item.isViewable && (
-                                <span className={`ml-auto text-xs ${item.progress > 0 ? 'text-green-600' : 'text-gray-500'}`}>
-                                  {Math.round(item.progress)}% watched
+                              {item.isViewable ? (
+                                <span className={`ml-auto text-xs ${(item.progress || 0) > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {Math.round(item.progress || 0)}% watched
                                 </span>
-                              )}
-                              {typeof item.calculatedProgress === 'number' && !item.isViewable && (
-                                <span className={`ml-auto text-xs ${item.calculatedProgress > 0 ? 'text-blue-600' : 'text-gray-500'}`}>
-                                  {Math.round(item.calculatedProgress)}% complete
+                              ) : (
+                                <span className={`ml-auto text-xs ${(item.calculatedProgress || 0) > 0 ? 'text-blue-600' : 'text-gray-500'}`}>
+                                  {Math.round(item.calculatedProgress || 0)}% complete
                                 </span>
                               )}
                             </Link>
@@ -478,14 +484,13 @@ function TreeNode({ node, content, depth }: { node: any; content: Content[]; dep
         >
           <span className="text-sm text-gray-600 capitalize mr-2">{nodeContent.mediaType}</span>
           <span className="font-medium text-gray-900">{nodeContent.name}</span>
-          {typeof nodeContent.progress === 'number' && nodeContent.isViewable && (
-            <span className={`ml-auto text-xs ${nodeContent.progress > 0 ? 'text-green-600' : 'text-gray-500'}`}>
-              {Math.round(nodeContent.progress)}% watched
+          {nodeContent.isViewable ? (
+            <span className={`ml-auto text-xs ${(nodeContent.progress || 0) > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+              {Math.round(nodeContent.progress || 0)}% watched
             </span>
-          )}
-          {typeof nodeContent.calculatedProgress === 'number' && !nodeContent.isViewable && (
-            <span className={`ml-auto text-xs ${nodeContent.calculatedProgress > 0 ? 'text-blue-600' : 'text-gray-500'}`}>
-              {Math.round(nodeContent.calculatedProgress)}% complete
+          ) : (
+            <span className={`ml-auto text-xs ${(nodeContent.calculatedProgress || 0) > 0 ? 'text-blue-600' : 'text-gray-500'}`}>
+              {Math.round(nodeContent.calculatedProgress || 0)}% complete
             </span>
           )}
         </Link>

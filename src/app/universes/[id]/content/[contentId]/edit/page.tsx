@@ -292,7 +292,7 @@ export default function EditContentPage() {
                 <p className="mt-1 text-sm text-gray-500">
                   {isViewableContent ? 
                     'This content can be marked as watched and will contribute to progress tracking.' :
-                    'This is organisational content that helps organize the franchise but cannot be marked as watched.'
+                    'This is organisational content that helps organise the franchise but cannot be marked as watched.'
                   }
                 </p>
               )}

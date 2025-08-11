@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 3c plus Phase 6a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, and advanced hierarchical content organisation with infinite depth support and polished UI with consistent progress indicators.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 3d plus Phase 6a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, and advanced hierarchical content organisation with infinite depth support and polished UI with consistent progress indicators.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -22,8 +22,8 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │    Pages    │  │ Components  │  │  Contexts   │             │
 │  │             │  │             │  │             │             │
-│  │ page.tsx    │  │ (Empty)     │  │ AuthContext │             │
-│  │ (Dashboard) │  │             │  │ - User mgmt │             │
+│  │ page.tsx    │  │ Favourite   │  │ AuthContext │             │
+│  │ (Dashboard) │  │ Button      │  │ - User mgmt │             │
 │  │ layout.tsx  │  │             │  │ - Sign in/  │             │
 │  │ universes/  │  │             │  │   out       │             │
 │  │ content/    │  │             │  │             │             │
@@ -318,7 +318,9 @@ canoncore/
 │   │   ├── hooks/                  # Custom React hooks (empty)
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions + UserProgress interface
-│   ├── components/                 # UI components (empty - Phase 4)
+│   ├── components/                 # UI components (Phase 3d+)
+│   │   ├── FavouriteButton.tsx    # Favouriting functionality component
+│   │   └── index.ts               # Component exports
 │   └── styles/                     # Additional styles (empty)
 ├── public/                         # Static assets (Firebase hosting files)
 │   ├── 404.html                   # Firebase 404 page
@@ -419,24 +421,33 @@ canoncore/
 - **Parent-child creation**: Content forms include parent selection for hierarchical relationships
 - **Calculated progress**: Organisational holders show progress based on user-specific child viewable content
 
-### Phase 3d: Data Management - Visibility & Favourites (PENDING)
-- Public/private visibility system and favourites functionality
+### Phase 3d: Data Management - Visibility & Favourites (COMPLETE)
+- Public/private visibility system and favourites functionality fully implemented
+- Users can favourite/unfavourite their own and other users' universes and content
+- Profile page displays favourites with tabbed interface
 
-### Phase 4a: UI Components - Component Library
+### Phase 4a: Design System Foundation
 - Establish design system foundation (colours, typography, spacing)
-- Components will consume service layer and contexts
-- Apply consistent design to: Dashboard, Universe Detail, Content Detail pages
-- Reusable components built with consistent styling patterns
-- Standardised button, form, and component variations
+- Create reusable UI components using already hardcoded elements as base
+- Consolidate duplicate UI patterns
+- Ensure consistent loading and error states
 
-### Phase 4b: UI Components - Navigation & Responsive
-CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
-
+### Phase 4b: Core Pages Design Consistency
+- Apply consistent design to 5 CORE PAGES: Dashboard, Universe Detail, Content Detail, Discover, Profile pages
 - Build franchise navigation components with design system applied
-- Apply design system to: Discover page, Profile pages
-- Standardise navigation patterns across all 5 core pages
-- Progress tracking components with consistent styling
-- Responsive design implemented across all pages and screen sizes
+- Create progress tracking components
+- Standardise navigation across 5 core pages
+
+### Phase 4c: Form Pages Design Consistency
+- Apply consistent design to 5 FORM PAGES: Universe Create, Universe Edit, Content Create, Content Edit, Profile Edit
+- Add breadcrumb navigation to all form pages
+- Ensure consistent header/nav patterns across form pages
+- Standardise form layouts and validation patterns
+
+### Phase 4d: Responsive Design & Polish
+- Implement responsive design for mobile (all 10 pages)
+- Ensure consistent design across all screen sizes
+- Final design consistency review across all pages
 
 ### Phase 5a: Testing
 - Comprehensive testing of all implemented features
@@ -475,5 +486,5 @@ CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
 
 ---
 
-**Last Updated**: Phase 3c + Partial Phase 6a Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Advanced Hierarchical Content Organisation with Infinite Depth Support)  
-**Next Update**: After Phase 3d: Data Management - Visibility & Favourites
+**Last Updated**: Phase 3d + Phase 6a Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation with Infinite Depth Support)  
+**Next Update**: After Phase 4a-4d: UI Components & Design System

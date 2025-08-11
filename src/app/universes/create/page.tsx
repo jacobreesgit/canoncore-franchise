@@ -14,7 +14,7 @@ export default function CreateUniversePage() {
   const [formData, setFormData] = useState<CreateUniverseData>({
     name: '',
     description: '',
-    isPublic: false,
+    isPublic: true,
     sourceLink: '',
     sourceLinkName: '',
   });

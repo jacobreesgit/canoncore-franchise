@@ -40,7 +40,7 @@ npm run clear-data --force
 
 **Important Notes:**
 - Requires `--force` flag to run as a safety measure
-- Clears collections: `universes`, `content`, `favorites`, `contentRelationships`
+- Clears **all collections except `users`** (automatically discovers collections)
 - **Preserves user accounts** (users collection is untouched)
 - May encounter permission errors due to Firestore security rules (expected)
 - If script fails, manually delete collections via Firebase Console
@@ -147,7 +147,7 @@ The application follows **hierarchical routing** that mirrors the data relations
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b + Phase 3c + Phase 6a):**
+**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b + Phase 3c + Phase 3d + Phase 6a):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration and account selection
@@ -158,7 +158,7 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Universe Detail Pages** - Shows universe details, content by type (viewable/organisational), owner permissions, tree/grid view toggle, hierarchical navigation
 - **Content Detail Pages** - Individual content viewing with user-specific progress tracking, breadcrumb navigation
 - **Public Discovery** - Browse and search all public franchises with responsive interface
-- **User Profiles** - Display public franchises and favourites with tabbed interface (favourites functionality disabled pending Phase 3d)
+- **User Profiles** - Display public franchises and favourites with tabbed interface (favourites functionality fully implemented)
 - **Universe Creation Forms** - Complete form for creating new franchises with validation and Firebase integration
 - **Content Creation Forms** - Comprehensive forms for adding content with media type selection, parent selection for hierarchies, and permissions
 - **Universe Edit Forms** - Complete edit functionality for updating franchise details with pre-populated data
@@ -169,8 +169,7 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Polished UI & Progress Indicators** - Consistent progress bar colors (green for viewable, blue for organisational), smart progress display logic, consistent ordering across grid/tree views, conditional progress text colors
 
 **Next Implementation Phases (see todo.md):**
-3. **Phase 3d: Data Management** - Visibility & favourites functionality
-4. **Phase 4a-4b: UI Components** - Component library with design system, navigation, responsive design
+4. **Phase 4a-4d: UI Components & Design System** - Design system foundation, core pages consistency, form pages consistency, responsive design
 5. **Phase 5a-5d: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup, flow optimisation
 6. **Phase 6a: Advanced Content Hierarchies** (remaining) - Drag-and-drop organisation, circular reference detection, breadcrumbs (core functionality complete)
 

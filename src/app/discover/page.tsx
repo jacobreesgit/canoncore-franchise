@@ -5,6 +5,7 @@ import { universeService } from '@/lib/services';
 import { Universe } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FavouriteButton } from '@/components';
 
 export default function DiscoverPage() {
   const { user, loading } = useAuth();
@@ -167,44 +168,53 @@ export default function DiscoverPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredUniverses.map((universe) => (
-                <Link
+                <div
                   key={universe.id}
-                  href={`/universes/${universe.id}`}
-                  className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="bg-white rounded-lg shadow hover:shadow-md transition-shadow"
                 >
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-medium text-gray-900 truncate">
+                      <Link 
+                        href={`/universes/${universe.id}`}
+                        className="text-lg font-medium text-gray-900 hover:text-blue-600 truncate transition-colors"
+                      >
                         {universe.name}
-                      </h3>
-                      <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                        Public
-                      </span>
+                      </Link>
+                      <div className="flex items-center space-x-2">
+                        {user && (
+                          <FavouriteButton 
+                            targetId={universe.id} 
+                            targetType="universe"
+                            className="text-gray-400 hover:text-red-500"
+                          />
+                        )}
+                        <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
+                          Public
+                        </span>
+                      </div>
                     </div>
                     {universe.description && (
                       <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                         {universe.description}
                       </p>
                     )}
-                    {typeof universe.progress === 'number' && (
-                      <div className="mb-3">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                          <span>Progress</span>
-                          <span>{Math.round(universe.progress)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
-                            style={{ width: `${universe.progress}%` }}
-                          />
-                        </div>
+                    <div className="mb-3">
+                      <div className="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span>{Math.round(universe.progress || 0)}%</span>
                       </div>
-                    )}
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all"
+                          style={{ width: `${universe.progress || 0}%` }}
+                        />
+                      </div>
+                    </div>
                     <div className="text-xs text-gray-500">
                       Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </>

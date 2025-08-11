@@ -189,6 +189,12 @@ function printSummary(collectionName, docs) {
       console.log(`  ${doc.id}: User ${doc.userId} - Content ${doc.contentId}: ${doc.progress}%`);
     });
   }
+  
+  if (collectionName === 'favourites') {
+    docs.forEach(doc => {
+      console.log(`  ${doc.id}: User ${doc.userId} - ${doc.targetType} ${doc.targetId}`);
+    });
+  }
 }
 
 function printDetailed(collectionName, docs) {
@@ -224,6 +230,7 @@ async function main() {
   if (options.all || options.content) collections.push('content');
   if (options.all || options.relationships) collections.push('contentRelationships');
   if (options.all || options.progress) collections.push('userProgress');
+  if (options.all) collections.push('favourites');
   
   for (const collectionName of collections) {
     const docs = await scanCollection(collectionName, filter);

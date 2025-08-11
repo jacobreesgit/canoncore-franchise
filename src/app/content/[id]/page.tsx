@@ -6,6 +6,7 @@ import { Content, Universe } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FavouriteButton } from '@/components';
 
 export default function ContentPage() {
   const { user, loading } = useAuth();
@@ -187,6 +188,12 @@ export default function ContentPage() {
                 )}
               </div>
             </div>
+            <FavouriteButton 
+              targetId={content.id} 
+              targetType="content"
+              className="text-gray-600 hover:text-red-500"
+              showText={true}
+            />
           </div>
 
           {content.description && (

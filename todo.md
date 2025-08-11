@@ -17,6 +17,8 @@
       profiles
     ☒ ✅ Create RelationshipService for content
       hierarchies
+    ☒ ✅ Create UserProgressService for individual
+      user progress tracking
 
 **Phase 2a: Core Pages - Dashboard & Universe** ✅ COMPLETE
     ☒ ✅ Build franchise dashboard (list user's
@@ -53,29 +55,35 @@
     ☒ ✅ Build calculated progress for
       organisational holders
 
-**Phase 3d: Data Management - Visibility & Favourites**
-    ☐ Create public/private franchise visibility
-      system
-    ☐ Build favourites system for franchises and
+**Phase 3d: Data Management - Visibility & Favourites** ✅ COMPLETE
+    ☒ ✅ Create public/private franchise visibility
+      system (implemented with isPublic field)
+    ☒ ✅ Build favourites system for franchises and
       content
-    ☐ Re-enable favourites functionality in profile page
-      (currently disabled due to missing implementation)
+    ☒ ✅ Re-enable favourites functionality in profile page
+      (fully implemented with UI components)
 
-**Phase 4a: UI Components - Component Library**
-CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
+**Phase 4a: Design System Foundation**
     ☐ Establish design system (colours, typography, spacing)
-    ☐ Create reusable UI components (forms, cards, modals)
-    ☐ Standardise button and form styles
-    ☐ Apply consistent design to: Dashboard, Universe Detail, Content Detail
+    ☐ Consolidate duplicate UI patterns and Create reusable UI components but use already hardcoded elements as base. Make sure logic stays. Do one by one and let me check.
     ☐ Ensure consistent loading and error states
 
-**Phase 4b: UI Components - Navigation & Responsive**
-    ☐ Build franchise navigation components
+**Phase 4b: Core Pages Design Consistency** 
+    ☐ Apply consistent design to 5 CORE PAGES: Dashboard, Universe Detail, Content Detail, Discover, Profile pages
+    ☐ Build franchise navigation components  
     ☐ Create progress tracking components
-    ☐ Apply design system to: Discover page, Profile pages
-    ☐ Standardise navigation across all 5 core pages
-    ☐ Implement responsive design for mobile (all pages)
+    ☐ Standardise navigation across 5 core pages
+
+**Phase 4c: Form Pages Design Consistency**
+    ☐ Apply consistent design to 5 FORM PAGES: Universe Create, Universe Edit, Content Create, Content Edit, Profile Edit
+    ☐ Add breadcrumb navigation to all form pages
+    ☐ Ensure consistent header/nav patterns across form pages
+    ☐ Standardise form layouts and validation patterns
+
+**Phase 4d: Responsive Design & Polish**
+    ☐ Implement responsive design for mobile (all 10 pages)
     ☐ Ensure consistent design across all screen sizes
+    ☐ Final design consistency review across all pages
 
 **Phase 5a: Testing**
     ☐ Add service layer unit tests
@@ -83,17 +91,19 @@ CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
     ☐ Test Firestore security rules
 
 **Phase 5b: Code Optimisation & Cleanup**
+     ☐ Find any to do comments or anything else unfinshed
+
+
+ BEFORE ANYTHING ELSE - SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE.
+
     ☐ Remove unused files and directories
     ☐ Clean up redundant code and components
-    ☐ Remove unused service methods and hooks
     ☐ Optimise imports and dependencies
-    ☐ Consolidate duplicate UI patterns
     ☐ Review and improve code organisation
-    ☐ Remove unused Firebase features/collections
     ☐ Optimise bundle size and performance
 
 **Phase 5c: Deployment**
-    ☐ Set up production environment
+    ☐ Set up development and production environment using Vercel
     ☐ Configure Firebase hosting
     ☐ Test full end-to-end user workflows
 
@@ -104,16 +114,21 @@ CHECK WHAT OTHER PAGES TO MAKE CONSISTENT
     ☐ Optimise form flows and reduce friction
     ☐ Review content organisation and discovery patterns
     ☐ Streamline universe-to-content creation workflow
-    ☐ Add grid and list view toggle for organisational content pages showing their children
+    ☒ ✅ Add grid and tree view toggle for universe pages (already implemented)
     ☐ Add "Universe Context" section to viewable content pages showing all parent hierarchies
     ☐ Add add content button to organisational content pages
 
-**Phase 6a: Advanced Content Hierarchies - Infinite Nesting** (Partial ✅)
+**Phase 6a: Advanced Content Hierarchies - Infinite Nesting** ✅ COMPLETE
     ☒ ✅ Implement infinite looping nested children support
-    ☒ ✅ Build recursive content tree components
+    ☒ ✅ Build recursive content tree components  
     ☒ ✅ Add parent-child relationship management in content forms
+    ☒ ✅ Fix duplicate tree rendering bugs and hierarchy issues
+    ☒ ✅ Implement consistent ordering across grid/tree views
+    ☒ ✅ Add smart progress display logic for organisational content
+    ☒ ✅ Create consistent progress color scheme (green/blue)
+    ☒ ✅ Build enhanced data scanning and validation tools
     ☐ Create drag-and-drop content organisation interface
-    ☐ Build nested content navigation and breadcrumbs
+    ☐ Build nested content navigation and breadcrumbs  
     ☐ Add bulk operations for nested content structures
     ☐ Optimise performance for deep content hierarchies
 
