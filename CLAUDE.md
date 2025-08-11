@@ -170,8 +170,10 @@ interface Content {
 
 ### Progress Tracking Rules
 - **ONLY viewable content** (episodes, movies, books) can be directly marked as watched
+- **Individual per user**: Same public content can have different progress for each user (100% for User A, 0% for User B)
 - **Organisational holders** (series, phases) show calculated progress based on contained viewable content
 - Progress propagates up hierarchies: viewable content → organisational holders → franchise progress
+- **Current limitation**: Progress is shared across users (needs individual tracking implementation)
 
 ### British English
 - Use British English spelling throughout (organisation, cataloguing, favourites, optimise)

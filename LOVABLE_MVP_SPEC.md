@@ -37,6 +37,7 @@ Create a content management platform for organising REAL existing fictional fran
 - **Assumption**: Users are cataloguing established movies/shows/books that already exist (Iron Man 2008, The Eleventh Hour, A New Hope)
 - **Assumption**: Hierarchical organisation (franchise > series/phases > episodes/movies > existing characters) meets cataloguing needs for real properties
 - **Assumption**: Progress tracking applies ONLY to viewable content (existing episodes, movies, books) with automatic calculation for organisational holders (series, phases show progress based on contained viewable content)
+- **Assumption**: Progress tracking should be individual per user - same public content can show different progress states for different users (100% completed for User A, 0% not started for User B)
 - **Assumption**: Current comprehensive test suite (798 tests per CLAUDE.md) indicates production-ready codebase maturity
 
 ## 2. Snapshot of Current System

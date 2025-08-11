@@ -48,6 +48,8 @@
       (Phase 1 > Iron Man > Tony Stark)
     ☒ ✅ Implement progress tracking for viewable
       content only
+    ☐ Make progress tracking individual per user 
+      (same public content can be 100% for one user, 0% for another)
     ☐ Build calculated progress for
       organisational holders
 

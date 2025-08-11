@@ -164,6 +164,9 @@ Content: { id, name, universeId, isViewable, mediaType, progress, ... }
 Favorite: { id, userId, targetId, targetType, createdAt }
 ContentRelationship: { id, contentId, parentId, displayOrder, ... }
 
+// Future: Individual User Progress (Phase 3c)
+UserProgress: { id, userId, contentId, progress, lastAccessedAt }
+
 // Form interfaces
 CreateUniverseData: { name, description, isPublic, sourceLink?, ... }
 CreateContentData: { name, description, isViewable, mediaType }
@@ -200,11 +203,19 @@ content/ (Service implemented, consumed by universe detail pages)
     ├── universeId: string
     ├── isViewable: boolean
     ├── mediaType: string
-    ├── progress?: number
+    ├── progress?: number (CURRENT: shared across users, FUTURE: individual per user)
     └── createdAt, updatedAt: Timestamp
 
 favorites/ (Service implemented, not yet used by UI)
 contentRelationships/ (Service implemented, not yet used by UI)
+
+userProgress/ (FUTURE: Phase 3c - Individual user progress tracking)
+├── {userProgressId}/
+    ├── userId: string
+    ├── contentId: string
+    ├── progress: number (0 or 100)
+    ├── lastAccessedAt: Timestamp
+    └── createdAt, updatedAt: Timestamp
 ```
 
 ## Current Data Flows
@@ -373,8 +384,11 @@ canoncore/
 - Owner permission checks and error handling for all operations
 
 ### Phase 3c: Data Management - Progress & Hierarchies (PENDING)
-- Progress tracking will update Firestore directly
+- **Individual user progress tracking**: Create UserProgress collection/subcollection for per-user progress states
+- Same public content can show different progress for each user (100% for User A, 0% for User B)
+- Migrate from content.progress to userId+contentId based progress storage
 - Hierarchical organisation will use ContentRelationship model
+- Calculated progress for organisational holders based on user-specific viewable content progress
 
 ### Phase 3d: Data Management - Visibility & Favourites (PENDING)
 - Public/private visibility system and favourites functionality
