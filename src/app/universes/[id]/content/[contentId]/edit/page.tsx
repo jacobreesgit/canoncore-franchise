@@ -6,6 +6,7 @@ import { Content, Universe } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, FormTextarea, PageContainer } from '@/components';
 
 const mediaTypeOptions: { value: Content['mediaType']; label: string; description: string }[] = [
   { value: 'video', label: 'Video', description: 'Movies, TV episodes, web series' },
@@ -100,11 +101,7 @@ export default function EditContentPage() {
   }, [user, contentId, universeId]);
 
   if (loading || contentLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <LoadingSpinner variant="fullscreen" message="Loading..." />;
   }
 
   if (!user) {
@@ -190,54 +187,22 @@ export default function EditContentPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                CanonCore
-              </Link>
-              <span className="text-gray-400">/</span>
-              {universe && (
-                <>
-                  <Link href={`/universes/${universe.id}`} className="text-blue-600 hover:text-blue-800">
-                    {universe.name}
-                  </Link>
-                  <span className="text-gray-400">/</span>
-                </>
-              )}
-              <Link href={`/content/${contentId}`} className="text-blue-600 hover:text-blue-800">
-                {content.name}
-              </Link>
-              <span className="text-gray-400">/</span>
-              <span className="text-gray-600">Edit</span>
-            </div>
-            <Link
-              href={`/content/${contentId}`}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Cancel
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navigation 
+        variant="detail"
+        currentPage="dashboard"
+        showNavigationMenu={true}
+      />
 
-      <main className="max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <PageContainer variant="narrow">
+        <PageHeader
+          variant="form"
+          title={`Edit Content: ${content.name}`}
+          description="Update the details of this content. Remember, only catalogue established content from real franchises."
+        />
+
         <div className="bg-white rounded-lg shadow p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Edit Content: {content.name}
-            </h1>
-            <p className="text-gray-600">
-              Update the details of this content. Remember, only catalogue established content from real franchises.
-            </p>
-          </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800">{error}</p>
-            </div>
-          )}
+          <ErrorMessage variant="form" message={error} />
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -252,7 +217,7 @@ export default function EditContentPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="e.g. Iron Man, The Eleventh Hour, Tony Stark"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
               />
             </div>
 
@@ -267,7 +232,7 @@ export default function EditContentPage() {
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Describe this content, its role in the franchise, key details..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
               />
             </div>
 
@@ -280,7 +245,7 @@ export default function EditContentPage() {
                 name="mediaType"
                 value={formData.mediaType}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
               >
                 {mediaTypeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -307,7 +272,7 @@ export default function EditContentPage() {
                 name="parentId"
                 value={selectedParentId}
                 onChange={(e) => setSelectedParentId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
               >
                 <option value="">No parent (top-level content)</option>
                 {existingContent
@@ -323,24 +288,14 @@ export default function EditContentPage() {
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
-              <Link
-                href={`/content/${contentId}`}
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-6 rounded-lg transition-colors"
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
+            <FormActions
+              variant="update"
+              cancelHref={`/content/${contentId}`}
+              isSubmitting={isSubmitting}
+            />
           </form>
         </div>
-      </main>
+      </PageContainer>
     </div>
   );
 }

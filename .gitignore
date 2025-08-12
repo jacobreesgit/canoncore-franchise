@@ -38,3 +38,6 @@ next-env.d.ts
 *.swp
 *.swo
 .firebase/service-account-key.json
+
+*storybook.log
+storybook-static

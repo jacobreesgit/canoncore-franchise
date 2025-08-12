@@ -1,13 +1,13 @@
 'use client';
 
 import { useAuth } from '@/lib/contexts/auth-context';
-import { userService, universeService } from '@/lib/services';
-import { User, Universe, Favorite } from '@/lib/types';
+import { userService, universeService, contentService } from '@/lib/services';
+import { User, Universe, Content, Favorite } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import Link from 'next/link';
-import { auth } from '@/lib/firebase';
-import { FavouriteButton } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, EmptyState, Button, UniverseCard, ProgressBar, ViewToggle, LoadingSpinner, PageContainer, CardGrid } from '@/components';
 
 export default function ProfilePage() {
   const { user: currentUser, loading } = useAuth();
@@ -19,9 +19,14 @@ export default function ProfilePage() {
   const [userUniverses, setUserUniverses] = useState<Universe[]>([]);
   const [favourites, setFavourites] = useState<Favorite[]>([]);
   const [favouriteUniverses, setFavouriteUniverses] = useState<Universe[]>([]);
+  const [favouriteContent, setFavouriteContent] = useState<Content[]>([]);
   const [profileLoading, setProfileLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'universes' | 'favourites'>('universes');
+  const [universeOwners, setUniverseOwners] = useState<Record<string, User>>({});
+
+  // Set dynamic page title
+  usePageTitle(profileUser?.displayName || 'Profile', profileUser);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -55,18 +60,60 @@ export default function ProfilePage() {
               .filter(fav => fav.targetType === 'universe')
               .map(fav => fav.targetId);
             
+            // Get content details for favourited content
+            const contentIds = userFavorites
+              .filter(fav => fav.targetType === 'content')
+              .map(fav => fav.targetId);
+            
+            // Fetch universe details
             if (universeIds.length > 0) {
               const favouriteUniverseDetails = await Promise.all(
                 universeIds.map(id => universeService.getById(id))
               );
-              setFavouriteUniverses(favouriteUniverseDetails.filter(Boolean) as Universe[]);
+              const validUniverses = favouriteUniverseDetails.filter(Boolean) as Universe[];
+              setFavouriteUniverses(validUniverses);
+              
+              // Fetch owner information for favourite universes not owned by current user
+              if (currentUser) {
+                const ownersToFetch = [...new Set(
+                  validUniverses
+                    .filter(universe => universe.userId !== currentUser.id)
+                    .map(universe => universe.userId)
+                )];
+                
+                const owners: Record<string, User> = {};
+                await Promise.all(
+                  ownersToFetch.map(async (userId) => {
+                    try {
+                      const ownerData = await userService.getById(userId);
+                      if (ownerData) {
+                        owners[userId] = ownerData;
+                      }
+                    } catch (error) {
+                      console.error(`Error fetching owner ${userId}:`, error);
+                    }
+                  })
+                );
+                setUniverseOwners(owners);
+              }
             } else {
               setFavouriteUniverses([]);
+            }
+
+            // Fetch content details
+            if (contentIds.length > 0) {
+              const favouriteContentDetails = await Promise.all(
+                contentIds.map(id => contentService.getById(id))
+              );
+              setFavouriteContent(favouriteContentDetails.filter(Boolean) as Content[]);
+            } else {
+              setFavouriteContent([]);
             }
           } catch (error) {
             console.error('Error fetching favourites:', error);
             setFavourites([]);
             setFavouriteUniverses([]);
+            setFavouriteContent([]);
           }
         }
       } catch (error) {
@@ -93,11 +140,7 @@ export default function ProfilePage() {
   }, [userId, currentUser, loading]);
 
   if (loading || profileLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <LoadingSpinner variant="fullscreen" message="Loading..." />;
   }
 
   if (!currentUser) {
@@ -107,18 +150,10 @@ export default function ProfilePage() {
 
   if (error || !profileUser) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                CanonCore
-              </Link>
-            </div>
-          </div>
-        </nav>
+      <div className="min-h-screen bg-surface-page">
+        <Navigation variant="detail" />
 
-        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <PageContainer variant="wide">
           <div className="text-center py-12">
             <div className="bg-white rounded-lg shadow p-8">
               <h3 className="text-lg font-medium text-red-600 mb-2">
@@ -132,7 +167,7 @@ export default function ProfilePage() {
               </Link>
             </div>
           </div>
-        </main>
+        </PageContainer>
       </div>
     );
   }
@@ -142,63 +177,29 @@ export default function ProfilePage() {
   const totalFavourites = favourites.length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-8">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                CanonCore
-              </Link>
-              <div className="hidden md:flex space-x-4">
-                <Link
-                  href="/"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/discover"
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                >
-                  Discover
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              {isOwnProfile && (
-                <Link
-                  href={`/profile/${userId}/edit`}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Edit Profile
-                </Link>
-              )}
-              <span className="text-gray-700">
-                {currentUser.displayName || currentUser.email}
-              </span>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-surface-page">
+      <Navigation 
+        variant="detail"
+        currentPage="profile"
+        actions={isOwnProfile ? [
+          { type: 'secondary', label: 'Edit Profile', href: `/profile/${userId}/edit` }
+        ] : []}
+        showNavigationMenu={true}
+      />
 
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="flex items-center justify-between">
+      <PageContainer variant="wide">
+        <PageHeader
+          variant="detail"
+          title={profileUser.displayName || 'Anonymous User'}
+          description={isOwnProfile ? 'Your Profile' : 'User Profile'}
+          extraContent={
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {profileUser.displayName || 'Anonymous User'}
-              </h1>
-              <p className="text-gray-600">
-                {isOwnProfile ? 'Your Profile' : 'User Profile'}
-              </p>
               {isOwnProfile && profileUser.email && (
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 mb-4">
                   {profileUser.email}
                 </p>
               )}
-              <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-6 text-sm text-gray-600">
                 <div>
                   <span className="font-medium text-gray-900">{totalUniverses}</span>
                   <span className="ml-1">Public Franchise{totalUniverses !== 1 ? 's' : ''}</span>
@@ -209,41 +210,26 @@ export default function ProfilePage() {
                     <span className="ml-1">Favourite{totalFavourites !== 1 ? 's' : ''}</span>
                   </div>
                 )}
-                <div>
-                  <span>Joined {new Date(profileUser.createdAt.toDate()).toLocaleDateString()}</span>
-                </div>
               </div>
             </div>
-          </div>
-        </div>
+          }
+          actions={isOwnProfile ? [
+            { type: 'secondary', label: 'Edit Profile', href: `/profile/${userId}/edit` }
+          ] : []}
+        />
 
         {/* Tabs */}
         <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('universes')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'universes'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Public Franchises ({totalUniverses})
-              </button>
-              {isOwnProfile && (
-                <button
-                  onClick={() => setActiveTab('favourites')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'favourites'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Favourites ({totalFavourites})
-                </button>
-              )}
-            </nav>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">Content</h2>
+            <ViewToggle
+              value={activeTab}
+              onChange={(value) => setActiveTab(value as 'universes' | 'favourites')}
+              options={[
+                { value: 'universes', label: `Public Franchises (${totalUniverses})` },
+                ...(isOwnProfile ? [{ value: 'favourites' as const, label: `Favourites (${totalFavourites})` }] : [])
+              ]}
+            />
           </div>
         </div>
 
@@ -251,137 +237,84 @@ export default function ProfilePage() {
         {activeTab === 'universes' && (
           <div>
             {userUniverses.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="bg-white rounded-lg shadow p-8">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No public franchises
-                  </h3>
-                  <p className="text-gray-600">
-                    {isOwnProfile 
-                      ? "You haven't created any public franchises yet"
-                      : "This user hasn't shared any public franchises yet"
-                    }
-                  </p>
-                </div>
-              </div>
+              <EmptyState
+                variant="default"
+                title="No public franchises"
+                description={isOwnProfile 
+                  ? "You haven't created any public franchises yet"
+                  : "This user hasn't shared any public franchises yet"
+                }
+              />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <CardGrid variant="default">
                 {userUniverses.map((universe) => (
-                  <Link
+                  <UniverseCard
                     key={universe.id}
-                    href={`/universes/${universe.id}`}
-                    className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-                  >
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-medium text-gray-900 truncate">
-                          {universe.name}
-                        </h3>
-                        <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                          Public
-                        </span>
-                      </div>
-                      {universe.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                          {universe.description}
-                        </p>
-                      )}
-                      <div className="mb-3">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                          <span>Progress</span>
-                          <span>{Math.round(universe.progress || 0)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
-                            style={{ width: `${universe.progress || 0}%` }}
-                          />
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </Link>
+                    universe={universe}
+                    href={`/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
+                    showFavourite={false}
+                    showOwner={false}
+                    showOwnerBadge={true}
+                    currentUserId={currentUser?.id}
+                  />
                 ))}
-              </div>
+              </CardGrid>
             )}
           </div>
         )}
 
         {activeTab === 'favourites' && isOwnProfile && (
           <div>
-            {favouriteUniverses.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="bg-white rounded-lg shadow p-8">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No favourites yet
-                  </h3>
-                  <p className="text-gray-600 mb-6">
-                    Start exploring franchises to add them to your favourites
-                  </p>
-                  <Link
-                    href="/discover"
-                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                  >
-                    Discover Franchises
-                  </Link>
-                </div>
-              </div>
+            {favouriteUniverses.length === 0 && favouriteContent.length === 0 ? (
+              <EmptyState
+                variant="default"
+                title="No favourites yet"
+                description="Start exploring franchises to add them to your favourites"
+                actionText="Discover Franchises"
+                actionHref="/discover"
+              />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {favouriteUniverses.map((universe) => (
-                  <div
-                    key={universe.id}
-                    className="bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-                  >
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <Link 
-                          href={`/universes/${universe.id}`}
-                          className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                        >
-                          {universe.name}
-                        </Link>
-                        <div className="flex items-center space-x-2">
-                          <FavouriteButton 
-                            targetId={universe.id} 
-                            targetType="universe"
-                            className="text-red-500 hover:text-red-600"
+              <div className="space-y-8">
+                {/* Favourite Universes */}
+                {favouriteUniverses.length > 0 && (
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-4">Favourite Universes</h2>
+                    <CardGrid variant="default">
+                      {favouriteUniverses.map((universe) => {
+                        const isOwned = currentUser && universe.userId === currentUser.id;
+                        const ownerData = universeOwners[universe.userId];
+                        
+                        return (
+                          <UniverseCard
+                            key={`universe-${universe.id}`}
+                            universe={universe}
+                            href={`/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
+                            showFavourite={true}
+                            showOwner={!isOwned && !!ownerData}
+                            ownerName={ownerData?.displayName || ownerData?.email}
+                            showOwnerBadge={true}
+                            currentUserId={currentUser?.id}
                           />
-                          <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">
-                            Public
-                          </span>
-                        </div>
-                      </div>
-                      {universe.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                          {universe.description}
-                        </p>
-                      )}
-                      <div className="mb-3">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                          <span>Progress</span>
-                          <span>{Math.round(universe.progress || 0)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
-                            style={{ width: `${universe.progress || 0}%` }}
-                          />
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Created {new Date(universe.createdAt.toDate()).toLocaleDateString()}
-                      </div>
-                    </div>
+                        );
+                      })}
+                    </CardGrid>
                   </div>
-                ))}
+                )}
+
+                {/* Favourite Content */}
+                {favouriteContent.length > 0 && (
+                  <CardGrid 
+                    variant="default"
+                    content={favouriteContent}
+                    contentHref={(content) => `/content/${content.id}?from=profile&profileId=${profileUser?.id}`}
+                    sortContent={true}
+                  />
+                )}
               </div>
             )}
           </div>
         )}
-      </main>
+      </PageContainer>
     </div>
   );
 }

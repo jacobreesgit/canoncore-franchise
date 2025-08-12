@@ -3,6 +3,7 @@
 import { useAuth } from '@/lib/contexts/auth-context';
 import { userService } from '@/lib/services';
 import { useState, useEffect } from 'react';
+import { Button } from './Button';
 
 interface FavouriteButtonProps {
   targetId: string;
@@ -74,52 +75,55 @@ export function FavouriteButton({
   // Don't show button if user not logged in
   if (!user) return null;
 
+  // Heart icon component
+  const heartIcon = (
+    <svg 
+      className={`w-5 h-5 transition-colors ${
+        isFavourited 
+          ? 'fill-red-500 text-red-500' 
+          : 'fill-none text-gray-400 hover:text-red-500'
+      }`}
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        strokeWidth={2} 
+        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+      />
+    </svg>
+  );
+
   // Show loading state while checking initial status
   if (!hasLoaded) {
     return (
-      <button 
-        disabled 
-        className={`inline-flex items-center space-x-1 opacity-50 ${className}`}
+      <Button
+        variant="clear"
+        size="small"
+        disabled
+        loading
+        icon={heartIcon}
+        className={`favourite-button ${className}`}
         aria-label="Loading favourite status"
       >
-        <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-        {showText && <span>Loading...</span>}
-      </button>
+        {showText && 'Loading...'}
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
+      variant="clear"
+      size="small"
       onClick={handleToggleFavourite}
       disabled={isLoading}
-      className={`inline-flex items-center space-x-1 transition-colors duration-200 ${
-        isLoading ? 'opacity-50' : ''
-      } ${className}`}
+      loading={isLoading}
+      icon={heartIcon}
+      className={`favourite-button ${className}`}
       aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
     >
-      <svg 
-        className={`w-5 h-5 transition-colors ${
-          isFavourited 
-            ? 'fill-red-500 text-red-500' 
-            : 'fill-none text-gray-400 hover:text-red-500'
-        }`}
-        stroke="currentColor" 
-        viewBox="0 0 24 24"
-      >
-        <path 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          strokeWidth={2} 
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
-        />
-      </svg>
-      {showText && (
-        <span className="text-sm">
-          {isFavourited ? 'Favourited' : 'Add to favourites'}
-        </span>
-      )}
-    </button>
+      {showText && (isFavourited ? 'Favourited' : 'Add to favourites')}
+    </Button>
   );
 }

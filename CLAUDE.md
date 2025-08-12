@@ -91,7 +91,7 @@ src/
 │   ├── hooks/             # Custom React hooks (empty)
 │   ├── firebase.ts        # Firebase configuration
 │   └── types.ts           # TypeScript interfaces
-└── components/            # UI components (empty)
+└── components/            # UI components (Navigation, Button, FavouriteButton)
 ```
 
 ## Routing Conventions
@@ -147,7 +147,7 @@ The application follows **hierarchical routing** that mirrors the data relations
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b + Phase 3c + Phase 3d + Phase 6a):**
+**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b + Phase 3c + Phase 3d + Phase 6a + Phase 4a-4c Navigation):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration and account selection
@@ -167,6 +167,8 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Individual User Progress** - Per-user progress tracking with UserProgress collection, same content shows different progress per user
 - **Advanced Hierarchical Content Organisation** - Infinite depth parent-child relationships, recursive tree building, expandable tree navigation, calculated progress for organisational content
 - **Polished UI & Progress Indicators** - Consistent progress bar colors (green for viewable, blue for organisational), smart progress display logic, consistent ordering across grid/tree views, conditional progress text colors
+- **Navigation Component System** - Unified Navigation component with breadcrumbs, source context support, and consistent patterns across all pages (dashboard, detail, form variants)
+- **Consistent Page Navigation** - All 10 pages (5 core + 5 form) now use standardized Navigation component with proper breadcrumbs and actions
 
 **Next Implementation Phases (see todo.md):**
 4. **Phase 4a-4d: UI Components & Design System** - Design system foundation, core pages consistency, form pages consistency, responsive design
@@ -258,6 +260,32 @@ interface Content {
 - **NEVER** allow creation of original fictional content
 - **NEVER** provide tools for creating new characters, stories, or fictional elements
 - Users can only catalogue and organise existing, established franchise properties
+
+## Component System (Phase 4a-4c Complete)
+
+### Navigation Component
+Unified navigation system with consistent patterns across all pages:
+
+```typescript
+import { Navigation } from '@/components';
+
+// All pages use dashboard variant for consistency
+<Navigation 
+  variant="dashboard" 
+  currentPage="dashboard" 
+  showNavigationMenu={true} 
+/>
+```
+
+**Navigation Features:**
+- **Simplified structure**: Logo | nav buttons | sign out for all pages
+- **Authentication integration**: Automatic user state handling
+- **Consistent pattern**: Same navigation across dashboard, detail, and form pages
+
+**PageHeader handles contextual elements:**
+- **Breadcrumbs**: Moved from Navigation to PageHeader for better hierarchy display
+- **Action buttons**: Page-specific actions are now in PageHeader, not Navigation
+- **Page context**: Title, description, and metadata handled by PageHeader
 
 ## Service Layer (Phase 1 Complete)
 

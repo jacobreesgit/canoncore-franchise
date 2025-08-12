@@ -3,10 +3,14 @@
 import { useAuth } from '@/lib/contexts/auth-context';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Link from 'next/link';
+import { usePageTitle } from '@/lib/hooks/usePageTitle';
+import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, PageContainer } from '@/components';
 
 export default function EditProfilePage() {
   const { user, loading, updateDisplayName } = useAuth();
+  
+  // Set page title
+  usePageTitle('Edit Profile');
   const params = useParams();
   const router = useRouter();
   const userId = params.userId as string;
@@ -26,11 +30,7 @@ export default function EditProfilePage() {
   }, [user]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <LoadingSpinner variant="fullscreen" message="Loading..." />;
   }
 
   if (!user) {
@@ -73,54 +73,30 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                CanonCore
-              </Link>
-              <span className="text-gray-400">/</span>
-              <Link href={`/profile/${userId}`} className="text-blue-600 hover:text-blue-800">
-                Profile
-              </Link>
-              <span className="text-gray-400">/</span>
-              <span className="text-gray-600">Edit</span>
-            </div>
-            <Link
-              href={`/profile/${userId}`}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Cancel
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-surface-page">
+      <Navigation 
+        variant="detail"
+        currentPage="dashboard"
+        showNavigationMenu={true}
+      />
 
-      <main className="max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Edit Profile
-            </h1>
-            <p className="text-gray-600">
-              Update your profile information.
-            </p>
-          </div>
+      <PageContainer variant="narrow">
+        <PageHeader
+          variant="form"
+          title="Edit Profile"
+          description="Update your profile information."
+        />
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800">{error}</p>
-            </div>
-          )}
+        <div className="bg-surface-card rounded-lg shadow p-6">
+
+          <ErrorMessage variant="form" message={error} />
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="displayName">
                 Display Name *
-              </label>
-              <input
+              </FormLabel>
+              <FormInput
                 type="text"
                 id="displayName"
                 name="displayName"
@@ -128,31 +104,20 @@ export default function EditProfilePage() {
                 value={formData.displayName}
                 onChange={handleInputChange}
                 placeholder="Enter your display name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-tertiary">
                 This is how your name will appear to other users.
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
-              <Link
-                href={`/profile/${userId}`}
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-6 rounded-lg transition-colors"
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
+            <FormActions
+              variant="update"
+              cancelHref={`/profile/${userId}`}
+              isSubmitting={isSubmitting}
+            />
           </form>
         </div>
-      </main>
+      </PageContainer>
     </div>
   );
 }

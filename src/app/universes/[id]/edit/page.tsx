@@ -6,6 +6,7 @@ import { Universe } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, FormTextarea, PageContainer } from '@/components';
 
 export default function EditUniversePage() {
   const { user, loading } = useAuth();
@@ -61,11 +62,7 @@ export default function EditUniversePage() {
   }, [user, universeId]);
 
   if (loading || universeLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <LoadingSpinner variant="fullscreen" message="Loading..." />;
   }
 
   if (!user) {
@@ -77,10 +74,10 @@ export default function EditUniversePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 text-lg mb-4">{error}</div>
+          <div className="text-danger text-lg mb-4">{error}</div>
           <Link 
             href="/" 
-            className="text-blue-600 hover:text-blue-800 underline"
+            className="text-link hover:text-link-hover underline"
           >
             Return to Dashboard
           </Link>
@@ -122,54 +119,30 @@ export default function EditUniversePage() {
   if (!universe) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                CanonCore
-              </Link>
-              <span className="text-gray-400">/</span>
-              <Link href={`/universes/${universeId}`} className="text-blue-600 hover:text-blue-800">
-                {universe.name}
-              </Link>
-              <span className="text-gray-400">/</span>
-              <span className="text-gray-600">Edit</span>
-            </div>
-            <Link
-              href={`/universes/${universeId}`}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Cancel
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-surface-page">
+      <Navigation 
+        variant="detail"
+        currentPage="dashboard"
+        showNavigationMenu={true}
+      />
 
-      <main className="max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Edit Franchise: {universe.name}
-            </h1>
-            <p className="text-gray-600">
-              Update the details of your franchise. Remember, only catalogue established fictional universes.
-            </p>
-          </div>
+      <PageContainer variant="narrow">
+        <PageHeader
+          variant="form"
+          title={`Edit Franchise: ${universe.name}`}
+          description="Update the details of your franchise. Remember, only catalogue established fictional universes."
+        />
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-800">{error}</p>
-            </div>
-          )}
+        <div className="bg-surface-card rounded-lg shadow p-6">
+
+          <ErrorMessage variant="form" message={error} />
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="name">
                 Franchise Name *
-              </label>
-              <input
+              </FormLabel>
+              <FormInput
                 type="text"
                 id="name"
                 name="name"
@@ -177,52 +150,48 @@ export default function EditUniversePage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="e.g. Marvel Cinematic Universe, Doctor Who, Star Wars"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="description">
                 Description
-              </label>
-              <textarea
+              </FormLabel>
+              <FormTextarea
                 id="description"
                 name="description"
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Describe this franchise universe and what content you plan to catalogue..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label htmlFor="sourceLink" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="sourceLink">
                 Source Link (Optional)
-              </label>
-              <input
+              </FormLabel>
+              <FormInput
                 type="url"
                 id="sourceLink"
                 name="sourceLink"
                 value={formData.sourceLink}
                 onChange={handleInputChange}
                 placeholder="https://example.com/franchise-info"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label htmlFor="sourceLinkName" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="sourceLinkName">
                 Source Name (Optional)
-              </label>
-              <input
+              </FormLabel>
+              <FormInput
                 type="text"
                 id="sourceLinkName"
                 name="sourceLinkName"
                 value={formData.sourceLinkName}
                 onChange={handleInputChange}
                 placeholder="e.g. Official Website, Wiki, IMDb"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
@@ -233,31 +202,21 @@ export default function EditUniversePage() {
                 name="isPublic"
                 checked={formData.isPublic}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)] border-input rounded"
               />
-              <label htmlFor="isPublic" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="isPublic" className="ml-2 block text-sm text-primary">
                 Make this franchise public for others to discover
               </label>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
-              <Link
-                href={`/universes/${universeId}`}
-                className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-6 rounded-lg transition-colors"
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
+            <FormActions
+              variant="update"
+              cancelHref={`/universes/${universeId}`}
+              isSubmitting={isSubmitting}
+            />
           </form>
         </div>
-      </main>
+      </PageContainer>
     </div>
   );
 }

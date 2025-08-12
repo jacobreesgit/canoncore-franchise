@@ -1,8 +1,292 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3b82f6;
-  --color-secondary: #8b5cf6; 
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
+  /* 
+   * CanonCore Design System
+   * Custom properties following Tailwind CSS v4 @theme syntax
+   * Based on design tokens in src/design-system/tokens.js
+   */
+
+  /* Color primitives */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  --color-green-100: #dcfce7;
+  --color-green-600: #16a34a;
+  --color-green-800: #166534;
+
+  --color-red-50: #fef2f2;
+  --color-red-200: #fecaca;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+
+  --color-white: #ffffff;
+
+  /* Semantic color tokens */
+  --color-surface-page: var(--color-gray-50);
+  --color-surface-card: var(--color-white);
+  --color-surface-card-hover: var(--color-gray-100);
+  --color-surface-input: var(--color-white);
+
+  --color-interactive-primary: var(--color-blue-600);
+  --color-interactive-primary-hover: var(--color-blue-700);
+  --color-interactive-secondary: var(--color-gray-100);
+  --color-interactive-secondary-hover: var(--color-gray-200);
+  --color-interactive-danger: var(--color-red-600);
+  --color-interactive-danger-hover: var(--color-red-700);
+
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-on-primary: var(--color-white);
+  --color-text-link: var(--color-blue-600);
+  --color-text-link-hover: var(--color-blue-800);
+  --color-text-danger: var(--color-red-600);
+
+  --color-border-default: var(--color-gray-200);
+  --color-border-input: var(--color-gray-300);
+  --color-border-focus: var(--color-blue-600);
+  --color-border-error: var(--color-red-200);
+
+  --color-status-progress-track: var(--color-gray-200);
+  --color-status-progress-viewable: var(--color-green-600);
+  --color-status-progress-organisational: var(--color-blue-600);
+  --color-status-success-background: var(--color-green-100);
+  --color-status-success-text: var(--color-green-800);
+  --color-status-info-background: var(--color-blue-100);
+  --color-status-info-text: var(--color-blue-800);
+  --color-status-error-background: var(--color-red-50);
+
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1rem;
+  --line-height-snug: 1.25rem;
+  --line-height-normal: 1.5rem;
+  --line-height-relaxed: 1.75rem;
+  --line-height-loose: 2rem;
+  --line-height-3xl: 2.25rem;
+
+  /* Spacing */
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-16: 4rem;
+
+  /* Border radius */
+  --border-radius-lg: 0.5rem;
+  --border-radius-full: 9999px;
+
+  /* Container max widths */
+  --max-width-md: 28rem;
+  --max-width-2xl: 42rem;
+  --max-width-4xl: 56rem;
+  --max-width-7xl: 80rem;
+
+  /* Component tokens */
+  /* Button component */
+  --button-primary-background: var(--color-interactive-primary);
+  --button-primary-background-hover: var(--color-interactive-primary-hover);
+  --button-primary-text: var(--color-text-on-primary);
+  --button-primary-padding-y: var(--spacing-2);
+  --button-primary-padding-x: var(--spacing-4);
+  --button-primary-border-radius: var(--border-radius-lg);
+
+  --button-secondary-background: var(--color-interactive-secondary);
+  --button-secondary-background-hover: var(--color-interactive-secondary-hover);
+  --button-secondary-text: var(--color-text-primary);
+  --button-secondary-padding-y: var(--spacing-2);
+  --button-secondary-padding-x: var(--spacing-4);
+
+  --button-danger-background: var(--color-interactive-danger);
+  --button-danger-background-hover: var(--color-interactive-danger-hover);
+  --button-danger-text: var(--color-text-on-primary);
+
+  --button-clear-background: transparent;
+  --button-clear-background-hover: var(--color-interactive-secondary);
+  --button-clear-text: var(--color-text-secondary);
+  --button-clear-text-hover: var(--color-text-primary);
+
+  /* Size variants */
+  --button-small-padding-y: var(--spacing-1);
+  --button-small-padding-x: var(--spacing-2);
+  --button-large-padding-y: var(--spacing-3);
+  --button-large-padding-x: var(--spacing-6);
+
+  /* Card component */
+  --card-background: var(--color-surface-card);
+  --card-padding: var(--spacing-6);
+  --card-border-radius: var(--border-radius-lg);
+
+  /* Form component */
+  --form-input-background: var(--color-surface-input);
+  --form-input-border: var(--color-border-input);
+  --form-input-border-focus: var(--color-border-focus);
+  --form-input-padding: var(--spacing-3);
+  --form-input-border-radius: var(--border-radius-lg);
+
+  /* Navigation component */
+  --nav-background: var(--color-surface-card);
+  --nav-height: var(--spacing-16);
+  --nav-text: var(--color-text-primary);
+  --nav-link: var(--color-text-link);
+  --nav-link-hover: var(--color-text-link-hover);
+
+  /* Progress component */
+  --progress-track: var(--color-status-progress-track);
+  --progress-viewable: var(--color-status-progress-viewable);
+  --progress-organisational: var(--color-status-progress-organisational);
+
+  /* Badge component */
+  --badge-success-background: var(--color-status-success-background);
+  --badge-success-text: var(--color-status-success-text);
+  --badge-info-background: var(--color-status-info-background);
+  --badge-info-text: var(--color-status-info-text);
+  --badge-border-radius: var(--border-radius-full);
+
+  /* Layout tokens */
+  --layout-page-background: var(--color-surface-page);
+  --layout-page-max-width: var(--max-width-7xl);
+  --layout-section-gap: var(--spacing-8);
+  --layout-element-gap: var(--spacing-6);
+}
+
+/* Custom utility classes using design tokens */
+@layer utilities {
+  /* Button base classes */
+  .btn-base {
+    @apply inline-flex items-center justify-center font-medium transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed;
+    border-radius: var(--button-primary-border-radius);
+  }
+
+  .btn-primary {
+    background-color: var(--button-primary-background);
+    color: var(--button-primary-text);
+    padding: var(--button-primary-padding-y) var(--button-primary-padding-x);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--button-primary-background-hover);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+  }
+
+  .btn-secondary {
+    background-color: var(--button-secondary-background);
+    color: var(--button-secondary-text);
+    padding: var(--button-secondary-padding-y) var(--button-secondary-padding-x);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--button-secondary-background-hover);
+  }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+  }
+
+  .btn-danger {
+    background-color: var(--button-danger-background);
+    color: var(--button-danger-text);
+    padding: var(--button-primary-padding-y) var(--button-primary-padding-x);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--button-danger-background-hover);
+  }
+  .btn-danger:disabled {
+    opacity: 0.5;
+  }
+
+  .btn-clear {
+    background-color: var(--button-clear-background);
+    color: var(--button-clear-text);
+    padding: var(--button-primary-padding-y) var(--button-primary-padding-x);
+    border: none;
+    box-shadow: none;
+  }
+  .btn-clear:hover:not(:disabled) {
+    background-color: var(--button-clear-background-hover);
+    color: var(--button-clear-text-hover);
+  }
+  .btn-clear:disabled {
+    opacity: 0.5;
+  }
+
+  /* Size variants */
+  .btn-small {
+    padding: var(--button-small-padding-y) var(--button-small-padding-x);
+    @apply text-sm;
+  }
+  .btn-large {
+    padding: var(--button-large-padding-y) var(--button-large-padding-x);
+    @apply text-base;
+  }
+
+  /* Typography classes using tokens */
+  .text-primary { color: var(--color-text-primary); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .text-tertiary { color: var(--color-text-tertiary); }
+  .text-on-primary { color: var(--color-text-on-primary); }
+  .text-link { color: var(--color-text-link); }
+  .text-link:hover { color: var(--color-text-link-hover); }
+  .text-danger { color: var(--color-text-danger); }
+
+  /* Background classes using tokens */
+  .bg-surface-page { background-color: var(--layout-page-background); }
+  .bg-surface-card { background-color: var(--card-background); }
+  .bg-surface-card:hover { background-color: var(--color-surface-card-hover); }
+  .bg-surface-card.no-hover:hover { background-color: var(--card-background); }
+
+  /* Border classes using tokens */
+  .border-default { border-color: var(--color-border-default); }
+  .border-input { border-color: var(--form-input-border); }
+  .border-focus { border-color: var(--form-input-border-focus); }
+
+  /* Card component */
+  .card {
+    background-color: var(--card-background);
+    padding: var(--card-padding);
+    border-radius: var(--card-border-radius);
+    @apply shadow;
+  }
+
+  /* Form input */
+  .input {
+    background-color: var(--form-input-background);
+    border: 1px solid var(--form-input-border);
+    border-radius: var(--form-input-border-radius);
+    padding: var(--form-input-padding);
+    @apply w-full focus:ring-2 focus:ring-offset-0;
+  }
+  .input:focus {
+    border-color: var(--form-input-border-focus);
+    --tw-ring-color: var(--form-input-border-focus);
+  }
 }
