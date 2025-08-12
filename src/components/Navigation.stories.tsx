@@ -64,7 +64,7 @@ export const UniverseDetail: Story = {
   args: {
     variant: 'dashboard',
     showNavigationMenu: true,
-    currentPage: 'universe-detail',
+    currentPage: 'dashboard',
   },
 };
 
@@ -72,6 +72,6 @@ export const ContentDetail: Story = {
   args: {
     variant: 'dashboard',
     showNavigationMenu: true,
-    currentPage: 'content',
+    currentPage: 'dashboard',
   },
 };

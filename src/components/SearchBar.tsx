@@ -4,7 +4,7 @@ import React from 'react';
  * SearchBar component following the component creation guide
  */
 
-export interface SearchBarProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface SearchBarProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'value' | 'onChange'> {
   /** SearchBar variant */
   variant?: 'default' | 'large';
   /** Component size */
@@ -70,8 +70,8 @@ export function SearchBar({
     .trim();
 
   const inputClasses = variant === 'large' 
-    ? 'w-full px-4 py-3 pl-12 border border-input rounded-lg text-lg focus:ring-2 focus:border-focus'
-    : 'w-full px-4 py-2 pl-10 border border-input rounded-lg focus:ring-2 focus:border-focus';
+    ? 'w-full px-4 py-3 pl-12 border border-input rounded-lg text-base sm:text-lg focus:ring-2 focus:border-focus min-h-[44px]'
+    : 'w-full px-4 py-2 pl-10 border border-input rounded-lg text-base focus:ring-2 focus:border-focus min-h-[40px]';
 
   const iconClasses = variant === 'large'
     ? 'absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'

@@ -132,7 +132,7 @@ export default function DiscoverPage() {
                     href={`/universes/${universe.id}?from=discover`}
                     showFavourite={user ? true : false}
                     showOwner={!isOwned && !!ownerData}
-                    ownerName={ownerData?.displayName || ownerData?.email}
+                    ownerName={ownerData?.displayName || ownerData?.email || 'Unknown User'}
                     showOwnerBadge={true}
                     currentUserId={user?.id}
                   />

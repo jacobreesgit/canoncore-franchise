@@ -104,12 +104,12 @@ export function DeleteConfirmationModal({
           Are you sure you want to delete &ldquo;{itemName}&rdquo;? This action cannot be undone
           {warningMessage && `. ${warningMessage}`}.
         </p>
-        <div className="flex justify-end space-x-3">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <Button
             variant="secondary"
             onClick={onCancel}
             disabled={isDeleting}
-            className="bg-transparent hover:bg-transparent text-secondary hover:text-primary p-0"
+            className="bg-transparent hover:bg-transparent text-secondary hover:text-primary p-0 w-full sm:w-auto text-center sm:text-left"
           >
             Cancel
           </Button>
@@ -117,6 +117,7 @@ export function DeleteConfirmationModal({
             variant="danger"
             onClick={onConfirm}
             disabled={isDeleting}
+            className="w-full sm:w-auto"
           >
             {isDeleting ? 'Deleting...' : deleteButtonText}
           </Button>

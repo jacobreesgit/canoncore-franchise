@@ -6,7 +6,7 @@ import { ContentCard } from './ContentCard';
  * CardGrid component following the component creation guide
  */
 
-export interface CardGridProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardGridProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'content'> {
   /** CardGrid variant */
   variant?: 'default' | 'compact' | 'wide';
   /** Component size */

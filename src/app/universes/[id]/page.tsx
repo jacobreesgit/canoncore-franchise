@@ -139,7 +139,7 @@ export default function UniversePage() {
             { label: universe.name, isCurrentPage: true }
           ]}
           metadata={
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <FavouriteButton 
                 targetId={universe.id} 
                 targetType="universe"
@@ -172,7 +172,7 @@ export default function UniversePage() {
             <div>
               {universe.sourceLink && (
                 <div className="mb-4 p-3 bg-[var(--color-status-info-background)] border border-blue-200 rounded-lg">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <svg className="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 2l6 6m0 0l-3-3m3 3l-3 3" />
                     </svg>
@@ -211,7 +211,7 @@ export default function UniversePage() {
         ) : (
           <div className="space-y-8">
             {/* View Mode Toggle */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
               <h2 className="text-xl font-bold text-primary">Content</h2>
               <ViewToggle
                 value={viewMode}

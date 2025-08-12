@@ -184,17 +184,17 @@ export function PageHeader({
     if (breadcrumbs.length === 0) return null;
     
     return (
-      <nav className="mb-2">
-        <ol className="flex items-center space-x-2 text-sm text-secondary">
+      <nav className="mb-2 overflow-x-auto">
+        <ol className="flex items-center space-x-2 text-sm text-secondary min-w-max">
           {breadcrumbs.map((crumb, index) => (
-            <li key={index} className="flex items-center">
+            <li key={index} className="flex items-center whitespace-nowrap">
               {index > 0 && (
-                <span className="text-gray-400 mr-2">/</span>
+                <span className="text-tertiary mr-2">/</span>
               )}
               {crumb.href && !crumb.isCurrentPage ? (
                 <a
                   href={crumb.href}
-                  className="text-link"
+                  className="text-link hover:text-link-hover transition-colors"
                 >
                   {crumb.label}
                 </a>
@@ -220,7 +220,7 @@ export function PageHeader({
             <p className="text-secondary mt-1">{description}</p>
           )}
           {actions.length > 0 && (
-            <div className="flex items-center space-x-4 mt-4">
+            <div className="flex flex-wrap items-center gap-2 mt-4">
               {renderActions()}
             </div>
           )}
@@ -239,17 +239,17 @@ export function PageHeader({
     return (
       <div className={containerClasses} {...props}>
         {renderBreadcrumbs()}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-4 md:space-y-0">
           <div>
             <h1 className={getTitleClasses()}>{title}</h1>
             {metadata && (
-              <div className="flex items-center space-x-4 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 {metadata}
               </div>
             )}
           </div>
           {actions.length > 0 && (
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2 md:space-x-2">
               {renderActions()}
             </div>
           )}
@@ -293,7 +293,7 @@ export function PageHeader({
         )}
         {actions.length > 0 && (
           <div className="flex justify-center mt-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               {renderActions()}
             </div>
           </div>

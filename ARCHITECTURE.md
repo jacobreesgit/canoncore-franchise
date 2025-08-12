@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 3d plus Phase 6a plus Phase 4a-4c with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, polished UI with consistent progress indicators, and unified Navigation component system across all pages.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 4d with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with reusable UI components, and unified Navigation component system across all pages.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -20,21 +20,29 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │                    Client (Next.js 15 App)                     │
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
-│  │    Pages    │  │ Components  │  │  Contexts   │             │
-│  │             │  │             │  │             │             │
-│  │ page.tsx    │  │ Navigation  │  │ AuthContext │             │
-│  │ (Dashboard) │  │ Button      │  │ - User mgmt │             │
-│  │ layout.tsx  │  │ Favourite   │  │ - Sign in/  │             │
-│  │ universes/  │  │ Button      │  │   out       │             │
-│  │ content/    │  │             │  │             │             │
-│  │ discover/   │  │             │  │             │             │
-│  │ profile/    │  │             │  │             │             │
-│  │ Forms       │  │             │  │             │             │
+│  │    Pages    │  │Design System│  │  Contexts   │             │
+│  │             │  │(17 Components)│  │             │             │
+│  │ Dashboard   │  │ Navigation  │  │ AuthContext │             │
+│  │ Universe    │  │ Button      │  │ - User mgmt │             │
+│  │ Content     │  │ PageHeader  │  │ - Sign in/  │             │
+│  │ Discovery   │  │ CardGrid    │  │   out       │             │
+│  │ Profile     │  │ FormInput   │  │             │             │
+│  │ Forms (5)   │  │ SearchBar   │  │             │             │
+│  │             │  │ + 11 more   │  │             │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                           │                │                    │
-├───────────────────────────┼────────────────┼────────────────────┤
-│      Service Layer        │                │                    │
-│     (IMPLEMENTED)         ▼                ▼                    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Design System Foundation                   │   │
+│  │                                                         │   │
+│  │  • CSS Custom Properties (Design Tokens)               │   │
+│  │  • Consistent Component Patterns                       │   │
+│  │  • Responsive Mobile-First Design                      │   │
+│  │  • Storybook Documentation                             │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+├───────────────────────────┼─────────────────────────────────────┤
+│      Service Layer        │                                     │
+│     (COMPLETE)            ▼                                     │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │              Franchise Services                         │   │
 │  │                                                         │   │
@@ -61,33 +69,48 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │  │ JWT tokens  │  │ - content   │                              │
 │  │             │  │ - favourites│                              │
 │  │             │  │ - relations │                              │
+│  │             │  │ - userProgress                             │
 │  └─────────────┘  └─────────────┘                              │
 └─────────────────────────────────────────────────────────────────┘
 
 Current Data Flow:
-User Action → AuthContext → Service Layer → Firestore → UI Update
+User Action → Design System Components → Service Layer → Firestore → UI Update
 Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
+Design: Component Props → Design Tokens → Consistent Styling → Responsive UI
 ```
 
 ## Component Structure (Current State)
 
-### Implemented Components (Phase 4a-4c Navigation Complete)
+### Implemented Components (Phase 4a-4d Complete)
 
 #### Component Library (src/components/)
-- **`Navigation.tsx`**: Unified navigation component with breadcrumb system (Phase 4a-4c)
-  - Responsibilities: Consistent navigation across all pages, breadcrumb hierarchy, source context
+- **`Navigation.tsx`**: Unified navigation component with responsive design system (Phase 4a-4d)
+  - Responsibilities: Consistent navigation across all pages, mobile responsive design, hamburger menu
   - Variants: `dashboard` (full nav menu), `detail` (breadcrumbs), `form` (form navigation)
-  - Features: Authentication integration, action buttons, source context breadcrumbs
-  - Used by: All 10 pages (5 core + 5 form pages)
+  - Features: Authentication integration, mobile hamburger menu, responsive breakpoints, React-based screen detection
+  - Used by: All 10 pages (5 core + 5 form pages) with full responsive support
 
-- **`Button.tsx`**: Reusable button component with consistent styling
-  - Variants: primary, secondary, danger, text
-  - Features: Loading states, disabled states, size variants
-  - Integration: Used by Navigation component and forms
+- **Design System Components (Phase 4a-4d)**:
+  - **`Button.tsx`**: Reusable button component with variants (primary, secondary, danger, text)
+  - **`Badge.tsx`**: Status badges for public/private and ownership labels
+  - **`CardGrid.tsx`**: Responsive grid layout with automatic content sorting
+  - **`ContentCard.tsx`**: Content display cards with progress indicators
+  - **`UniverseCard.tsx`**: Universe display cards with progress tracking
+  - **`DeleteConfirmationModal.tsx`**: Consistent delete confirmation patterns
+  - **`EmptyState.tsx`**: Empty state with call-to-action patterns
+  - **`ErrorMessage.tsx`**: Form error display component
+  - **`FormActions.tsx`**: Cancel Link + Submit button pairs
+  - **`FormInput.tsx`**: Standardised form input component
+  - **`FormLabel.tsx`**: Consistent form label styling
+  - **`FormTextarea.tsx`**: Textarea component with consistent styling
+  - **`LoadingSpinner.tsx`**: Loading state component
+  - **`PageContainer.tsx`**: Consistent page layout wrapper
+  - **`PageHeader.tsx`**: Page titles with breadcrumbs and actions
+  - **`ProgressBar.tsx`**: Progress visualization component
+  - **`SearchBar.tsx`**: Search functionality component
+  - **`ViewToggle.tsx`**: Toggle component for view switching
+  - **`FavouriteButton.tsx`**: Favouriting functionality component
 
-- **`FavouriteButton.tsx`**: Favouriting functionality component
-  - Responsibilities: Universe and content favouriting with state management
-  - Features: Heart icon toggle, optimistic updates, error handling
 
 #### Layout Layer
 - **`app/layout.tsx`**: Root layout with AuthProvider wrapper
@@ -172,14 +195,21 @@ All services include:
 - British English spelling throughout
 - Full TypeScript type safety
 
-### Not Yet Implemented
+### Design System Foundation (Phase 4a-4d Complete)
 
-#### Component Library (Remaining - Phase 4: UI Components)
-- **Form Action Patterns**: Cancel Link + Submit button pairs
-- **Page Header Components**: Title + description + action button layouts
-- **Modal Components**: Consistent delete confirmation and edit modals
-- **Card Components**: Universe cards, content cards with consistent styling
-- **Empty State Components**: Message + call-to-action button patterns
+#### Design System Structure
+- **`src/design-system/`**: Complete design system documentation and tokens
+  - **`tokens.js`**: CSS custom properties for colors, spacing, typography
+  - **`COMPONENT_CREATION_GUIDE.md`**: Guidelines for creating components
+  - **`README.md`**: Design system overview and usage patterns
+
+#### Component Patterns Established
+- **Form Patterns**: Consistent Cancel Link + Submit button pairs across all forms
+- **Page Layout**: Standardised PageContainer + PageHeader patterns
+- **Navigation**: Unified breadcrumb and action button patterns
+- **Cards**: Consistent Universe and Content card layouts with progress
+- **States**: Loading, error, and empty state patterns
+- **Interactive Elements**: Buttons, toggles, and form controls with design tokens
 
 ## Data Model (Current State)
 
@@ -298,55 +328,92 @@ canoncore/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── layout.tsx         # Root layout with AuthProvider
-│   │   ├── page.tsx           # Franchise dashboard with Navigation component (Phase 2a/3c/4b)
+│   │   ├── page.tsx           # Franchise dashboard with design system components
 │   │   ├── globals.css        # Global styles with Tailwind CSS v4
 │   │   ├── content/
 │   │   │   └── [id]/
-│   │   │       └── page.tsx   # Content detail with Navigation + breadcrumbs (Phase 2b/3c/4b)
+│   │   │       └── page.tsx   # Content detail with complete design system
 │   │   ├── discover/
-│   │   │   └── page.tsx       # Public discovery with Navigation component (Phase 2b/4b)
+│   │   │   └── page.tsx       # Public discovery with SearchBar and CardGrid
 │   │   ├── profile/
 │   │   │   └── [userId]/
-│   │   │       ├── page.tsx   # User profile with Navigation + breadcrumbs (Phase 2b/4b)
+│   │   │       ├── page.tsx   # User profile with ViewToggle and favourites
 │   │   │       └── edit/
-│   │   │           └── page.tsx # Profile edit with Navigation form variant (Phase 3b/4c)
+│   │   │           └── page.tsx # Profile edit with form components
 │   │   └── universes/
 │   │       ├── create/
-│   │       │   └── page.tsx   # Universe creation with Navigation form variant (Phase 3a/4c)
+│   │       │   └── page.tsx   # Universe creation with form design system
 │   │       └── [id]/
-│   │           ├── page.tsx   # Universe detail with Navigation + breadcrumbs (Phase 2a/3c/4b)
+│   │           ├── page.tsx   # Universe detail with ViewToggle and CardGrid
 │   │           ├── edit/
-│   │           │   └── page.tsx # Universe edit with Navigation form variant (Phase 3b/4c)
+│   │           │   └── page.tsx # Universe edit with design system forms
 │   │           └── content/
 │   │               ├── create/
-│   │               │   └── page.tsx # Content creation with Navigation form variant (Phase 3a/3c/4c)
+│   │               │   └── page.tsx # Content creation with complete form system
 │   │               └── [contentId]/
 │   │                   └── edit/
-│   │                       └── page.tsx # Content edit with Navigation form variant (Phase 3b/4c)
+│   │                       └── page.tsx # Content edit with form design system
 │   ├── lib/
 │   │   ├── contexts/
 │   │   │   └── auth-context.tsx    # Authentication context with account selection
-│   │   ├── services/               # Service layer (Phase 1/3c)
+│   │   ├── services/               # Complete service layer
 │   │   │   ├── universe.service.ts # Franchise CRUD + user-specific progress
 │   │   │   ├── content.service.ts  # Episodes/movies/characters + user progress
 │   │   │   ├── user.service.ts     # Favourites and profiles
 │   │   │   ├── relationship.service.ts # Content hierarchies + tree building
-│   │   │   ├── user-progress.service.ts # Individual user progress tracking (Phase 3c)
+│   │   │   ├── user-progress.service.ts # Individual user progress tracking
 │   │   │   └── index.ts            # Service exports
-│   │   ├── hooks/                  # Custom React hooks (empty)
+│   │   ├── hooks/                  # Custom React hooks
+│   │   │   ├── usePageTitle.ts     # Page title management hook
+│   │   │   └── useScreenSize.ts    # Screen size detection with Tailwind breakpoints
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions + UserProgress interface
-│   ├── components/                 # UI components (Phase 4a-4c)
-│   │   ├── Navigation.tsx         # Unified navigation with breadcrumbs + source context (Phase 4a-4c)
-│   │   ├── Navigation.stories.tsx # Storybook stories for Navigation component
-│   │   ├── Button.tsx             # Reusable button component with variants
-│   │   ├── Button.stories.tsx     # Storybook stories for Button component
-│   │   ├── FavouriteButton.tsx    # Favouriting functionality component (Phase 3d)
+│   ├── components/                 # Complete design system (Phase 4a-4d)
+│   │   ├── Badge.tsx              # Status badges with Storybook stories
+│   │   ├── Badge.stories.tsx      
+│   │   ├── Button.tsx             # Primary button component with variants
+│   │   ├── Button.stories.tsx     
+│   │   ├── CardGrid.tsx           # Responsive grid with content sorting
+│   │   ├── CardGrid.stories.tsx   
+│   │   ├── ContentCard.tsx        # Content display cards with progress
+│   │   ├── ContentCard.stories.tsx
+│   │   ├── DeleteConfirmationModal.tsx # Consistent delete patterns
+│   │   ├── DeleteConfirmationModal.stories.tsx
+│   │   ├── EmptyState.tsx         # Empty state with CTA patterns
+│   │   ├── EmptyState.stories.tsx 
+│   │   ├── ErrorMessage.tsx       # Form error display
+│   │   ├── ErrorMessage.stories.tsx
+│   │   ├── FavouriteButton.tsx    # Favouriting functionality
+│   │   ├── FavouriteButton.stories.tsx
+│   │   ├── FormActions.tsx        # Cancel + Submit button pairs
+│   │   ├── FormActions.stories.tsx
+│   │   ├── FormInput.tsx          # Standardised form inputs
+│   │   ├── FormInput.stories.tsx  
+│   │   ├── FormLabel.tsx          # Consistent form labels
+│   │   ├── FormLabel.stories.tsx  
+│   │   ├── FormTextarea.tsx       # Textarea with consistent styling
+│   │   ├── FormTextarea.stories.tsx
+│   │   ├── LoadingSpinner.tsx     # Loading state component
+│   │   ├── LoadingSpinner.stories.tsx
+│   │   ├── Navigation.tsx         # Unified navigation system
+│   │   ├── Navigation.stories.tsx 
+│   │   ├── PageContainer.tsx      # Consistent page layout wrapper
+│   │   ├── PageContainer.stories.tsx
+│   │   ├── PageHeader.tsx         # Page titles with breadcrumbs
+│   │   ├── PageHeader.stories.tsx 
+│   │   ├── ProgressBar.tsx        # Progress visualization
+│   │   ├── ProgressBar.stories.tsx
+│   │   ├── SearchBar.tsx          # Search functionality
+│   │   ├── SearchBar.stories.tsx  
+│   │   ├── UniverseCard.tsx       # Universe display cards
+│   │   ├── UniverseCard.stories.tsx
+│   │   ├── ViewToggle.tsx         # View switching component
+│   │   ├── ViewToggle.stories.tsx 
 │   │   └── index.ts               # Component exports
-│   ├── design-system/              # Design system documentation and tokens
-│   │   ├── COMPONENT_CREATION_GUIDE.md # Guide for creating design system components
+│   ├── design-system/              # Design system foundation
+│   │   ├── COMPONENT_CREATION_GUIDE.md # Component creation guidelines
 │   │   ├── README.md              # Design system overview
-│   │   └── tokens.js              # Design system tokens (colors, spacing, typography)
+│   │   └── tokens.js              # Design tokens (colors, spacing, typography)
 │   └── styles/                     # Additional styles (empty)
 ├── public/                         # Static assets (Firebase hosting files)
 │   ├── 404.html                   # Firebase 404 page
@@ -459,33 +526,36 @@ canoncore/
 - Users can favourite/unfavourite their own and other users' universes and content
 - Profile page displays favourites with tabbed interface
 
-### Phase 4a: Design System Foundation (COMPLETE - Navigation)
-- ✅ **Navigation Component System**: Created unified Navigation component with breadcrumb support and source context
-- ☐ Replace hardcoded buttons with Button component throughout codebase
-- ☐ Form Actions Pattern: Cancel Link + Submit button pairs with consistent styling
-- ☐ Page Headers with Action Buttons: Title + description + action button patterns
-- ☐ Delete Confirmation Modals: Same modal structure with Cancel/Delete button pairs
-- ☐ Empty State with CTA: Message + call-to-action button pattern
-- ☐ Establish design system foundation (colours, typography, spacing)
-- ☐ Create reusable UI components using already hardcoded elements as base
-- ☐ Consolidate duplicate UI patterns and ensure consistent loading/error states
+### Phase 4a: Design System Foundation (COMPLETE)
+- ✅ **Navigation Component System**: Unified Navigation component with breadcrumb support and source context
+- ✅ **Design System Tokens**: CSS custom properties for colors, spacing, and typography
+- ✅ **Form Actions Pattern**: Cancel Link + Submit button pairs with consistent styling
+- ✅ **Page Headers with Action Buttons**: Title + description + action button patterns
+- ✅ **Delete Confirmation Modals**: Consistent modal structure with Cancel/Delete button pairs
+- ✅ **Empty State with CTA**: Message + call-to-action button patterns
+- ✅ **Button Component System**: Replace hardcoded buttons throughout codebase
+- ✅ **Reusable UI Components**: Created 17 design system components with Storybook stories
+- ✅ **Consolidated UI Patterns**: Consistent loading/error states across all components
 
-### Phase 4b: Core Pages Design Consistency (COMPLETE - Navigation)
-- ✅ **Navigation Applied to 5 Core Pages**: Dashboard, Universe Detail, Content Detail, Discover, Profile pages all use Navigation component
-- ✅ **Unified Navigation System**: Built franchise navigation components with breadcrumbs and authentication integration
-- ☐ Create progress tracking components for consistent progress display
-- ✅ **Standardised Navigation**: All 5 core pages use consistent Navigation patterns with proper variants
+### Phase 4b: Core Pages Design Consistency (COMPLETE)
+- ✅ **Navigation Applied to 5 Core Pages**: Dashboard, Universe Detail, Content Detail, Discover, Profile
+- ✅ **Design System Integration**: All core pages use design system components
+- ✅ **Progress Tracking Components**: ProgressBar component for consistent progress display
+- ✅ **SearchBar Integration**: Dashboard and Discover pages with search functionality
+- ✅ **CardGrid and ViewToggle**: Consistent layout and view switching patterns
 
-### Phase 4c: Form Pages Design Consistency (COMPLETE - Navigation)
-- ✅ **Navigation Applied to 5 Form Pages**: Universe Create, Universe Edit, Content Create, Content Edit, Profile Edit all use Navigation component
-- ✅ **Breadcrumb Navigation**: All form pages have proper hierarchical breadcrumbs showing parent relationships
-- ✅ **Consistent Header/Nav Patterns**: All form pages use Navigation form variant with Cancel actions
-- ☐ Standardise form layouts and validation patterns beyond navigation
+### Phase 4c: Form Pages Design Consistency (COMPLETE)
+- ✅ **Navigation Applied to 5 Form Pages**: Universe Create/Edit, Content Create/Edit, Profile Edit
+- ✅ **Form Component System**: FormInput, FormLabel, FormTextarea, FormActions throughout
+- ✅ **Breadcrumb Navigation**: All form pages with proper hierarchical breadcrumbs
+- ✅ **Consistent Form Patterns**: Standardised form layouts and validation patterns
 
-### Phase 4d: Responsive Design & Polish
-- Implement responsive design for mobile (all 10 pages)
-- Ensure consistent design across all screen sizes
-- Final design consistency review across all pages
+### Phase 4d: Responsive Design & Polish (COMPLETE)
+- ✅ **Mobile Responsive Navigation**: React-based responsive navigation with useScreenSize hook
+- ✅ **Mobile Menu Implementation**: Hamburger menu with overlay dropdown for mobile screens
+- ✅ **Screen Size Detection**: Custom useIsMobile hook with Tailwind breakpoint integration
+- ✅ **Responsive Design Patterns**: Mobile-first approach with proper breakpoint handling
+- ✅ **Mobile Touch Targets**: 44px minimum touch targets for mobile accessibility
 
 ### Phase 5a: Testing
 - Comprehensive testing of all implemented features
@@ -524,5 +594,5 @@ canoncore/
 
 ---
 
-**Last Updated**: Phase 3d + Phase 6a + Phase 4a-4c Navigation Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation with Infinite Depth Support + Unified Navigation Component System across all 10 pages)  
-**Next Update**: After Phase 4a-4d Remaining: UI Components & Design System Completion
+**Last Updated**: Phase 4d Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 17 UI Components + Unified Navigation + Mobile Responsive Design with React-based Navigation)  
+**Next Update**: After Phase 5a-5d: Testing, Code Optimisation, Deployment, and UX Review

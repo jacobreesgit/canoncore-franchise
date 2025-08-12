@@ -87,8 +87,10 @@ src/
 │                       └── page.tsx # Content edit form
 ├── lib/
 │   ├── contexts/          # React contexts (AuthContext implemented)
-│   ├── services/          # Firebase service layer (all 4 services implemented)
-│   ├── hooks/             # Custom React hooks (empty)
+│   ├── services/          # Firebase service layer (all 5 services implemented)
+│   ├── hooks/             # Custom React hooks
+│   │   ├── usePageTitle.ts    # Page title management hook
+│   │   └── useScreenSize.ts   # Responsive screen size detection hook with Tailwind breakpoints
 │   ├── firebase.ts        # Firebase configuration
 │   └── types.ts           # TypeScript interfaces
 └── components/            # UI components (Navigation, Button, FavouriteButton)
@@ -147,7 +149,7 @@ The application follows **hierarchical routing** that mirrors the data relations
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1 + Phase 2a + Phase 2b + Phase 3a + Phase 3b + Phase 3c + Phase 3d + Phase 6a + Phase 4a-4c Navigation):**
+**Completed (Foundation + Phase 1-4d Complete):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration and account selection
@@ -167,13 +169,19 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Individual User Progress** - Per-user progress tracking with UserProgress collection, same content shows different progress per user
 - **Advanced Hierarchical Content Organisation** - Infinite depth parent-child relationships, recursive tree building, expandable tree navigation, calculated progress for organisational content
 - **Polished UI & Progress Indicators** - Consistent progress bar colors (green for viewable, blue for organisational), smart progress display logic, consistent ordering across grid/tree views, conditional progress text colors
-- **Navigation Component System** - Unified Navigation component with breadcrumbs, source context support, and consistent patterns across all pages (dashboard, detail, form variants)
-- **Consistent Page Navigation** - All 10 pages (5 core + 5 form) now use standardized Navigation component with proper breadcrumbs and actions
+- **Complete Design System Foundation** - 17 reusable UI components with Storybook stories, design tokens, and consistent patterns
+- **Navigation Component System** - Unified Navigation component with breadcrumbs, source context support, and consistent patterns across all pages
+- **Form Component System** - FormInput, FormLabel, FormTextarea, FormActions with validation and error handling
+- **Layout Components** - PageContainer, PageHeader, CardGrid, ViewToggle for consistent page structure
+- **Interactive Components** - Button, Badge, SearchBar, ProgressBar, FavouriteButton with design token integration
+- **State Components** - LoadingSpinner, ErrorMessage, EmptyState, DeleteConfirmationModal for user feedback
+- **Content Display** - UniverseCard, ContentCard with progress tracking and responsive design
+- **Mobile Responsive Design** - Mobile-first design patterns with React-based responsive navigation across all 10 pages
+- **Navigation Responsive System** - Hamburger menu for mobile screens, desktop navigation menu, React-based screen size detection with useIsMobile hook
 
 **Next Implementation Phases (see todo.md):**
-4. **Phase 4a-4d: UI Components & Design System** - Design system foundation, core pages consistency, form pages consistency, responsive design
-5. **Phase 5a-5d: Testing, Optimisation & Deployment** - Tests, code cleanup, production setup, flow optimisation
-6. **Phase 6a: Advanced Content Hierarchies** (remaining) - Drag-and-drop organisation, circular reference detection, breadcrumbs (core functionality complete)
+5. **Phase 5a-5d: Testing, Optimisation & Deployment** - Unit tests, code cleanup, production setup, UX review
+6. **Phase 6a: Advanced Content Hierarchies** (remaining) - Drag-and-drop organisation, circular reference detection
 
 ## Data Model
 
@@ -261,31 +269,45 @@ interface Content {
 - **NEVER** provide tools for creating new characters, stories, or fictional elements
 - Users can only catalogue and organise existing, established franchise properties
 
-## Component System (Phase 4a-4c Complete)
+## Component System (Phase 4a-4d Complete)
 
 ### Navigation Component
 Unified navigation system with consistent patterns across all pages:
 
 ```typescript
-import { Navigation } from '@/components';
+import { Navigation, PageContainer, PageHeader, Button, LoadingSpinner } from '@/components';
 
-// All pages use dashboard variant for consistency
-<Navigation 
-  variant="dashboard" 
-  currentPage="dashboard" 
-  showNavigationMenu={true} 
-/>
+// Example page structure with design system
+<PageContainer>
+  <Navigation variant="dashboard" currentPage="dashboard" showNavigationMenu={true} />
+  <PageHeader 
+    title="Dashboard"
+    breadcrumbs={[
+      { label: 'Dashboard', href: '/' }
+    ]}
+    actions={
+      <Button variant="primary" href="/universes/create">
+        Create Universe
+      </Button>
+    }
+  />
+  {loading ? <LoadingSpinner /> : <Content />}
+</PageContainer>
 ```
 
-**Navigation Features:**
-- **Simplified structure**: Logo | nav buttons | sign out for all pages
-- **Authentication integration**: Automatic user state handling
-- **Consistent pattern**: Same navigation across dashboard, detail, and form pages
+**Complete Design System (17 Components):**
+- **Layout**: PageContainer, PageHeader, CardGrid components for consistent structure
+- **Forms**: FormInput, FormLabel, FormTextarea, FormActions for standardised form patterns
+- **Interactive**: Button, Badge, SearchBar, ProgressBar, ViewToggle, FavouriteButton
+- **Content**: UniverseCard, ContentCard for franchise and content display
+- **States**: LoadingSpinner, ErrorMessage, EmptyState, DeleteConfirmationModal
+- **Design Tokens**: CSS custom properties for colors, spacing, and typography throughout
 
-**PageHeader handles contextual elements:**
-- **Breadcrumbs**: Moved from Navigation to PageHeader for better hierarchy display
-- **Action buttons**: Page-specific actions are now in PageHeader, not Navigation
-- **Page context**: Title, description, and metadata handled by PageHeader
+**Responsive Design System:**
+- **useScreenSize Hook**: Custom hook for detecting window dimensions with SSR-safe implementation
+- **useIsMobile Hook**: Tailwind-breakpoint-aware mobile detection (`sm`, `md`, `lg`, `xl`, `2xl`)
+- **React-Based Responsive Logic**: JavaScript conditional rendering instead of CSS media queries for complex responsive navigation
+- **Navigation Component**: Uses `useIsMobile('md')` for responsive hamburger menu and desktop navigation switching
 
 ## Service Layer (Phase 1 Complete)
 

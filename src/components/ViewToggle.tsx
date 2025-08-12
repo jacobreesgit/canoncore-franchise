@@ -10,7 +10,7 @@ export interface ViewToggleOption {
   label: string;
 }
 
-export interface ViewToggleProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ViewToggleProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /** Current selected value */
   value: string;
   /** Callback when selection changes */
@@ -32,7 +32,7 @@ const baseStyles = `
  * Button styles for toggle options using design system tokens
  */
 const buttonBaseStyles = `
-  px-3 py-1 rounded-md text-sm font-medium transition-colors
+  px-3 py-2 sm:py-1 rounded-md text-sm font-medium transition-colors min-h-[40px] sm:min-h-[32px] flex items-center
 `;
 
 const getButtonStyles = (isActive: boolean) => `

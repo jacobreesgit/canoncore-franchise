@@ -29,10 +29,6 @@ const meta: Meta<typeof ProgressBar> = {
       control: 'text',
       description: 'Custom label text',
     },
-    progressText: {
-      control: 'text',
-      description: 'Custom progress text (overrides percentage)',
-    },
   },
 };
 

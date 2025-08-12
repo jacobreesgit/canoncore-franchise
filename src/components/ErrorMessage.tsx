@@ -8,7 +8,7 @@ export interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> 
   /** Error message variant */
   variant?: 'form' | 'page' | 'inline';
   /** Error message text */
-  message: string;
+  message: string | null;
   /** Optional custom class names */
   className?: string;
 }

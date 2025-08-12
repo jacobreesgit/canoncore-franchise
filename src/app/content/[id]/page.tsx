@@ -144,7 +144,7 @@ export default function ContentPage() {
             { label: content.name, isCurrentPage: true }
           ]}
           metadata={
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <FavouriteButton 
                 targetId={content.id} 
                 targetType="content"
@@ -203,7 +203,7 @@ export default function ContentPage() {
 
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Universe Context</h3>
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg gap-4 sm:gap-0">
             <div>
               <h4 className="font-medium text-gray-900">{universe.name}</h4>
               {universe.description && (

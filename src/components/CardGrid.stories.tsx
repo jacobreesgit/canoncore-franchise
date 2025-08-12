@@ -1,7 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Timestamp } from 'firebase/firestore';
 import { CardGrid } from './CardGrid';
 import { UniverseCard } from './UniverseCard';
 import { ContentCard } from './ContentCard';
+
+// Helper function to create mock timestamp
+const mockTimestamp = () => Timestamp.fromDate(new Date());
 
 const meta: Meta<typeof CardGrid> = {
   title: 'Components/CardGrid',
@@ -34,8 +38,8 @@ const mockUniverses = [
     userId: 'user1',
     isPublic: true,
     progress: 75,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: mockTimestamp(),
+    updatedAt: mockTimestamp()
   },
   {
     id: '2', 
@@ -44,8 +48,8 @@ const mockUniverses = [
     userId: 'user1',
     isPublic: true,
     progress: 45,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: mockTimestamp(),
+    updatedAt: mockTimestamp()
   },
   {
     id: '3',
@@ -54,8 +58,8 @@ const mockUniverses = [
     userId: 'user2',
     isPublic: true,
     progress: 90,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: mockTimestamp(),
+    updatedAt: mockTimestamp()
   }
 ];
 
@@ -67,11 +71,12 @@ const mockContent = [
     description: 'The first MCU film that started it all',
     universeId: '1',
     userId: 'user1',
+    isPublic: true,
     isViewable: true,
     mediaType: 'video' as const,
     progress: 100,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: mockTimestamp(),
+    updatedAt: mockTimestamp()
   },
   {
     id: '2',
@@ -79,11 +84,12 @@ const mockContent = [
     description: 'Earth\'s Mightiest Heroes assemble for the first time',
     universeId: '1', 
     userId: 'user1',
+    isPublic: true,
     isViewable: true,
     mediaType: 'video' as const,
     progress: 100,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: mockTimestamp(),
+    updatedAt: mockTimestamp()
   }
 ];
 
@@ -115,8 +121,8 @@ export const Compact: Story = {
         userId: 'user1',
         isPublic: true,
         progress: 60,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: mockTimestamp(),
+        updatedAt: mockTimestamp()
       }
     ]).map((universe) => (
       <UniverseCard

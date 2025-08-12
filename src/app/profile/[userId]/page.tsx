@@ -199,7 +199,7 @@ export default function ProfilePage() {
                   {profileUser.email}
                 </p>
               )}
-              <div className="flex items-center space-x-6 text-sm text-gray-600">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-secondary">
                 <div>
                   <span className="font-medium text-gray-900">{totalUniverses}</span>
                   <span className="ml-1">Public Franchise{totalUniverses !== 1 ? 's' : ''}</span>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
 
         {/* Tabs */}
         <div className="mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
             <h2 className="text-xl font-bold text-gray-900">Content</h2>
             <ViewToggle
               value={activeTab}
@@ -291,7 +291,7 @@ export default function ProfilePage() {
                             href={`/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
                             showFavourite={true}
                             showOwner={!isOwned && !!ownerData}
-                            ownerName={ownerData?.displayName || ownerData?.email}
+                            ownerName={ownerData?.displayName || ownerData?.email || 'Unknown User'}
                             showOwnerBadge={true}
                             currentUserId={currentUser?.id}
                           />

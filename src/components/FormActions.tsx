@@ -26,7 +26,7 @@ export interface FormActionsProps extends React.HTMLAttributes<HTMLDivElement> {
  * Base form actions styles using design system tokens
  */
 const baseStyles = `
-  flex items-center justify-between pt-4
+  flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between pt-4 space-y-3 space-y-reverse sm:space-y-0 sm:space-x-4
 `;
 
 /**
@@ -113,7 +113,7 @@ export function FormActions({
       <ButtonLink
         variant="secondary"
         href={cancelHref}
-        className="text-gray-600 hover:text-gray-900 bg-transparent hover:bg-transparent p-0"
+        className="text-secondary hover:text-primary bg-transparent hover:bg-transparent p-0 w-full sm:w-auto text-center sm:text-left"
       >
         Cancel
       </ButtonLink>
@@ -121,6 +121,7 @@ export function FormActions({
         type="submit"
         variant="primary"
         disabled={isSubmitting}
+        className="w-full sm:w-auto"
       >
         {isSubmitting ? labels.submitting : labels.submit}
       </Button>
