@@ -227,9 +227,10 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Component Organisation & Structure** - Logical component folders (layout, forms, interactive, content, feedback) with organized Storybook hierarchy
 - **Deployment Configuration** - Vercel deployment setup with environment separation, optimized build configuration, and comprehensive deployment documentation
 - **Phase 5a Performance Optimization Complete** - Bundle size optimization maintaining 99.5 kB shared bundle, dynamic imports for Fuse.js and axe-core, image optimization with WebP/AVIF formats, security headers, and comprehensive caching strategies
+- **Professional 3-Environment Pipeline Complete** - Enterprise-grade deployment architecture with development/staging/production separation using canoncore-development, canoncore-staging, and canoncore-production-929c5 Firebase projects with complete data isolation and automated branch-based deployments
 
 **Next Implementation Phases (see todo.md):**
-5. **Phase 5b-5c: Deployment & UX Review** - Environment separation with Firebase projects, UX review and flow optimization
+5. **Phase 5c: UX Review** - Flow optimization and user experience improvements
 6. **Phase 6a-6b: Advanced Content Hierarchies & Legacy Review** - Drag-and-drop organisation, old project analysis
 7. **Phase 7: Testing** (Final Phase) - Unit tests, integration tests, security rule testing
 
@@ -393,6 +394,86 @@ await userProgressService.setUserProgress(userId, { contentId, universeId, progr
 - Universe documents: Public read for isPublic=true, owner read/write for own
 - Content documents: Inherit universe visibility rules
 - All operations require proper authentication
+
+## Professional Deployment Architecture (Phase 5b Complete)
+
+CanonCore implements enterprise-grade deployment architecture with complete environment separation and automated deployments.
+
+### **3-Environment Pipeline**
+
+```
+Development Environment:
+├── Branch: develop
+├── Firebase: canoncore-development  
+├── URL: http://localhost:3000
+├── Config: .env.local
+└── Data: Safe development testing
+
+Staging Environment:
+├── Branch: staging
+├── Firebase: canoncore-staging
+├── URL: https://canoncore-o3gmncb7o-jacob-rees-projects.vercel.app
+├── Config: Vercel preview environment variables
+└── Data: Production-like testing environment
+
+Production Environment:
+├── Branch: main
+├── Firebase: canoncore-production-929c5
+├── URL: https://canoncore-4wcorlbw6-jacob-rees-projects.vercel.app
+├── Config: Vercel production environment variables
+└── Data: Live user data
+```
+
+### **Git Workflow**
+
+**Standard Development Flow:**
+```bash
+# Feature development
+git checkout develop
+git checkout -b feature/new-feature
+# ... develop feature ...
+git push origin feature/new-feature
+
+# Staging deployment
+git checkout staging
+git merge feature/new-feature
+git push  # Auto-deploys to staging environment
+
+# Production deployment  
+git checkout main
+git merge staging
+git push  # Auto-deploys to production
+```
+
+**Emergency Hotfix Flow:**
+```bash
+# Critical bug fix
+git checkout -b hotfix/urgent-fix main
+# ... fix bug ...
+git checkout staging  
+git merge hotfix/urgent-fix
+git push  # Test in staging
+
+git checkout main
+git merge staging
+git push  # Deploy to production
+```
+
+### **Environment Separation Benefits**
+
+- **Complete Data Isolation:** Each environment uses separate Firebase projects
+- **Risk Management:** Triple safety net before production deployment
+- **Stakeholder Review:** Staging environment for feature approval
+- **Automated Deployments:** Push-to-deploy workflow with branch detection
+- **Professional Standards:** Industry-standard enterprise deployment architecture
+
+### **Firebase Project Structure**
+
+- **canoncore-development:** Local development and feature testing
+- **canoncore-staging:** Pre-production testing and stakeholder review  
+- **canoncore-production-929c5:** Live production environment
+- **Complete isolation:** No cross-contamination between environments
+- **Consistent rules:** Same Firestore security rules deployed to all environments
 
 ## Next Steps
 
