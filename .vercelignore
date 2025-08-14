@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+*.log
+
+# Testing
+coverage/
+.nyc_output
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Development
+.env.local
+.env.development.local
+.env.test.local
+
+# Build artifacts
+.next/
+out/
+dist/
+storybook-static/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation (not needed for runtime)
+*.md
+docs/
+ARCHITECTURE.md
+LOVABLE_MVP_SPEC.md
+todo.md
+todo\ 2.md
+
+# Storybook (deploy separately if needed)
+.storybook/
+*.stories.tsx
+*.stories.ts
+
+# Firebase local
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Scripts (not needed at runtime)
+scripts/

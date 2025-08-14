@@ -12,7 +12,11 @@
     "clear-data": "node scripts/clear-firestore.js",
     "scan-data": "node scripts/scan-data.js",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "deploy:dev": "vercel --target development",
+    "vercel:build": "npm run type-check && npm run build"
   },
   "keywords": [],
   "author": "",

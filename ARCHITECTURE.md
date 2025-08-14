@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 4d with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with reusable UI components, and unified Navigation component system across all pages.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 5a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, and Vercel deployment configuration.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -12,6 +12,9 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 - **Styling**: Tailwind CSS v4
 - **Backend**: Firebase (Auth + Firestore)
 - **Authentication**: Google OAuth via Firebase Auth
+- **Deployment**: Vercel with environment separation
+- **Design System**: Storybook with organized component hierarchy
+- **Testing**: Vitest + Accessibility testing via @axe-core/react
 
 ## Current Architecture Diagram
 
@@ -81,36 +84,63 @@ Design: Component Props → Design Tokens → Consistent Styling → Responsive 
 
 ## Component Structure (Current State)
 
-### Implemented Components (Phase 4a-4d Complete)
+### Organized Component Architecture (Phase 5a Complete)
 
-#### Component Library (src/components/)
-- **`Navigation.tsx`**: Unified navigation component with responsive design system (Phase 4a-4d)
-  - Responsibilities: Consistent navigation across all pages, mobile responsive design, hamburger menu
-  - Variants: `dashboard` (full nav menu), `detail` (breadcrumbs), `form` (form navigation)
-  - Features: Authentication integration, mobile hamburger menu, responsive breakpoints, React-based screen detection
-  - Used by: All 10 pages (5 core + 5 form pages) with full responsive support
+The design system follows industry best practices with logical component organization:
 
-- **Design System Components (Phase 4a-4d)**:
-  - **`Button.tsx`**: Reusable button component with variants (primary, secondary, danger, text)
-  - **`Badge.tsx`**: Status badges for public/private and ownership labels
-  - **`CardGrid.tsx`**: Responsive grid layout with automatic content sorting
-  - **`ContentCard.tsx`**: Content display cards with progress indicators
-  - **`UniverseCard.tsx`**: Universe display cards with progress tracking
-  - **`DeleteConfirmationModal.tsx`**: Consistent delete confirmation patterns
-  - **`EmptyState.tsx`**: Empty state with call-to-action patterns
-  - **`ErrorMessage.tsx`**: Form error display component
-  - **`FormActions.tsx`**: Cancel Link + Submit button pairs
-  - **`FormInput.tsx`**: Standardised form input component
-  - **`FormLabel.tsx`**: Consistent form label styling
-  - **`FormTextarea.tsx`**: Textarea component with consistent styling
-  - **`LoadingSpinner.tsx`**: Loading state component
-  - **`PageContainer.tsx`**: Consistent page layout wrapper
-  - **`PageHeader.tsx`**: Page titles with breadcrumbs and actions
-  - **`ProgressBar.tsx`**: Progress visualization component
-  - **`SearchBar.tsx`**: Search functionality component
-  - **`ViewToggle.tsx`**: Toggle component for view switching
-  - **`FavouriteButton.tsx`**: Favouriting functionality component
+#### Component Organization (src/components/)
 
+**Layout Components (`src/components/layout/` - 6 components):**
+- **`PageContainer.tsx`**: Consistent page layout wrapper (wide/narrow variants)
+- **`PageHeader.tsx`**: Page headers with titles, descriptions, breadcrumbs, and actions
+- **`Navigation.tsx`**: Unified navigation with responsive design and hamburger menu
+- **`CardGrid.tsx`**: Responsive grid layout with automatic content sorting
+- **`EmptyState.tsx`**: Empty state with call-to-action patterns
+- **`DeleteConfirmationModal.tsx`**: Consistent delete confirmation patterns
+
+**Form Components (`src/components/forms/` - 4 components):**
+- **`FormInput.tsx`**: Text input with validation and error states
+- **`FormLabel.tsx`**: Consistent form labeling with required indicators
+- **`FormTextarea.tsx`**: Multi-line text input with validation
+- **`FormActions.tsx`**: Form button groups (Cancel + Submit patterns)
+
+**Interactive Components (`src/components/interactive/` - 4 components):**
+- **`Button.tsx`**: Multi-variant button component (primary, secondary, danger, clear)
+- **`FavouriteButton.tsx`**: Heart toggle for favouriting content/universes
+- **`SearchBar.tsx`**: Search input with real-time filtering
+- **`ViewToggle.tsx`**: Toggle switches for grid/tree views and tab navigation
+
+**Content Display (`src/components/content/` - 4 components):**
+- **`UniverseCard.tsx`**: Universe display cards with progress tracking
+- **`ContentCard.tsx`**: Content display cards with progress indicators
+- **`ProgressBar.tsx`**: Progress indicators for viewable/organisational content
+- **`Badge.tsx`**: Status badges for public/private and ownership labels
+
+**Feedback Components (`src/components/feedback/` - 2 components):**
+- **`LoadingSpinner.tsx`**: Loading indicators with size variants
+- **`ErrorMessage.tsx`**: Error display with WCAG AA compliant contrast
+
+#### Storybook Organization
+
+Components are organized in Storybook under logical namespaces:
+- `CanonCore/Layout/` - Page structure components
+- `CanonCore/Forms/` - Form controls and validation
+- `CanonCore/Interactive/` - Buttons, toggles, and user interactions
+- `CanonCore/Content/` - Content display and cards
+- `CanonCore/Feedback/` - Loading states and error handling
+
+#### Deployment Architecture (Phase 5a)
+
+**Production Environment:**
+- **Hosting:** Vercel with automatic deployments from GitHub
+- **Build:** Next.js optimized production builds with Vercel edge functions
+- **Environment Separation:** Development (.env.local) vs Production (Vercel environment variables)
+- **Performance:** Built-in image optimization, bundle analysis, security headers
+
+**Firebase Configuration:**
+- **Development:** `canoncore-694a5` (current single environment)
+- **Production:** Separate Firebase project recommended for data isolation
+- **Security:** Environment-specific Firestore rules and authentication domains
 
 #### Layout Layer
 - **`app/layout.tsx`**: Root layout with AuthProvider wrapper

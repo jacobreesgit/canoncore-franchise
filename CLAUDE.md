@@ -28,6 +28,12 @@ npm run type-check
 
 # Clear development data (requires --force flag)
 npm run clear-data --force
+
+# Deployment commands
+npm run deploy              # Deploy to production
+npm run deploy:preview      # Deploy preview/staging
+npm run storybook          # Run Storybook dev server
+npm run build-storybook    # Build Storybook for deployment
 ```
 
 ## Development Data Management
@@ -45,6 +51,17 @@ npm run clear-data --force
 - May encounter permission errors due to Firestore security rules (expected)
 - If script fails, manually delete collections via Firebase Console
 - Useful for testing from a clean state during development
+
+## Project Documentation
+
+This project includes comprehensive documentation across multiple files:
+
+- **ARCHITECTURE.md** - Complete system architecture, data flows, and component organisation
+- **ACCESSIBILITY.md** - WCAG AA compliance guidelines and accessibility testing procedures  
+- **DEPLOYMENT.md** - Step-by-step Vercel deployment guide and environment setup
+- **LOVABLE_MVP_SPEC.md** - Original MVP specification and technical requirements
+- **README.md** - Project overview and quick start guide
+- **todo.md** - Implementation roadmap and completed phases
 
 ## Architecture Overview
 
@@ -89,11 +106,34 @@ src/
 │   ├── contexts/          # React contexts (AuthContext implemented)
 │   ├── services/          # Firebase service layer (all 5 services implemented)
 │   ├── hooks/             # Custom React hooks
+│   │   ├── index.ts           # Hook exports
 │   │   ├── usePageTitle.ts    # Page title management hook
-│   │   └── useScreenSize.ts   # Responsive screen size detection hook with Tailwind breakpoints
+│   │   ├── useScreenSize.ts   # Responsive screen size detection hook with Tailwind breakpoints
+│   │   └── useSearch.ts       # Search functionality hook
+│   ├── utils/             # Utility functions
+│   │   ├── accessibility.ts   # WCAG AA compliance utilities
+│   │   └── accessibility.test.ts # Accessibility testing
 │   ├── firebase.ts        # Firebase configuration
 │   └── types.ts           # TypeScript interfaces
-└── components/            # UI components (Navigation, Button, FavouriteButton)
+├── components/            # Organized component system (17 components)
+│   ├── layout/            # Page structure & containers (6 components)
+│   │   ├── PageContainer, PageHeader, Navigation
+│   │   ├── CardGrid, EmptyState, DeleteConfirmationModal
+│   │   └── *.stories.tsx  # Storybook stories for each component
+│   ├── forms/             # Form controls & validation (4 components)
+│   │   ├── FormInput, FormLabel, FormTextarea, FormActions
+│   │   └── *.stories.tsx  # Storybook stories for each component
+│   ├── interactive/       # Buttons, toggles, inputs (4 components)
+│   │   ├── Button, FavouriteButton, SearchBar, ViewToggle
+│   │   └── *.stories.tsx  # Storybook stories for each component
+│   ├── content/          # Cards, badges, progress (4 components)
+│   │   ├── UniverseCard, ContentCard, ProgressBar, Badge
+│   │   └── *.stories.tsx  # Storybook stories for each component
+│   ├── feedback/         # Loading, errors, empty states (2 components)
+│   │   ├── LoadingSpinner, ErrorMessage
+│   │   └── *.stories.tsx  # Storybook stories for each component
+│   └── index.ts          # Organized barrel exports with logical groupings
+└── design-system/        # Design system documentation and tokens
 ```
 
 ## Routing Conventions
@@ -180,9 +220,11 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Navigation Responsive System** - Hamburger menu for mobile screens, desktop navigation menu, React-based screen size detection with useIsMobile hook
 - **Comprehensive Accessibility Implementation** - WCAG AA compliant design with automated checking via @axe-core/react, ESLint accessibility rules, and custom contrast validation
 - **Fixed Critical Accessibility Issues** - ErrorMessage contrast compliance (5.91:1 ratio), enhanced ViewToggle with blue active states and white text
+- **Component Organisation & Structure** - Logical component folders (layout, forms, interactive, content, feedback) with organized Storybook hierarchy
+- **Deployment Configuration** - Vercel deployment setup with environment separation, optimized build configuration, and comprehensive deployment documentation
 
 **Next Implementation Phases (see todo.md):**
-5. **Phase 5a-5c: Code Optimisation, Deployment & UX Review** - Code cleanup, production setup, UX review
+5. **Phase 5b-5c: Deployment & UX Review** - Production environment setup, performance optimization, UX review
 6. **Phase 6a-6b: Advanced Content Hierarchies & Legacy Review** - Drag-and-drop organisation, old project analysis
 7. **Phase 7: Testing** (Final Phase) - Unit tests, integration tests, security rule testing
 
@@ -298,13 +340,19 @@ import { Navigation, PageContainer, PageHeader, Button, LoadingSpinner } from '@
 </PageContainer>
 ```
 
-**Complete Design System (17 Components):**
-- **Layout**: PageContainer, PageHeader, CardGrid components for consistent structure
-- **Forms**: FormInput, FormLabel, FormTextarea, FormActions for standardised form patterns
-- **Interactive**: Button, Badge, SearchBar, ProgressBar, ViewToggle, FavouriteButton
-- **Content**: UniverseCard, ContentCard for franchise and content display
-- **States**: LoadingSpinner, ErrorMessage, EmptyState, DeleteConfirmationModal
+**Organized Design System (17 Components in 5 Categories):**
+
+- **Layout Components (6)**: PageContainer, PageHeader, Navigation, CardGrid, EmptyState, DeleteConfirmationModal
+- **Form Components (4)**: FormInput, FormLabel, FormTextarea, FormActions  
+- **Interactive Components (4)**: Button, FavouriteButton, SearchBar, ViewToggle
+- **Content Display (4)**: UniverseCard, ContentCard, ProgressBar, Badge
+- **Feedback Components (2)**: LoadingSpinner, ErrorMessage
 - **Design Tokens**: CSS custom properties for colors, spacing, and typography throughout
+
+**Storybook Organization:**
+- Components organized in logical hierarchy: `CanonCore/Layout/`, `CanonCore/Forms/`, etc.
+- Each component includes comprehensive stories with realistic use cases
+- Accessibility testing integrated via @storybook/addon-a11y
 
 **Responsive Design System:**
 - **useScreenSize Hook**: Custom hook for detecting window dimensions with SSR-safe implementation
