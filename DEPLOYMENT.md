@@ -2,6 +2,18 @@
 
 This document provides step-by-step instructions for deploying CanonCore to Vercel.
 
+## 🚀 Deployment Status
+
+**Current Status:** ✅ **DEPLOYED AND LIVE**
+
+- ✅ **Vercel Project:** Created and configured
+- ✅ **Environment Variables:** All Firebase config set
+- ✅ **Build:** Successful deployment  
+- ✅ **Live URL:** https://canoncore-nrxx80w1l-jacob-rees-projects.vercel.app
+- ⚠️ **Authentication:** Requires adding Vercel domain to Firebase authorized domains
+
+**Next Step:** Add `canoncore-nrxx80w1l-jacob-rees-projects.vercel.app` to Firebase authorized domains for authentication to work.
+
 ## Prerequisites
 
 - GitHub repository with the code
@@ -10,45 +22,47 @@ This document provides step-by-step instructions for deploying CanonCore to Verc
 
 ## Quick Setup
 
-### 1. Vercel Account Setup
+### 1. Vercel Account Setup ✅ COMPLETED
 
-1. Visit [vercel.com](https://vercel.com) and sign up with your GitHub account
-2. Connect your GitHub account and grant necessary permissions
+1. ✅ Visit [vercel.com](https://vercel.com) and sign up with your GitHub account
+2. ✅ Connect your GitHub account and grant necessary permissions
 
-### 2. Create New Project
+### 2. Create New Project ✅ COMPLETED
 
-1. In Vercel dashboard, click "New Project"
-2. Import the `canoncore-franchise` repository from GitHub
-3. Configure the project settings:
+1. ✅ In Vercel dashboard, click "New Project"
+2. ✅ Import the `canoncore-franchise` repository from GitHub
+3. ✅ Configure the project settings:
 
-**Framework Preset:** Next.js
-**Root Directory:** `./` (leave as default)
-**Build Command:** `npm run vercel:build` (or use default `npm run build`)
-**Output Directory:** `.next` (default for Next.js)
+**Framework Preset:** Next.js ✅
+**Root Directory:** `./` (leave as default) ✅
+**Build Command:** `npm run build` ✅
+**Output Directory:** `.next` (default for Next.js) ✅
 
-### 3. Environment Variables
+**Project Name:** `canoncore` ✅
+**Project URL:** https://canoncore-nrxx80w1l-jacob-rees-projects.vercel.app ✅
 
-Add the following environment variables in Vercel dashboard:
+### 3. Environment Variables ✅ COMPLETED
 
-#### Production Environment Variables
-Navigate to Project Settings → Environment Variables:
+Added the following environment variables in Vercel via CLI:
+
+#### Production Environment Variables ✅ SET
+All Firebase configuration variables set via `npx vercel env add`:
 
 ```
-NEXT_PUBLIC_FIREBASE_API_KEY=your_production_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_production_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_production_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_production_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_production_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_production_app_id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_production_measurement_id
-NODE_ENV=production
+✅ NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCkj13naWv5BOihLGK9Tmt3U1mqF_dTZN4
+✅ NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=canoncore-694a5.firebaseapp.com
+✅ NEXT_PUBLIC_FIREBASE_PROJECT_ID=canoncore-694a5
+✅ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=canoncore-694a5.firebasestorage.app
+✅ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=869167254359
+✅ NEXT_PUBLIC_FIREBASE_APP_ID=1:869167254359:web:5027427d4c6179fd7f8c12
+✅ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-WQ1CJ19RZQ
 ```
 
-### 4. Deploy
+### 4. Deploy ✅ COMPLETED
 
-1. Click "Deploy" in Vercel dashboard
-2. Wait for the build to complete (usually 2-3 minutes)
-3. Visit the generated URL to verify the deployment
+1. ✅ Deploy via CLI: `npx vercel --prod`
+2. ✅ Build completed successfully (after fixing test file import issue)
+3. ✅ Live at: https://canoncore-nrxx80w1l-jacob-rees-projects.vercel.app
 
 ## Firebase Production Setup
 
@@ -69,12 +83,14 @@ firebase deploy --only firestore:rules --project production
 firebase deploy --only firestore:indexes --project production
 ```
 
-### 3. Set Up Authentication
+### 3. Set Up Authentication ⚠️ PENDING
 
 1. In Firebase Console → Authentication → Settings
-2. Add your Vercel domain to authorized domains:
-   - `your-project-name.vercel.app`
+2. ⚠️ **REQUIRED:** Add your Vercel domain to authorized domains:
+   - `canoncore-nrxx80w1l-jacob-rees-projects.vercel.app` ⚠️ NEEDS TO BE ADDED
    - Any custom domains you plan to use
+
+**Action Required:** Visit [Firebase Console](https://console.firebase.google.com/project/canoncore-694a5/authentication/settings) and add the domain above.
 
 ## Domain Configuration (Optional)
 
