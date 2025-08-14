@@ -12,7 +12,7 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Content, CreateContentData, UpdateContentProgressData } from '@/lib/types';
+import { Content, CreateContentData } from '@/lib/types';
 import { userProgressService } from './user-progress.service';
 
 export class ContentService {
@@ -152,35 +152,6 @@ export class ContentService {
     });
   }
 
-  /**
-   * Update progress for viewable content (episodes, movies) - DEPRECATED
-   * Use updateUserProgress instead for individual user progress tracking
-   */
-  async updateProgress(id: string, userId: string, progressData: UpdateContentProgressData): Promise<void> {
-    const content = await this.getById(id);
-    
-    if (!content || content.userId !== userId) {
-      throw new Error('Content not found or access denied');
-    }
-
-    if (!content.isViewable) {
-      throw new Error('Cannot update progress on non-viewable content');
-    }
-
-    const docRef = doc(this.collection, id);
-    const updateData: any = {
-      progress: progressData.progress,
-      updatedAt: Timestamp.now()
-    };
-
-    if (progressData.lastAccessedAt) {
-      updateData.lastAccessedAt = progressData.lastAccessedAt;
-    } else {
-      updateData.lastAccessedAt = Timestamp.now();
-    }
-
-    await updateDoc(docRef, updateData);
-  }
 
   /**
    * Update user-specific progress for viewable content (NEW METHOD)
@@ -243,28 +214,11 @@ export class ContentService {
     // Clean up all user progress for this content
     await userProgressService.deleteUserProgressByContent(id);
     
-    // Note: Related relationships should be cleaned up in a transaction
-    // or Cloud Function for data consistency
+    // Clean up all relationships where this content is involved
+    const { relationshipService } = await import('./index');
+    await relationshipService.removeAllRelationships(id, userId);
   }
 
-  /**
-   * Get content with progress tracking info for a user - DEPRECATED
-   * Use getByUniverseWithUserProgress instead
-   */
-  async getWithProgress(universeId: string, userId: string): Promise<Content[]> {
-    const q = query(
-      this.collection,
-      where('universeId', '==', universeId),
-      where('userId', '==', userId),
-      orderBy('updatedAt', 'desc')
-    );
-    
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Content));
-  }
 
   /**
    * Get universe content combined with user-specific progress (NEW METHOD)
@@ -353,24 +307,4 @@ export class ContentService {
     );
   }
 
-  /**
-   * Get recently accessed viewable content for "up next" recommendations
-   */
-  async getRecentlyAccessed(universeId: string, limit: number = 10): Promise<Content[]> {
-    const q = query(
-      this.collection,
-      where('universeId', '==', universeId),
-      where('isViewable', '==', true),
-      where('lastAccessedAt', '!=', null),
-      orderBy('lastAccessedAt', 'desc')
-    );
-    
-    const snapshot = await getDocs(q);
-    const results = snapshot.docs.slice(0, limit).map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Content));
-    
-    return results;
-  }
 }

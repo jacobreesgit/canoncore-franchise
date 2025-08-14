@@ -8,7 +8,7 @@ const { execSync } = require('child_process');
 const collections = [
   'universes',
   'content', 
-  'favorites',
+  'favourites',
   'contentRelationships'
   // Note: We don't delete 'users' collection as it contains auth data
 ];

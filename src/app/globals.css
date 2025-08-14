@@ -57,6 +57,7 @@
   --color-text-link: var(--color-blue-600);
   --color-text-link-hover: var(--color-blue-800);
   --color-text-danger: var(--color-red-600);
+  --color-text-error-on-light: var(--color-red-700);
 
   --color-border-default: var(--color-gray-200);
   --color-border-input: var(--color-gray-300);
@@ -259,12 +260,12 @@
   .text-link { color: var(--color-text-link); }
   .text-link:hover { color: var(--color-text-link-hover); }
   .text-danger { color: var(--color-text-danger); }
+  .text-error-on-light { color: var(--color-text-error-on-light); }
 
   /* Background classes using tokens */
   .bg-surface-page { background-color: var(--layout-page-background); }
   .bg-surface-card { background-color: var(--card-background); }
-  .bg-surface-card:hover { background-color: var(--color-surface-card-hover); }
-  .bg-surface-card.no-hover:hover { background-color: var(--card-background); }
+  .bg-surface-card-hover:hover { background-color: var(--color-surface-card-hover); }
 
   /* Border classes using tokens */
   .border-default { border-color: var(--color-border-default); }

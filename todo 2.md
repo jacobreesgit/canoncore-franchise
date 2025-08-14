@@ -112,26 +112,13 @@
     ☒ ✅ Final design consistency review across all pages - Mobile-first design patterns across all components
     ☒ ✅ Complete responsive design system implementation across all pages - useIsMobile hook with screen size detection, responsive Navigation component
 
-**Phase 5a: Code Optimisation & Cleanup** 🔄 IN PROGRESS
-    ☒ ✅ SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections/deprecated methods AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE.
-    ☒ ✅ Fix critical collection name bug in clear-firestore.js (favorites → favourites)
-    ☒ ✅ Remove 3 deprecated service methods (ContentService.updateProgress, getWithProgress; UniverseService.updateProgress)
-    ☒ ✅ Fix missing relationship cleanup in content deletion
-    ☒ ✅ Remove 2 unused TypeScript interfaces (FranchiseContextType, UpdateContentProgressData)
-    ☒ ✅ Remove 2 unused UserService methods (getRecentFavourites, bulkUpdateFavourites)
-    ☒ ✅ Implement ContentService.search() for universe content search functionality
-    ☒ ✅ Remove ContentService.getRecentlyAccessed() - unused method removed
-    ☒ ✅ Remove UniverseService.searchPublic() - unused method removed
-    ☒ ✅ Implement UserService.clearAllFavourites() on profile view page with confirmation modal
-    ☒ ✅ Implement comprehensive accessibility checking with @axe-core/react, ESLint jsx-a11y rules, and custom contrast validation
-    ☒ ✅ Fix ErrorMessage component contrast issue (4.41:1 → 5.91:1 WCAG AA compliant) 
-    ☒ ✅ Enhance ViewToggle component with blue background and white text for active states
-    ☒ ✅ Add design system tokens for accessible error text styling (--color-text-error-on-light)
-    ☒ ✅ Find any TODO comments or anything else unfinished
-    ☒ ✅ Remove unused files and directories
-    ☒ ✅ Clean up redundant code and components
-    ☒ ✅ Optimise imports and dependencies
-    ☒ ✅ Review and improve code organisation, and update component organisation for Storybook to match new folder organisation.
+**Phase 5a: Code Optimisation & Cleanup**
+    ☐ BEFORE ANYTHING ELSE - SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections/deprecated methods AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE.
+    ☐ Find any to do comments or anything else unfinshed
+    ☐ Remove unused files and directories
+    ☐ Clean up redundant code and components
+    ☐ Optimise imports and dependencies
+    ☐ Review and improve code organisation, and update compponet organisation for storybook to match new folder organisation.
     ☐ Optimise bundle size and performance
 
 **Phase 5b: Deployment**
@@ -166,7 +153,9 @@
     ☐ Add bulk operations for nested content structures
     ☐ Optimise performance for deep content hierarchies
 
-**Phase 7: Testing** (Final Phase)
+**Phase 6b: Scan old project for more ideas***
 
-    
-**Phase 8: Scan old project for more ideas***
+**Phase 7: Testing** (Final Phase)
+    ☐ Add service layer unit tests
+    ☐ Create component integration tests
+    ☐ Test Firestore security rules

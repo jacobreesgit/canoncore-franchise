@@ -168,36 +168,7 @@ export class UniverseService {
     // or Cloud Function for data consistency
   }
 
-  /**
-   * Update universe progress based on contained content
-   */
-  async updateProgress(id: string, progress: number, contentProgress?: Universe['contentProgress']): Promise<void> {
-    const docRef = doc(this.collection, id);
-    const updateData: any = {
-      progress,
-      updatedAt: Timestamp.now()
-    };
 
-    if (contentProgress) {
-      updateData.contentProgress = contentProgress;
-    }
-
-    await updateDoc(docRef, updateData);
-  }
-
-  /**
-   * Search public universes by name
-   */
-  async searchPublic(searchTerm: string): Promise<Universe[]> {
-    // Note: This is a simple implementation. For better search,
-    // consider using Algolia or similar search service
-    const publicUniverses = await this.getPublicUniverses();
-    
-    return publicUniverses.filter(universe =>
-      universe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      universe.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
 
   /**
    * Get universes owned by a user with user-specific progress (NEW METHOD)

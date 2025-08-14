@@ -5,13 +5,18 @@ import { universeService } from '@/lib/services';
 import { Universe } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
+import { useSearch } from '@/lib/hooks/useSearch';
 import { Navigation, PageHeader, EmptyState, UniverseCard, Button, LoadingSpinner, PageContainer, CardGrid } from '@/components';
 
 export default function Home() {
   const { user, loading, signIn, signOut } = useAuth();
   const [universes, setUniverses] = useState<Universe[]>([]);
   const [universesLoading, setUniversesLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Fuzzy search hook
+  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses, searchResultsText } = useSearch(universes, {
+    keys: ['name', 'description']
+  });
 
   // Set page title
   usePageTitle('Dashboard');
@@ -31,11 +36,6 @@ export default function Home() {
       fetchUniverses();
     }
   }, [user]);
-
-  const filteredUniverses = universes.filter(universe => 
-    universe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    universe.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   if (loading) {
     return <LoadingSpinner variant="fullscreen" message="Loading..." />;
@@ -88,6 +88,7 @@ export default function Home() {
             placeholder: 'Search your franchises...',
             variant: 'default'
           } : undefined}
+          searchResultsText={searchResultsText}
         />
 
         {universesLoading ? (
@@ -105,11 +106,6 @@ export default function Home() {
           />
         ) : (
           <>
-            {searchQuery && (
-              <div className="mb-4 text-sm text-secondary">
-                Showing {filteredUniverses.length} result{filteredUniverses.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
-              </div>
-            )}
             <CardGrid variant="default">
               {filteredUniverses.map((universe) => (
                 <UniverseCard

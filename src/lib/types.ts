@@ -94,10 +94,6 @@ export interface CreateContentData {
   mediaType: Content['mediaType'];
 }
 
-export interface UpdateContentProgressData {
-  progress: number;
-  lastAccessedAt?: Timestamp;
-}
 
 export interface CreateUserProgressData {
   contentId: string;
@@ -118,10 +114,3 @@ export interface AuthContextType {
   updateDisplayName: (newDisplayName: string) => Promise<void>;
 }
 
-export interface FranchiseContextType {
-  universes: Universe[];
-  loading: boolean;
-  createUniverse: (data: CreateUniverseData) => Promise<Universe>;
-  updateUniverse: (id: string, data: Partial<Universe>) => Promise<void>;
-  deleteUniverse: (id: string) => Promise<void>;
-}

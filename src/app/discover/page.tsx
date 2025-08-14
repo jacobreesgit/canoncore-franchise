@@ -3,8 +3,9 @@
 import { useAuth } from '@/lib/contexts/auth-context';
 import { universeService, userService } from '@/lib/services';
 import { Universe, User } from '@/lib/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
+import { useSearch } from '@/lib/hooks/useSearch';
 import { Navigation, PageHeader, EmptyState, UniverseCard, LoadingSpinner, PageContainer, CardGrid } from '@/components';
 
 export default function DiscoverPage() {
@@ -14,8 +15,20 @@ export default function DiscoverPage() {
   usePageTitle('Discover');
   const [publicUniverses, setPublicUniverses] = useState<Universe[]>([]);
   const [universesLoading, setUniversesLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [universeOwners, setUniverseOwners] = useState<Record<string, User>>({});
+  
+  // Fuzzy search hook
+  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses, searchResultsText, isSearching } = useSearch(publicUniverses, {
+    keys: ['name', 'description']
+  });
+
+  // Custom message for discover page (shows total count when not searching)
+  const displaySearchResultsText = useMemo(() => {
+    if (isSearching) {
+      return searchResultsText;
+    }
+    return publicUniverses.length > 0 ? `${publicUniverses.length} public franchise${publicUniverses.length !== 1 ? 's' : ''}` : 'Start typing to search...';
+  }, [isSearching, searchResultsText, publicUniverses.length]);
 
   useEffect(() => {
     const fetchPublicUniverses = async () => {
@@ -63,11 +76,6 @@ export default function DiscoverPage() {
     fetchPublicUniverses();
   }, [user]);
 
-  const filteredUniverses = publicUniverses.filter(universe => 
-    universe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    universe.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   if (loading) {
     return <LoadingSpinner variant="fullscreen" message="Loading..." />;
   }
@@ -91,6 +99,7 @@ export default function DiscoverPage() {
             placeholder: 'Search Marvel, Doctor Who, Star Wars...',
             variant: 'default'
           } : undefined}
+          searchResultsText={displaySearchResultsText}
         />
 
         {universesLoading ? (
@@ -109,16 +118,6 @@ export default function DiscoverPage() {
           />
         ) : (
           <>
-            <div className="mb-4 text-sm text-secondary">
-              {searchQuery && (
-                <span>
-                  Showing {filteredUniverses.length} result{filteredUniverses.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
-                </span>
-              )}
-              {!searchQuery && (
-                <span>{filteredUniverses.length} public franchise{filteredUniverses.length !== 1 ? 's' : ''}</span>
-              )}
-            </div>
 
             <CardGrid variant="default">
               {filteredUniverses.map((universe) => {

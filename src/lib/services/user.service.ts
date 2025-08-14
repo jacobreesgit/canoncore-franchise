@@ -192,44 +192,5 @@ export class UserService {
     await Promise.all(deletePromises);
   }
 
-  /**
-   * Get recent favourite activity for a user
-   */
-  async getRecentFavourites(userId: string, limit: number = 10): Promise<Favorite[]> {
-    const q = query(
-      this.favouriteCollection,
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
-    );
-    
-    const snapshot = await getDocs(q);
-    const results = snapshot.docs.slice(0, limit).map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Favorite));
-    
-    return results;
-  }
 
-  /**
-   * Bulk favourite/unfavourite operations
-   */
-  async bulkUpdateFavourites(
-    userId: string, 
-    operations: Array<{
-      action: 'add' | 'remove';
-      targetId: string;
-      targetType: 'universe' | 'content';
-    }>
-  ): Promise<void> {
-    const promises = operations.map(op => {
-      if (op.action === 'add') {
-        return this.addToFavourites(userId, op.targetId, op.targetType);
-      } else {
-        return this.removeFromFavourites(userId, op.targetId, op.targetType);
-      }
-    });
-
-    await Promise.all(promises);
-  }
 }

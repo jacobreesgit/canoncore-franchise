@@ -6,6 +6,7 @@ import { Universe, Content, User } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
+import { useSearch } from '@/lib/hooks/useSearch';
 import Link from 'next/link';
 import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, EmptyState, Button, ViewToggle, LoadingSpinner, PageContainer, Badge, CardGrid } from '@/components';
 
@@ -24,6 +25,11 @@ export default function UniversePage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'tree'>('grid');
   const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
+  
+  // Fuzzy search hook for content
+  const { searchQuery, setSearchQuery, filteredResults: filteredContent, searchResultsText } = useSearch(content, {
+    keys: ['name', 'description', 'mediaType']
+  });
 
   // Set dynamic page title
   usePageTitle(universe?.name || 'Universe', universe);
@@ -197,6 +203,13 @@ export default function UniversePage() {
             { type: 'secondary', label: 'Edit Universe', href: `/universes/${universe.id}/edit` },
             { type: 'danger', label: 'Delete', onClick: () => setShowDeleteConfirm(true) }
           ] : []}
+          searchBar={content.length > 0 ? {
+            value: searchQuery,
+            onChange: (e) => setSearchQuery(e.target.value),
+            placeholder: 'Search episodes, characters, locations...',
+            variant: 'default'
+          } : undefined}
+          searchResultsText={searchResultsText}
         />
 
         {content.length === 0 ? (
@@ -207,6 +220,12 @@ export default function UniversePage() {
             actionText={isOwner ? "Add First Content" : undefined}
             actionHref={isOwner ? `/universes/${universe.id}/content/create` : undefined}
             showAction={isOwner}
+          />
+        ) : filteredContent.length === 0 ? (
+          <EmptyState
+            variant="default"
+            title="No matching content found"
+            description="Try adjusting your search terms"
           />
         ) : (
           <div className="space-y-8">
@@ -226,15 +245,39 @@ export default function UniversePage() {
             {viewMode === 'grid' ? (
               <CardGrid 
                 variant="default"
-                content={content}
+                content={filteredContent}
                 contentHref={(item) => `/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
                 sortContent={true}
               />
             ) : (
               /* Tree View */
               <div className="bg-surface-card rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-primary mb-4">Content Hierarchy</h2>
-                {hierarchyTree.length > 0 ? (
+                <h2 className="text-xl font-bold text-primary mb-4">
+                  {searchQuery ? 'Search Results' : 'Content Hierarchy'}
+                </h2>
+                {searchQuery ? (
+                  /* Show search results in flat list when searching */
+                  <div className="space-y-1">
+                    {filteredContent.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
+                        className="flex items-center hover:bg-surface-page rounded-lg transition-colors"
+                      >
+                        <div className="flex items-center flex-1 p-2 hover:bg-surface-page rounded-lg transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-primary truncate">
+                              {item.name}
+                            </div>
+                            <div className="text-xs text-tertiary">
+                              {item.isViewable ? 'Viewable' : 'Organisational'} · {item.mediaType}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : hierarchyTree.length > 0 ? (
                   <div className="space-y-2">
                     {hierarchyTree.map((node, index) => (
                       <TreeNode key={`root-${node.contentId}-${index}`} node={node} content={content} universe={universe} depth={0} />

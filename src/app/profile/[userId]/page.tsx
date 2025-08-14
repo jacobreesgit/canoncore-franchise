@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import Link from 'next/link';
-import { FavouriteButton, Navigation, PageHeader, EmptyState, Button, UniverseCard, ProgressBar, ViewToggle, LoadingSpinner, PageContainer, CardGrid } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, EmptyState, Button, UniverseCard, ProgressBar, ViewToggle, LoadingSpinner, PageContainer, CardGrid, DeleteConfirmationModal } from '@/components';
 
 export default function ProfilePage() {
   const { user: currentUser, loading } = useAuth();
@@ -23,6 +23,8 @@ export default function ProfilePage() {
   const [profileLoading, setProfileLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'universes' | 'favourites'>('universes');
+  const [showClearFavouritesConfirm, setShowClearFavouritesConfirm] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [universeOwners, setUniverseOwners] = useState<Record<string, User>>({});
 
   // Set dynamic page title
@@ -139,6 +141,26 @@ export default function ProfilePage() {
     }
   }, [userId, currentUser, loading]);
 
+  const handleClearFavourites = async () => {
+    if (!currentUser) return;
+    
+    setIsClearing(true);
+    try {
+      await userService.clearAllFavourites(currentUser.id);
+      
+      // Refresh favourites data
+      setFavourites([]);
+      setFavouriteUniverses([]);
+      setFavouriteContent([]);
+      setShowClearFavouritesConfirm(false);
+    } catch (error) {
+      console.error('Error clearing favourites:', error);
+      setError('Failed to clear favourites. Please try again.');
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   if (loading || profileLoading) {
     return <LoadingSpinner variant="fullscreen" message="Loading..." />;
   }
@@ -214,7 +236,10 @@ export default function ProfilePage() {
             </div>
           }
           actions={isOwnProfile ? [
-            { type: 'secondary', label: 'Edit Profile', href: `/profile/${userId}/edit` }
+            { type: 'secondary' as const, label: 'Edit Profile', href: `/profile/${userId}/edit` },
+            ...(activeTab === 'favourites' && totalFavourites > 0 ? [
+              { type: 'danger' as const, label: 'Clear All Favourites', onClick: () => setShowClearFavouritesConfirm(true) }
+            ] : [])
           ] : []}
         />
 
@@ -315,6 +340,18 @@ export default function ProfilePage() {
           </div>
         )}
       </PageContainer>
+
+      {/* Clear Favourites Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showClearFavouritesConfirm}
+        onCancel={() => setShowClearFavouritesConfirm(false)}
+        onConfirm={handleClearFavourites}
+        isDeleting={isClearing}
+        title="Clear All Favourites?"
+        itemName={`${totalFavourites} favourite${totalFavourites !== 1 ? 's' : ''}`}
+        warningMessage="This action will remove all favourites from your profile"
+        deleteButtonText="Clear All Favourites"
+      />
     </div>
   );
 }
