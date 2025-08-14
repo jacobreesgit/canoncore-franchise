@@ -112,7 +112,7 @@
     ☒ ✅ Final design consistency review across all pages - Mobile-first design patterns across all components
     ☒ ✅ Complete responsive design system implementation across all pages - useIsMobile hook with screen size detection, responsive Navigation component
 
-**Phase 5a: Code Optimisation & Cleanup** 🔄 IN PROGRESS
+**Phase 5a: Code Optimisation & Cleanup** ✅ COMPLETE
     ☒ ✅ SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections/deprecated methods AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE.
     ☒ ✅ Fix critical collection name bug in clear-firestore.js (favorites → favourites)
     ☒ ✅ Remove 3 deprecated service methods (ContentService.updateProgress, getWithProgress; UniverseService.updateProgress)
@@ -132,13 +132,14 @@
     ☒ ✅ Clean up redundant code and components
     ☒ ✅ Optimise imports and dependencies
     ☒ ✅ Review and improve code organisation, and update component organisation for Storybook to match new folder organisation.
-    ☐ Optimise bundle size and performance
+    ☒ ✅ Performance optimization: Bundle size maintained at 99.5 kB, dynamic imports for Fuse.js and @axe-core/react, image optimization with WebP/AVIF, security headers, and comprehensive caching strategies
 
-**Phase 5b: Deployment**
-    ☐ Set up development and production environment using VercNel
-    Think about producton vs. development firebase schema
-    ☐ Configure Firebase hosting
-    ☐ Test full end-to-end user workflows
+**Phase 5b: Deployment** 🔄 IN PROGRESS
+    ☒ ✅ Set up Vercel deployment with optimized build configuration and regions (lhr1)
+    ☒ ✅ Configure Firebase environment variables for production deployment
+    ☒ ✅ Deploy to production with performance monitoring and analysis tools
+    ☐ Set up separate Firebase projects for development vs production environment separation
+    ☐ Configure custom domain and SSL certificates
 
 **Phase 5c: Flow Optimisation & UX Review**
     ☐ Review and optimise user flows objectively
@@ -167,6 +168,7 @@
     ☐ Optimise performance for deep content hierarchies
 
 **Phase 7: Testing** (Final Phase)
+    ☐ Test full end-to-end user workflows in production environment
 
     
 **Phase 8: Scan old project for more ideas***

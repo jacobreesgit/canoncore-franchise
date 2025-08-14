@@ -34,6 +34,10 @@ npm run deploy              # Deploy to production
 npm run deploy:preview      # Deploy preview/staging
 npm run storybook          # Run Storybook dev server
 npm run build-storybook    # Build Storybook for deployment
+
+# Performance analysis commands
+npm run analyze             # Analyze bundle size and dependencies
+npm run lighthouse          # Run Lighthouse performance audit
 ```
 
 ## Development Data Management
@@ -109,7 +113,7 @@ src/
 │   │   ├── index.ts           # Hook exports
 │   │   ├── usePageTitle.ts    # Page title management hook
 │   │   ├── useScreenSize.ts   # Responsive screen size detection hook with Tailwind breakpoints
-│   │   └── useSearch.ts       # Search functionality hook
+│   │   └── useSearch.ts       # Dynamic search hook with Fuse.js code splitting
 │   ├── utils/             # Utility functions
 │   │   ├── accessibility.ts   # WCAG AA compliance utilities
 │   │   └── accessibility.test.ts # Accessibility testing
@@ -222,9 +226,10 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Fixed Critical Accessibility Issues** - ErrorMessage contrast compliance (5.91:1 ratio), enhanced ViewToggle with blue active states and white text
 - **Component Organisation & Structure** - Logical component folders (layout, forms, interactive, content, feedback) with organized Storybook hierarchy
 - **Deployment Configuration** - Vercel deployment setup with environment separation, optimized build configuration, and comprehensive deployment documentation
+- **Phase 5a Performance Optimization Complete** - Bundle size optimization maintaining 99.5 kB shared bundle, dynamic imports for Fuse.js and axe-core, image optimization with WebP/AVIF formats, security headers, and comprehensive caching strategies
 
 **Next Implementation Phases (see todo.md):**
-5. **Phase 5b-5c: Deployment & UX Review** - Production environment setup, performance optimization, UX review
+5. **Phase 5b-5c: Deployment & UX Review** - Environment separation with Firebase projects, UX review and flow optimization
 6. **Phase 6a-6b: Advanced Content Hierarchies & Legacy Review** - Drag-and-drop organisation, old project analysis
 7. **Phase 7: Testing** (Final Phase) - Unit tests, integration tests, security rule testing
 

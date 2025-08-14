@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 5a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, and Vercel deployment configuration.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 5a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, Vercel deployment configuration, and comprehensive performance optimization with bundle size management and dynamic imports.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -396,7 +396,8 @@ canoncore/
 │   │   │   └── index.ts            # Service exports
 │   │   ├── hooks/                  # Custom React hooks
 │   │   │   ├── usePageTitle.ts     # Page title management hook
-│   │   │   └── useScreenSize.ts    # Screen size detection with Tailwind breakpoints
+│   │   │   ├── useScreenSize.ts    # Screen size detection with Tailwind breakpoints
+│   │   │   └── useSearch.ts        # Dynamic search hook with optimized Fuse.js loading
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions + UserProgress interface
 │   ├── components/                 # Complete design system (Phase 4a-4d)
@@ -461,15 +462,18 @@ canoncore/
 ├── firestore.rules               # Firestore security rules + UserProgress collection
 ├── firestore.indexes.json       # Firestore database indexes
 ├── next-env.d.ts                 # Next.js TypeScript declarations
-├── next.config.ts               # Next.js config
-├── package.json                 # Dependencies and scripts + Storybook
+├── next.config.js               # Next.js config with performance optimizations
+├── package.json                 # Dependencies + deployment scripts + performance analysis
 ├── package-lock.json           # Dependency lock file
 ├── postcss.config.mjs          # PostCSS configuration
 ├── todo.md                     # Implementation roadmap
 ├── tsconfig.json              # TypeScript config
 ├── tsconfig.tsbuildinfo       # TypeScript build cache
 ├── vitest.config.ts           # Vitest configuration for testing
-└── vitest.shims.d.ts          # Vitest type shims
+├── vitest.shims.d.ts          # Vitest type shims
+├── vercel.json                 # Vercel deployment configuration
+├── .vercelignore              # Vercel deployment exclusions
+└── .env.production            # Production environment template
 ```
 
 ## Security Model (Current)
@@ -498,18 +502,33 @@ canoncore/
 - Form validation errors
 - Component error boundaries
 
-## Performance Considerations (Current)
+## Performance Considerations (Phase 5a Complete)
 
-### Optimisations In Place
-- React 19 with concurrent features
-- Next.js App Router with automatic optimisation
-- Tailwind CSS for minimal bundle size
+### Performance Optimizations Implemented
+- **Bundle Size Management**: Maintained 99.5 kB shared bundle size through strategic optimization
+- **Dynamic Imports**: Fuse.js and @axe-core/react loaded only when needed to reduce initial bundle
+- **Image Optimization**: WebP/AVIF formats with 1-year caching for static assets
+- **Security Headers**: X-Frame-Options, X-Content-Type-Options, and Referrer-Policy
+- **Caching Strategy**: Long-term caching for static assets (31536000s) and favicon optimization
+- **Console Removal**: Production builds strip console.log statements for cleaner deployment
+- **Package Optimization**: Next.js experimental optimizePackageImports for firebase and fuse.js
 
-### Future Optimisations (Planned)
-- Firestore query optimisation for large franchise datasets
+### Bundle Analysis Tools
+- **npm run analyze**: ANALYZE=true npm run build for detailed bundle inspection
+- **npm run lighthouse**: Performance auditing with HTML reports
+- **Deployment Integration**: Vercel build optimizations with regions (lhr1) and framework detection
+
+### Architecture Optimizations
+- **Conditional Loading**: Accessibility tools only load in development environment
+- **Fallback Search**: Simple string matching while Fuse.js dynamically imports
+- **SSR Safety**: useScreenSize hook with proper server-side rendering compatibility
+- **Component Organization**: Logical component structure reduces import complexity
+
+### Future Optimizations (Planned)
+- Firestore query optimization for large franchise datasets
 - Component lazy loading for large franchise trees
-- Image optimisation for franchise media
 - Service worker for offline capability
+- Advanced caching strategies for dynamic content
 
 ## Next Phase Integration Points
 
@@ -588,16 +607,20 @@ canoncore/
 - ✅ **Responsive Design Patterns**: Mobile-first approach with proper breakpoint handling
 - ✅ **Mobile Touch Targets**: 44px minimum touch targets for mobile accessibility
 
-### Phase 5a: Code Optimisation & Cleanup
-- Remove unused files, components, and service methods
-- Consolidate duplicate UI patterns and optimise imports
-- Clean up Firebase features and improve code organisation
-- Bundle size optimisation and performance improvements
+### Phase 5a: Code Optimisation & Cleanup (COMPLETE)
+- ✅ **Performance Optimization**: Bundle size maintained at 99.5 kB through strategic optimization
+- ✅ **Dynamic Imports**: Fuse.js and @axe-core/react loaded only when needed
+- ✅ **Image Optimization**: WebP/AVIF formats with comprehensive caching strategies
+- ✅ **Security Headers**: Production-ready security and performance headers
+- ✅ **Build Configuration**: Next.js optimization with experimental package imports
+- ✅ **Analysis Tools**: Bundle analysis and Lighthouse performance auditing
 
-### Phase 5b: Deployment
-- Production environment setup and deployment
-- Firebase hosting configuration
-- End-to-end workflow validation
+### Phase 5b: Deployment (IN PROGRESS)
+- ✅ **Vercel Deployment**: Production deployment with optimized build configuration
+- ✅ **Environment Variables**: Firebase configuration for production environment
+- ✅ **Performance Monitoring**: Deployment scripts and performance analysis tools
+- ☐ **Environment Separation**: Separate Firebase projects for development vs production
+- ☐ **Domain Configuration**: Custom domain setup and SSL configuration
 
 ### Phase 5c: Flow Optimisation & UX Review
 - Objective review and optimisation of user flows
@@ -664,5 +687,5 @@ CanonCore implements industry-standard accessibility checking with full WCAG AA 
 
 ---
 
-**Last Updated**: Phase 5a Accessibility Implementation Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 17 UI Components + Unified Navigation + Mobile Responsive Design + Comprehensive WCAG AA Accessibility Implementation)  
-**Next Update**: After Phase 5b-5c: Deployment and UX Review (Testing moved to Phase 7 as final phase)
+**Last Updated**: Phase 5a Performance Optimization Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 17 UI Components + Unified Navigation + Mobile Responsive Design + Comprehensive WCAG AA Accessibility Implementation + Performance Optimization with Bundle Management and Dynamic Imports)  
+**Next Update**: After Phase 5b-5c: Deployment Environment Separation and UX Review (Testing moved to Phase 7 as final phase)

@@ -125,6 +125,10 @@ npm run deploy:preview
 
 # Deploy to development environment
 npm run deploy:dev
+
+# Performance analysis
+npm run analyze        # Analyze bundle size and dependencies
+npm run lighthouse     # Run Lighthouse performance audit
 ```
 
 ## Monitoring and Logs
@@ -168,7 +172,34 @@ npm run deploy:dev
 - Tailwind CSS should work out of the box with Next.js on Vercel
 - Check for any custom CSS compilation issues
 
-## Performance Optimization
+## Performance Optimization (Phase 5a Complete)
+
+### Bundle Size Management
+- **Maintained 99.5 kB shared bundle size** through strategic optimization
+- **Dynamic imports** for Fuse.js and @axe-core/react to reduce initial bundle size
+- **Next.js experimental optimizePackageImports** for firebase and fuse.js packages
+- **Console removal** in production builds for cleaner deployment
+
+### Image and Asset Optimization
+- **WebP/AVIF formats** supported with automatic format selection
+- **Long-term caching** (31536000s) for static assets and favicon
+- **Minimized cache TTL** for images with 1-year expiration
+- **DNS prefetch control** enabled for performance optimization
+
+### Performance Analysis Tools
+- **Bundle analyzer:** `npm run analyze` for detailed bundle inspection
+- **Lighthouse auditing:** `npm run lighthouse` for performance reports
+- **Build optimization:** Vercel regions (lhr1) and framework detection
+- **Performance monitoring:** Deployment scripts track bundle size changes
+
+### Next.js Configuration Optimizations
+
+The `next.config.js` includes comprehensive performance features:
+- **Image optimization** with WebP/AVIF formats and long-term caching
+- **Security headers** (X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
+- **Bundle optimization** through experimental package imports
+- **Console removal** for production builds
+- **Caching strategies** for static assets and favicon
 
 ### Vercel Analytics
 
@@ -176,14 +207,7 @@ Enable Vercel Analytics in project settings for:
 - Core Web Vitals monitoring
 - Real user performance metrics
 - Page load times
-
-### Next.js Optimization
-
-The `next.config.js` includes:
-- Image optimization
-- Bundle analysis
-- Security headers
-- Performance optimizations
+- Bundle size tracking
 
 ## Security Considerations
 
