@@ -1,5 +1,4 @@
-import { useState, useMemo } from 'react';
-import Fuse from 'fuse.js';
+import { useState, useMemo, useEffect } from 'react';
 
 /**
  * Configuration options for the search hook
@@ -61,15 +60,28 @@ export function useSearch<T>(
 ): UseSearchResult<T> {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Create Fuse instance with memoization
+  // Dynamically import Fuse.js only when needed
+  const [Fuse, setFuse] = useState<any>(null);
+
+  useEffect(() => {
+    if (searchQuery.trim() && !Fuse) {
+      import('fuse.js').then((module) => {
+        setFuse(() => module.default);
+      });
+    }
+  }, [searchQuery, Fuse]);
+
+  // Create Fuse instance with memoization (only when Fuse is loaded)
   const fuse = useMemo(() => {
+    if (!Fuse) return null;
+    
     const options: any = {
       ...DEFAULT_FUSE_OPTIONS,
       ...fuseOptions,
       keys: keys
     };
     return new Fuse(data, options);
-  }, [data, keys, fuseOptions]);
+  }, [Fuse, data, keys, fuseOptions]);
 
   // Filter results based on search query
   const filteredResults = useMemo(() => {
@@ -77,9 +89,20 @@ export function useSearch<T>(
       return data;
     }
     
+    if (!fuse) {
+      // Fallback to simple string matching while Fuse loads
+      return data.filter(item => {
+        return keys.some(key => {
+          const value = (item as any)[key];
+          return typeof value === 'string' && 
+                 value.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+      });
+    }
+    
     const results = fuse.search(searchQuery);
-    return results.map(result => result.item);
-  }, [fuse, searchQuery, data]);
+    return results.map((result: any) => result.item);
+  }, [fuse, searchQuery, data, keys]);
 
   // Generate search results text for PageHeader
   const searchResultsText = useMemo(() => {
