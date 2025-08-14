@@ -18,8 +18,7 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
     }, 2000);
   });
   
-  // Run accessibility tests
-  import('@/lib/utils/accessibility.test');
+  // Note: Accessibility tests are run separately via npm scripts, not imported here
 }
 
 export const metadata: Metadata = {
