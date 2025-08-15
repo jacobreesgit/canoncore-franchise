@@ -18,17 +18,10 @@ export default function DiscoverPage() {
   const [universeOwners, setUniverseOwners] = useState<Record<string, User>>({});
   
   // Fuzzy search hook
-  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses, searchResultsText, isSearching } = useSearch(publicUniverses, {
+  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses } = useSearch(publicUniverses, {
     keys: ['name', 'description']
   });
 
-  // Custom message for discover page (shows total count when not searching)
-  const displaySearchResultsText = useMemo(() => {
-    if (isSearching) {
-      return searchResultsText;
-    }
-    return publicUniverses.length > 0 ? `${publicUniverses.length} public franchise${publicUniverses.length !== 1 ? 's' : ''}` : 'Start typing to search...';
-  }, [isSearching, searchResultsText, publicUniverses.length]);
 
   useEffect(() => {
     const fetchPublicUniverses = async () => {
@@ -99,7 +92,6 @@ export default function DiscoverPage() {
             placeholder: 'Search Marvel, Doctor Who, Star Wars...',
             variant: 'default'
           } : undefined}
-          searchResultsText={displaySearchResultsText}
         />
 
         {universesLoading ? (
@@ -112,33 +104,26 @@ export default function DiscoverPage() {
               ? 'Try adjusting your search terms'
               : 'Be the first to create and share a public franchise!'
             }
-            actionText={user ? "Create First Public Franchise" : undefined}
-            actionHref={user ? "/universes/create" : undefined}
-            showAction={!!user}
+            actions={user ? [
+              { text: "Create First Public Franchise", href: "/universes/create", variant: "primary" }
+            ] : []}
           />
         ) : (
-          <>
-
-            <CardGrid variant="default">
-              {filteredUniverses.map((universe) => {
-                const isOwned = user && universe.userId === user.id;
-                const ownerData = universeOwners[universe.userId];
-                
-                return (
-                  <UniverseCard
-                    key={universe.id}
-                    universe={universe}
-                    href={`/universes/${universe.id}?from=discover`}
-                    showFavourite={user ? true : false}
-                    showOwner={!isOwned && !!ownerData}
-                    ownerName={ownerData?.displayName || ownerData?.email || 'Unknown User'}
-                    showOwnerBadge={true}
-                    currentUserId={user?.id}
-                  />
-                );
-              })}
-            </CardGrid>
-          </>
+          <CardGrid 
+            variant="default"
+            universes={filteredUniverses}
+            universeHref={(universe) => `/universes/${universe.id}?from=discover`}
+            showFavourite={user ? true : false}
+            showOwner={true}
+            ownerNames={Object.fromEntries(
+              Object.entries(universeOwners).map(([userId, userData]) => [
+                userId, 
+                userData?.displayName || userData?.email || 'Unknown User'
+              ])
+            )}
+            showOwnerBadge={true}
+            currentUserId={user?.id}
+          />
         )}
       </PageContainer>
     </div>

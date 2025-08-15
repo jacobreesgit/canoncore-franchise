@@ -141,3 +141,42 @@ export const OrganisationalContent: Story = {
   },
 };
 
+export const WithSearch: Story = {
+  args: {
+    variant: 'centered',
+    title: 'Your Franchises',
+    description: 'Manage and track your progress through your favourite fictional universes',
+    searchBar: {
+      value: '',
+      onChange: () => {},
+      placeholder: 'Search your franchises...',
+      variant: 'default'
+    },
+    actions: [
+      { type: 'primary', label: 'Add Franchise', href: '/universes/create' }
+    ],
+  },
+};
+
+export const WithSearchDetail: Story = {
+  args: {
+    variant: 'detail',
+    title: 'Marvel Cinematic Universe',
+    description: 'The shared universe of superhero films and TV series produced by Marvel Studios',
+    breadcrumbs: [
+      { label: 'Dashboard', href: '/' },
+      { label: 'Marvel Cinematic Universe', isCurrentPage: true }
+    ],
+    searchBar: {
+      value: '',
+      onChange: () => {},
+      placeholder: 'Search episodes, characters, locations...',
+      variant: 'default'
+    },
+    actions: [
+      { type: 'primary', label: 'Add Content Item', href: '/universes/123/content/add-viewable' },
+      { type: 'secondary', label: 'Add Organisation Group', href: '/universes/123/content/organise' }
+    ],
+  },
+};
+

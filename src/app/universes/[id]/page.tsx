@@ -8,7 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import { useSearch } from '@/lib/hooks/useSearch';
 import Link from 'next/link';
-import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, EmptyState, Button, ViewToggle, LoadingSpinner, PageContainer, Badge, CardGrid } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, EmptyState, Button, ButtonLink, ViewToggle, LoadingSpinner, PageContainer, Badge, CardGrid } from '@/components';
 
 export default function UniversePage() {
   const { user, loading } = useAuth();
@@ -27,7 +27,7 @@ export default function UniversePage() {
   const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
   
   // Fuzzy search hook for content
-  const { searchQuery, setSearchQuery, filteredResults: filteredContent, searchResultsText } = useSearch(content, {
+  const { searchQuery, setSearchQuery, filteredResults: filteredContent } = useSearch(content, {
     keys: ['name', 'description', 'mediaType']
   });
 
@@ -112,12 +112,12 @@ export default function UniversePage() {
               <h3 className="text-lg font-medium text-danger mb-2">
                 {error || 'Universe not found'}
               </h3>
-              <Link
+              <ButtonLink
+                variant="primary"
                 href="/"
-                className="inline-block bg-[var(--button-primary-background)] hover:bg-[var(--button-primary-background-hover)] text-on-primary font-medium py-2 px-4 rounded-lg transition-colors"
               >
                 Back to Dashboard
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </PageContainer>
@@ -199,7 +199,11 @@ export default function UniversePage() {
             </div>
           }
           actions={isOwner ? [
-            { type: 'primary', label: 'Add Content', href: `/universes/${universe.id}/content/create` },
+            // Only show content creation actions if content exists AND not loading (EmptyState handles them when empty)
+            ...(!universeLoading && content.length > 0 ? [
+              { type: 'primary' as const, label: 'Add Content Item', href: `/universes/${universe.id}/content/add-viewable` },
+              { type: 'secondary' as const, label: 'Add Organisation Group', href: `/universes/${universe.id}/content/organise` },
+            ] : []),
             { type: 'secondary', label: 'Edit Universe', href: `/universes/${universe.id}/edit` },
             { type: 'danger', label: 'Delete', onClick: () => setShowDeleteConfirm(true) }
           ] : []}
@@ -209,17 +213,17 @@ export default function UniversePage() {
             placeholder: 'Search episodes, characters, locations...',
             variant: 'default'
           } : undefined}
-          searchResultsText={searchResultsText}
         />
 
         {content.length === 0 ? (
           <EmptyState
             variant="default"
             title="No content yet"
-            description="Start by adding episodes, movies, characters, or other content to this universe"
-            actionText={isOwner ? "Add First Content" : undefined}
-            actionHref={isOwner ? `/universes/${universe.id}/content/create` : undefined}
-            showAction={isOwner}
+            description="Start by adding individual content items, or create organisational groups like series and characters"
+            actions={isOwner ? [
+              { text: "Add Content Item", href: `/universes/${universe.id}/content/add-viewable`, variant: "primary" },
+              { text: "Add Organisation Group", href: `/universes/${universe.id}/content/organise`, variant: "secondary" }
+            ] : []}
           />
         ) : filteredContent.length === 0 ? (
           <EmptyState
@@ -248,6 +252,8 @@ export default function UniversePage() {
                 content={filteredContent}
                 contentHref={(item) => `/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
                 sortContent={true}
+                showFavourite={true}
+                currentUserId={user?.id}
               />
             ) : (
               /* Tree View */
@@ -262,7 +268,7 @@ export default function UniversePage() {
                       <Link
                         key={item.id}
                         href={`/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-                        className="flex items-center hover:bg-surface-page rounded-lg transition-colors"
+                        className="flex items-center hover:bg-surface-page rounded-lg transition-colors cursor-pointer"
                       >
                         <div className="flex items-center flex-1 p-2 hover:bg-surface-page rounded-lg transition-colors">
                           <div className="flex-1 min-w-0">
@@ -298,7 +304,7 @@ export default function UniversePage() {
                             <Link
                               key={item.id}
                               href={`/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-                              className="flex items-center p-2 hover:bg-surface-page rounded-lg transition-colors"
+                              className="flex items-center p-2 hover:bg-surface-page rounded-lg transition-colors cursor-pointer"
                             >
                               <span className="text-sm text-secondary capitalize mr-2">{item.mediaType}</span>
                               <span className="font-medium text-primary">{item.name}</span>
@@ -366,7 +372,7 @@ function TreeNode({ node, content, universe, depth }: { node: any; content: Cont
           <Button
             variant="secondary"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 mr-1 hover:bg-[var(--color-interactive-secondary)] rounded transition-colors min-w-0"
+            className="p-1 mr-1 hover:bg-[var(--color-interactive-secondary)] rounded transition-colors min-w-0 cursor-pointer"
           >
             <svg 
               className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
@@ -382,7 +388,7 @@ function TreeNode({ node, content, universe, depth }: { node: any; content: Cont
         
         <Link
           href={`/content/${nodeContent.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-          className="flex items-center flex-1 p-2 hover:bg-surface-page rounded-lg transition-colors"
+          className="flex items-center flex-1 p-2 hover:bg-surface-page rounded-lg transition-colors cursor-pointer"
         >
           <span className="text-sm text-secondary capitalize mr-2">{nodeContent.mediaType}</span>
           <span className="font-medium text-primary">{nodeContent.name}</span>

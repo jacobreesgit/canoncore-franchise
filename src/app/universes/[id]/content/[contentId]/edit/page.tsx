@@ -6,7 +6,7 @@ import { Content, Universe } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, FormTextarea, PageContainer } from '@/components';
+import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, FormTextarea, FormSelect, PageContainer } from '@/components';
 
 const mediaTypeOptions: { value: Content['mediaType']; label: string; description: string }[] = [
   { value: 'video', label: 'Video', description: 'Movies, TV episodes, web series' },
@@ -237,22 +237,21 @@ export default function EditContentPage() {
             </div>
 
             <div>
-              <label htmlFor="mediaType" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="mediaType">
                 Content Type *
-              </label>
-              <select
+              </FormLabel>
+              <FormSelect
                 id="mediaType"
                 name="mediaType"
                 value={formData.mediaType}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
               >
                 {mediaTypeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label} - {option.description}
                   </option>
                 ))}
-              </select>
+              </FormSelect>
               {selectedMediaType && (
                 <p className="mt-1 text-sm text-gray-500">
                   {isViewableContent ? 
@@ -264,15 +263,14 @@ export default function EditContentPage() {
             </div>
 
             <div>
-              <label htmlFor="parentId" className="block text-sm font-medium text-gray-700 mb-1">
+              <FormLabel htmlFor="parentId">
                 Parent Content (Optional)
-              </label>
-              <select
+              </FormLabel>
+              <FormSelect
                 id="parentId"
                 name="parentId"
                 value={selectedParentId}
                 onChange={(e) => setSelectedParentId(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
               >
                 <option value="">No parent (top-level content)</option>
                 {existingContent
@@ -282,7 +280,7 @@ export default function EditContentPage() {
                       {content.name} ({content.mediaType})
                     </option>
                   ))}
-              </select>
+              </FormSelect>
               <p className="mt-1 text-sm text-gray-500">
                 Choose a parent organisational item to organise this content.
               </p>

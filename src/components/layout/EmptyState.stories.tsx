@@ -25,17 +25,9 @@ const meta: Meta<typeof EmptyState> = {
       control: 'text',
       description: 'Description text explaining the empty state',
     },
-    actionText: {
-      control: 'text',
-      description: 'Text for the call-to-action button',
-    },
-    actionHref: {
-      control: 'text',
-      description: 'Link destination for the call-to-action button',
-    },
-    showAction: {
-      control: 'boolean',
-      description: 'Whether to show the call-to-action button',
+    actions: {
+      control: false,
+      description: 'Array of action buttons',
     },
   },
 };
@@ -48,8 +40,9 @@ export const Dashboard: Story = {
     variant: 'default',
     title: 'No franchises yet',
     description: 'Start by adding your first franchise like Marvel, Doctor Who, or Star Wars',
-    actionText: 'Add Your First Franchise',
-    actionHref: '/universes/create',
+    actions: [
+      { text: 'Add Your First Franchise', href: '/universes/create', variant: 'primary' },
+    ],
   },
 };
 
@@ -57,9 +50,11 @@ export const Universe: Story = {
   args: {
     variant: 'default',
     title: 'No content yet',
-    description: 'Start by adding episodes, movies, characters, or other content to this universe',
-    actionText: 'Add First Content',
-    actionHref: '/universes/123/content/create',
+    description: 'Start by adding individual content items, or create organisational groups like series and characters',
+    actions: [
+      { text: 'Add Content Item', href: '/universes/123/content/add-viewable', variant: 'primary' },
+      { text: 'Add Organisation Group', href: '/universes/123/content/organise', variant: 'secondary' },
+    ],
   },
 };
 
@@ -68,8 +63,9 @@ export const Profile: Story = {
     variant: 'default',
     title: 'No favourites yet',
     description: 'Start exploring franchises to add them to your favourites',
-    actionText: 'Discover Franchises',
-    actionHref: '/discover',
+    actions: [
+      { text: 'Discover Franchises', href: '/discover', variant: 'primary' },
+    ],
   },
 };
 
@@ -78,8 +74,9 @@ export const DiscoverEmpty: Story = {
     variant: 'default',
     title: 'No public franchises yet',
     description: 'Be the first to create and share a public franchise!',
-    actionText: 'Create Franchise',
-    actionHref: '/universes/create',
+    actions: [
+      { text: 'Create Franchise', href: '/universes/create', variant: 'primary' },
+    ],
   },
 };
 
@@ -97,6 +94,6 @@ export const WithoutAction: Story = {
     variant: 'default',
     title: 'No items found',
     description: 'There are currently no items to display',
-    showAction: false,
+    actions: [],
   },
 };

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import Link from 'next/link';
-import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, ProgressBar, Button, LoadingSpinner, PageContainer, Badge } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, ProgressBar, Button, ButtonLink, LoadingSpinner, PageContainer, Badge } from '@/components';
 
 export default function ContentPage() {
   const { user, loading } = useAuth();
@@ -109,12 +109,12 @@ export default function ContentPage() {
               <h3 className="text-lg font-medium text-red-600 mb-2">
                 {error || 'Content not found'}
               </h3>
-              <Link
+              <ButtonLink
+                variant="primary"
                 href="/"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
               >
                 Back to Dashboard
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </PageContainer>
@@ -185,7 +185,7 @@ export default function ContentPage() {
                     <Button
                       variant={progressPercent === 100 ? "primary" : "secondary"}
                       onClick={() => handleProgressUpdate(100)}
-                      className={progressPercent === 100 ? 'bg-green-300 text-green-800' : 'bg-green-200 hover:bg-green-300 text-green-800'}
+                      className={progressPercent === 100 ? 'bg-green-300 text-green-800' : 'bg-green-200 hover:bg-green-300 text-green-800 cursor-pointer'}
                     >
                       Completed
                     </Button>

@@ -194,7 +194,7 @@ export function Navigation({
               <Button
                 variant="secondary"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 bg-transparent hover:bg-[var(--color-interactive-secondary)] text-secondary hover:text-primary"
+                className="p-2 bg-transparent hover:bg-[var(--color-interactive-secondary)] text-secondary hover:text-primary cursor-pointer"
                 aria-label="Toggle mobile menu"
               >
                 <svg className={`h-6 w-6 transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

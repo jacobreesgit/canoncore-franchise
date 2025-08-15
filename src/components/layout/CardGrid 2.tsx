@@ -120,6 +120,9 @@ export function CardGrid({
 
   // If content is provided, render automatically with optional sorting
   if (content && contentHref) {
+    // Debug logging
+    console.log('CardGrid props:', { showFavourite, currentUserId, sortContent });
+    
     if (sortContent) {
       const viewableContent = content.filter(c => c.isViewable);
       const organisationalContent = content.filter(c => !c.isViewable);

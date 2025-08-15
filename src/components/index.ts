@@ -8,7 +8,7 @@ export type { NavigationProps, NavigationAction } from './layout/Navigation';
 export { CardGrid } from './layout/CardGrid';
 export type { CardGridProps } from './layout/CardGrid';
 export { EmptyState } from './layout/EmptyState';
-export type { EmptyStateProps } from './layout/EmptyState';
+export type { EmptyStateProps, EmptyStateAction } from './layout/EmptyState';
 export { DeleteConfirmationModal } from './layout/DeleteConfirmationModal';
 export type { DeleteConfirmationModalProps } from './layout/DeleteConfirmationModal';
 
@@ -19,6 +19,8 @@ export { FormLabel } from './forms/FormLabel';
 export type { FormLabelProps } from './forms/FormLabel';
 export { FormTextarea } from './forms/FormTextarea';
 export type { FormTextareaProps } from './forms/FormTextarea';
+export { FormSelect } from './forms/FormSelect';
+export type { FormSelectProps } from './forms/FormSelect';
 export { FormActions } from './forms/FormActions';
 export type { FormActionsProps } from './forms/FormActions';
 

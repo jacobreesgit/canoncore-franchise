@@ -202,9 +202,9 @@ export default function EditUniversePage() {
                 name="isPublic"
                 checked={formData.isPublic}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)] border-input rounded"
+                className="h-4 w-4 text-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)] border-input rounded cursor-pointer"
               />
-              <label htmlFor="isPublic" className="ml-2 block text-sm text-primary">
+              <label htmlFor="isPublic" className="ml-2 block text-sm text-primary cursor-pointer">
                 Make this franchise public for others to discover
               </label>
             </div>

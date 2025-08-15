@@ -72,8 +72,6 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   progressBar?: PageHeaderProgressBar;
   /** Search bar configuration */
   searchBar?: PageHeaderSearchBar;
-  /** Search results counter text to prevent layout shift */
-  searchResultsText?: string;
 }
 
 /**
@@ -126,7 +124,6 @@ export function PageHeader({
   extraContent,
   progressBar,
   searchBar,
-  searchResultsText,
   ...props
 }: PageHeaderProps) {
   const containerClasses = [
@@ -272,19 +269,14 @@ export function PageHeader({
           </div>
         )}
         {searchBar && (
-          <div className="mt-4">
+          <div className="mt-4 w-full">
             <SearchBar
               variant={searchBar.variant || 'default'}
               value={searchBar.value}
               onChange={searchBar.onChange}
               placeholder={searchBar.placeholder}
+              className="w-full"
             />
-            {/* Search results counter or default message */}
-            <div className="mt-2">
-              <div className="text-sm text-secondary">
-                {searchResultsText || 'Start typing to search...'}
-              </div>
-            </div>
           </div>
         )}
         {extraContent && extraContent}
@@ -326,12 +318,6 @@ export function PageHeader({
                 onChange={searchBar.onChange}
                 placeholder={searchBar.placeholder}
               />
-              {/* Search results counter or default message */}
-              <div className="mt-2 text-center">
-                <div className="text-sm text-secondary">
-                  {searchResultsText || 'Start typing to search...'}
-                </div>
-              </div>
             </div>
           </div>
         )}

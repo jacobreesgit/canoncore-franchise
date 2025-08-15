@@ -10,8 +10,10 @@ CanonCore is a franchise organisation platform for cataloguing REAL existing fic
 
 ## Development Commands
 
+**IMPORTANT**: Never run `npm run dev` automatically. Always ask the user to start the development server themselves.
+
 ```bash
-# Start development server
+# Start development server (USER SHOULD RUN THIS)
 npm run dev
 
 # Build for production  

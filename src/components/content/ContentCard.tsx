@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Content } from '@/lib/types';
+import { FavouriteButton } from '../interactive/FavouriteButton';
 import { ProgressBar } from './ProgressBar';
 import { Badge } from './Badge';
 
@@ -19,13 +20,23 @@ export interface ContentCardProps {
   content: Content;
   /** Link destination */
   href: string;
+  /** Show favourite button */
+  showFavourite?: boolean;
+  /** Show owner information */
+  showOwner?: boolean;
+  /** Owner display name (required if showOwner is true) */
+  ownerName?: string;
+  /** Show owner badge (Your Content) */
+  showOwnerBadge?: boolean;
+  /** Current user ID for owner detection */
+  currentUserId?: string;
 }
 
 /**
  * Base card styles using design system tokens
  */
 const baseStyles = `
-  block bg-surface-card bg-surface-card-hover card hover:shadow-md transition-shadow
+  block bg-surface-card bg-surface-card-hover card hover:shadow-md transition-shadow cursor-pointer
 `;
 
 /**
@@ -43,10 +54,10 @@ const variantStyles = {
 
 /**
  * Size styles using design system spacing tokens
- * These map to our spacing tokens: p-4 = --spacing-4
+ * These map to our spacing tokens: p-6 = --spacing-6 (matching UniverseCard)
  */
 const sizeStyles = {
-  default: 'p-4'
+  default: 'p-6'
 };
 
 /**
@@ -79,6 +90,11 @@ export function ContentCard({
   className = '',
   content,
   href,
+  showFavourite = false,
+  showOwner = false,
+  ownerName,
+  showOwnerBadge = false,
+  currentUserId,
 }: ContentCardProps) {
   // Auto-detect variant from content if not provided
   const contentVariant = variant || (content.isViewable ? 'viewable' : 'organisational');
@@ -87,6 +103,7 @@ export function ContentCard({
     'content-card',
     baseStyles,
     variantStyles[contentVariant],
+    sizeStyles[size],
     className
   ]
     .join(' ')
@@ -99,20 +116,54 @@ export function ContentCard({
       className={cardClasses}
     >
       <div>
-        <h3 className="font-medium text-gray-900 mb-2">{content.name}</h3>
-        <div className="flex items-center justify-between mb-2">
-          <Badge variant="organisational" size="small" className="capitalize">
-            {content.mediaType}
-          </Badge>
-          <span className="text-sm text-gray-600">
-            {formatProgressText(content)}
-          </span>
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center space-x-2 mr-2">
+            <h3 className="text-lg font-medium text-primary truncate">
+              {content.name}
+            </h3>
+            {showFavourite && (
+              <FavouriteButton 
+                targetId={content.id} 
+                targetType="content"
+                className="text-tertiary hover:text-red-500 flex-shrink-0"
+              />
+            )}
+            <Badge variant="organisational" size="small" className="capitalize">
+              {content.mediaType}
+            </Badge>
+          </div>
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            {showOwnerBadge && currentUserId === content.userId && (
+              <Badge variant="owner" size="small">
+                Your Content
+              </Badge>
+            )}
+            {showOwner && ownerName && currentUserId !== content.userId && (
+              <Badge variant="info" size="small">
+                by {ownerName}
+              </Badge>
+            )}
+          </div>
         </div>
-        <ProgressBar 
-          variant={content.isViewable ? 'viewable' : 'organisational'}
-          value={getProgressValue(content)}
-          showLabel={false}
-        />
+
+        {/* Description */}
+        {content.description && (
+          <p className="text-secondary text-sm mb-4 line-clamp-3">
+            {content.description}
+          </p>
+        )}
+
+        {/* Progress */}
+        <div>
+          <ProgressBar 
+            variant={content.isViewable ? 'viewable' : 'organisational'}
+            value={getProgressValue(content)}
+            showLabel={true}
+            label={formatProgressText(content)}
+          />
+        </div>
+
       </div>
     </Link>
   );

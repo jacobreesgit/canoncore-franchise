@@ -45,7 +45,14 @@ export default function CreateUniversePage() {
       }
 
       const newUniverse = await universeService.create(user.id, formData);
-      router.push(`/universes/${newUniverse.id}`);
+      // Reset form after successful creation
+      setFormData({
+        name: '',
+        description: '',
+        isPublic: false,
+        sourceLink: '',
+        sourceLinkName: '',
+      });
     } catch (error) {
       console.error('Error creating universe:', error);
       setError(error instanceof Error ? error.message : 'Error creating universe');
@@ -148,9 +155,9 @@ export default function CreateUniversePage() {
                 name="isPublic"
                 checked={formData.isPublic}
                 onChange={handleInputChange}
-                className="h-4 w-4 text-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)] border-input rounded"
+                className="h-4 w-4 text-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)] border-input rounded cursor-pointer"
               />
-              <label htmlFor="isPublic" className="ml-2 block text-sm text-primary">
+              <label htmlFor="isPublic" className="ml-2 block text-sm text-primary cursor-pointer">
                 Make this franchise public for others to discover
               </label>
             </div>

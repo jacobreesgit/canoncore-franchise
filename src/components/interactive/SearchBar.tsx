@@ -23,7 +23,7 @@ export interface SearchBarProps extends Omit<React.InputHTMLAttributes<HTMLInput
  * Base search bar styles using design system tokens
  */
 const baseStyles = `
-  relative
+  relative w-full
 `;
 
 /**

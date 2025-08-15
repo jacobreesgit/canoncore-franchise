@@ -14,7 +14,7 @@ export default function Home() {
   const [universesLoading, setUniversesLoading] = useState(true);
   
   // Fuzzy search hook
-  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses, searchResultsText } = useSearch(universes, {
+  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses } = useSearch(universes, {
     keys: ['name', 'description']
   });
 
@@ -88,7 +88,6 @@ export default function Home() {
             placeholder: 'Search your franchises...',
             variant: 'default'
           } : undefined}
-          searchResultsText={searchResultsText}
         />
 
         {universesLoading ? (
@@ -101,24 +100,21 @@ export default function Home() {
               ? 'Try adjusting your search terms'
               : 'Start by adding your first franchise like Marvel, Doctor Who, or Star Wars'
             }
-            actionText={searchQuery ? undefined : "Add Your First Franchise"}
-            actionHref={searchQuery ? undefined : "/universes/create"}
+            actions={searchQuery ? [] : [
+              { text: "Add Your First Franchise", href: "/universes/create", variant: "primary" }
+            ]}
           />
         ) : (
           <>
-            <CardGrid variant="default">
-              {filteredUniverses.map((universe) => (
-                <UniverseCard
-                  key={universe.id}
-                  universe={universe}
-                  href={`/universes/${universe.id}?from=dashboard`}
-                  showFavourite={true}
-                  showOwner={false}
-                  showOwnerBadge={true}
-                  currentUserId={user.id}
-                />
-              ))}
-            </CardGrid>
+            <CardGrid 
+              variant="default" 
+              universes={filteredUniverses}
+              showFavourite={true}
+              showOwner={false}
+              showOwnerBadge={true}
+              currentUserId={user.id}
+              universeHref={(universe) => `/universes/${universe.id}?from=dashboard`}
+            />
           </>
         )}
       </PageContainer>

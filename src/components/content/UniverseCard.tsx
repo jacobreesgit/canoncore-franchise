@@ -36,7 +36,7 @@ export interface UniverseCardProps {
  * Base card styles using design system tokens
  */
 const baseStyles = `
-  block bg-surface-card bg-surface-card-hover card hover:shadow-md transition-shadow
+  block bg-surface-card bg-surface-card-hover card hover:shadow-md transition-shadow cursor-pointer
 `;
 
 /**

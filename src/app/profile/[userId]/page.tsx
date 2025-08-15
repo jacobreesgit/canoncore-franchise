@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import Link from 'next/link';
-import { FavouriteButton, Navigation, PageHeader, EmptyState, Button, UniverseCard, ProgressBar, ViewToggle, LoadingSpinner, PageContainer, CardGrid, DeleteConfirmationModal } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, EmptyState, Button, ButtonLink, UniverseCard, ProgressBar, ViewToggle, LoadingSpinner, PageContainer, CardGrid, DeleteConfirmationModal } from '@/components';
 
 export default function ProfilePage() {
   const { user: currentUser, loading } = useAuth();
@@ -181,12 +181,12 @@ export default function ProfilePage() {
               <h3 className="text-lg font-medium text-red-600 mb-2">
                 {error || 'User not found'}
               </h3>
-              <Link
+              <ButtonLink
+                variant="primary"
                 href="/"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
               >
                 Back to Dashboard
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </PageContainer>
@@ -271,19 +271,15 @@ export default function ProfilePage() {
                 }
               />
             ) : (
-              <CardGrid variant="default">
-                {userUniverses.map((universe) => (
-                  <UniverseCard
-                    key={universe.id}
-                    universe={universe}
-                    href={`/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
-                    showFavourite={false}
-                    showOwner={false}
-                    showOwnerBadge={true}
-                    currentUserId={currentUser?.id}
-                  />
-                ))}
-              </CardGrid>
+              <CardGrid 
+                variant="default"
+                universes={userUniverses}
+                showFavourite={false}
+                showOwner={false}
+                showOwnerBadge={true}
+                currentUserId={currentUser?.id}
+                universeHref={(universe) => `/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
+              />
             )}
           </div>
         )}
@@ -295,8 +291,9 @@ export default function ProfilePage() {
                 variant="default"
                 title="No favourites yet"
                 description="Start exploring franchises to add them to your favourites"
-                actionText="Discover Franchises"
-                actionHref="/discover"
+                actions={[
+                  { text: "Discover Franchises", href: "/discover", variant: "primary" }
+                ]}
               />
             ) : (
               <div className="space-y-8">
@@ -304,25 +301,18 @@ export default function ProfilePage() {
                 {favouriteUniverses.length > 0 && (
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Favourite Universes</h2>
-                    <CardGrid variant="default">
-                      {favouriteUniverses.map((universe) => {
-                        const isOwned = currentUser && universe.userId === currentUser.id;
-                        const ownerData = universeOwners[universe.userId];
-                        
-                        return (
-                          <UniverseCard
-                            key={`universe-${universe.id}`}
-                            universe={universe}
-                            href={`/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
-                            showFavourite={true}
-                            showOwner={!isOwned && !!ownerData}
-                            ownerName={ownerData?.displayName || ownerData?.email || 'Unknown User'}
-                            showOwnerBadge={true}
-                            currentUserId={currentUser?.id}
-                          />
-                        );
-                      })}
-                    </CardGrid>
+                    <CardGrid 
+                      variant="default"
+                      universes={favouriteUniverses}
+                      showFavourite={true}
+                      showOwner={true}
+                      showOwnerBadge={true}
+                      currentUserId={currentUser?.id}
+                      ownerNames={Object.fromEntries(
+                        Object.entries(universeOwners).map(([key, user]) => [key, user.displayName || 'Unknown User'])
+                      )}
+                      universeHref={(universe) => `/universes/${universe.id}?from=profile&profileId=${profileUser?.id}`}
+                    />
                   </div>
                 )}
 

@@ -59,6 +59,10 @@ export function useSearch<T>(
   { keys, fuseOptions = {}, defaultMessage = 'Start typing to search...' }: UseSearchOptions<T>
 ): UseSearchResult<T> {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Stabilize keys to prevent unnecessary re-renders
+  const keysString = JSON.stringify(keys);
+  const stableKeys = useMemo(() => keys, [keys]);
 
   // Dynamically import Fuse.js only when needed
   const [Fuse, setFuse] = useState<any>(null);
@@ -73,36 +77,57 @@ export function useSearch<T>(
 
   // Create Fuse instance with memoization (only when Fuse is loaded)
   const fuse = useMemo(() => {
-    if (!Fuse) return null;
+    if (!Fuse || !data || data.length === 0) return null;
     
-    const options: any = {
-      ...DEFAULT_FUSE_OPTIONS,
-      ...fuseOptions,
-      keys: keys
-    };
-    return new Fuse(data, options);
-  }, [Fuse, data, keys, fuseOptions]);
+    try {
+      const options: any = {
+        ...DEFAULT_FUSE_OPTIONS,
+        ...fuseOptions,
+        keys: stableKeys
+      };
+      return new Fuse(data, options);
+    } catch (error) {
+      console.warn('Error creating Fuse instance:', error);
+      return null;
+    }
+  }, [Fuse, data, stableKeys, fuseOptions]);
 
   // Filter results based on search query
   const filteredResults = useMemo(() => {
+    // Safety check for data
+    if (!data || data.length === 0) {
+      return [];
+    }
+    
     if (!searchQuery.trim()) {
       return data;
     }
     
     if (!fuse) {
       // Fallback to simple string matching while Fuse loads
-      return data.filter(item => {
-        return keys.some(key => {
-          const value = (item as any)[key];
-          return typeof value === 'string' && 
-                 value.toLowerCase().includes(searchQuery.toLowerCase());
+      try {
+        return data.filter(item => {
+          if (!item) return false;
+          return stableKeys.some(key => {
+            const value = (item as any)[key];
+            return typeof value === 'string' && 
+                   value.toLowerCase().includes(searchQuery.toLowerCase());
+          });
         });
-      });
+      } catch (error) {
+        console.warn('Error in fallback search:', error);
+        return data;
+      }
     }
     
-    const results = fuse.search(searchQuery);
-    return results.map((result: any) => result.item);
-  }, [fuse, searchQuery, data, keys]);
+    try {
+      const results = fuse.search(searchQuery);
+      return results.map((result: any) => result.item);
+    } catch (error) {
+      console.warn('Error in Fuse search:', error);
+      return data;
+    }
+  }, [fuse, searchQuery, data, stableKeys]);
 
   // Generate search results text for PageHeader
   const searchResultsText = useMemo(() => {

@@ -5,6 +5,15 @@ import { ButtonLink } from '../interactive/Button';
  * EmptyState component with consistent styling and behavior
  */
 
+export interface EmptyStateAction {
+  /** Button text */
+  text: string;
+  /** Button href */
+  href: string;
+  /** Button variant */
+  variant?: 'primary' | 'secondary';
+}
+
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Component variant */
   variant?: 'default' | 'hierarchical';
@@ -16,12 +25,8 @@ export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   /** Empty state description */
   description: string;
-  /** Call-to-action button text (optional) */
-  actionText?: string;
-  /** Call-to-action button href (optional) */
-  actionHref?: string;
-  /** Whether to show the CTA button (defaults to true if actionText and actionHref provided) */
-  showAction?: boolean;
+  /** Call-to-action buttons (optional) */
+  actions?: EmptyStateAction[];
 }
 
 /**
@@ -73,13 +78,13 @@ const getTitleClasses = (variant: EmptyStateProps['variant']) => {
 };
 
 /**
- * Get description classes based on variant and whether action will be shown
+ * Get description classes based on variant and whether actions will be shown
  */
-const getDescriptionClasses = (variant: EmptyStateProps['variant'], shouldShowAction: boolean) => {
+const getDescriptionClasses = (variant: EmptyStateProps['variant'], shouldShowActions: boolean) => {
   if (variant === 'hierarchical') {
     return 'text-secondary';
   }
-  return shouldShowAction ? 'text-secondary mb-6' : 'text-secondary';
+  return shouldShowActions ? 'text-secondary mb-6' : 'text-secondary';
 };
 
 /**
@@ -91,9 +96,7 @@ export function EmptyState({
   className = '',
   title,
   description,
-  actionText,
-  actionHref,
-  showAction = true,
+  actions = [],
   ...props
 }: EmptyStateProps) {
   const emptyStateClasses = [
@@ -107,11 +110,11 @@ export function EmptyState({
     .replace(/\s+/g, ' ')
     .trim();
 
-  const shouldShowAction = showAction && actionText && actionHref;
+  const shouldShowActions = actions.length > 0;
 
   const containerClasses = getContainerClasses(variant);
   const titleClasses = getTitleClasses(variant);
-  const descriptionClasses = getDescriptionClasses(variant, !!shouldShowAction);
+  const descriptionClasses = getDescriptionClasses(variant, shouldShowActions);
 
   // Hierarchical variant has simpler structure
   if (variant === 'hierarchical') {
@@ -134,13 +137,18 @@ export function EmptyState({
         <p className={descriptionClasses}>
           {description}
         </p>
-        {shouldShowAction && (
-          <ButtonLink
-            variant="primary"
-            href={actionHref}
-          >
-            {actionText}
-          </ButtonLink>
+        {shouldShowActions && (
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {actions.map((action, index) => (
+              <ButtonLink
+                key={index}
+                variant={action.variant || 'primary'}
+                href={action.href}
+              >
+                {action.text}
+              </ButtonLink>
+            ))}
+          </div>
         )}
       </div>
     </div>
