@@ -73,7 +73,11 @@
   --color-status-info-text: var(--color-blue-800);
   --color-status-error-background: var(--color-red-50);
 
-  /* Typography */
+  /* Typography - Tor Browser Compatible */
+  /* Font stacks optimized for privacy browsers */
+  --font-family-primary: Arial, "Liberation Sans", "Nimbus Sans L", sans-serif;
+  --font-family-monospace: "Courier New", "Liberation Mono", "Nimbus Mono L", monospace;
+  
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -252,7 +256,7 @@
     box-shadow: none;
   }
   .btn-clear:hover:not(:disabled) {
-    background-color: var(--button-clear-background-hover);
+    background-color: transparent;
     color: var(--button-clear-text-hover);
   }
   .btn-clear:disabled {
@@ -308,5 +312,30 @@
   .input:focus {
     border-color: var(--form-input-border-focus);
     --tw-ring-color: var(--form-input-border-focus);
+  }
+}
+
+/* Global font application for Tor browser compatibility */
+html, body {
+  font-family: var(--font-family-primary);
+  /* Enhanced text rendering for privacy browsers */
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+}
+
+/* Ensure code elements use monospace fonts */
+code, pre, kbd, samp {
+  font-family: var(--font-family-monospace);
+}
+
+/* Tree component responsive indentation */
+.tree-item {
+  padding-left: var(--mobile-indent);
+}
+
+@media (min-width: 768px) {
+  .tree-item {
+    padding-left: var(--desktop-indent);
   }
 }

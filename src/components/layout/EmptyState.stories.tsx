@@ -41,7 +41,7 @@ export const Dashboard: Story = {
     title: 'No franchises yet',
     description: 'Start by adding your first franchise like Marvel, Doctor Who, or Star Wars',
     actions: [
-      { text: 'Add Your First Franchise', href: '/universes/create', variant: 'primary' },
+      { text: '+ Your First Franchise', href: '/universes/create', variant: 'primary' },
     ],
   },
 };
@@ -52,8 +52,8 @@ export const Universe: Story = {
     title: 'No content yet',
     description: 'Start by adding individual content items, or create organisational groups like series and characters',
     actions: [
-      { text: 'Add Content Item', href: '/universes/123/content/add-viewable', variant: 'primary' },
-      { text: 'Add Organisation Group', href: '/universes/123/content/organise', variant: 'secondary' },
+      { text: '+ Content Item', href: '/universes/123/content/add-viewable', variant: 'primary' },
+      { text: '+ Organisation Group', href: '/universes/123/content/organise', variant: 'secondary' },
     ],
   },
 };

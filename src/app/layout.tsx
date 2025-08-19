@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/contexts/auth-context';
+import { Footer } from '@/components';
 
 export const metadata: Metadata = {
   title: 'CanonCore - Franchise Organisation',
@@ -14,9 +15,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen flex flex-col">
         <AuthProvider>
-          {children}
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

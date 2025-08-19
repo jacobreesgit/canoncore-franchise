@@ -62,7 +62,7 @@ export const Detail: Story = {
       label: 'Overall Progress'
     },
     actions: [
-      { type: 'primary', label: 'Add Content', href: '/content/create' },
+      { type: 'primary', label: '+ Content', href: '/content/create' },
       { type: 'secondary', label: 'Edit', href: '/edit' },
       { type: 'danger', label: 'Delete', onClick: () => alert('Delete clicked') },
     ],
@@ -107,7 +107,7 @@ export const ContentDetail: Story = {
       label: 'Progress'
     },
     actions: [
-      { type: 'secondary', label: 'Edit Content', href: '/content/456/edit' },
+      { type: 'secondary', label: 'Edit', href: '/content/456/edit' },
       { type: 'danger', label: 'Delete', onClick: () => alert('Delete clicked') },
     ],
   },
@@ -135,7 +135,7 @@ export const OrganisationalContent: Story = {
       label: 'Overall Progress'
     },
     actions: [
-      { type: 'secondary', label: 'Edit Content', href: '/content/789/edit' },
+      { type: 'secondary', label: 'Edit', href: '/content/789/edit' },
       { type: 'danger', label: 'Delete', onClick: () => alert('Delete clicked') },
     ],
   },
@@ -153,7 +153,7 @@ export const WithSearch: Story = {
       variant: 'default'
     },
     actions: [
-      { type: 'primary', label: 'Add Franchise', href: '/universes/create' }
+      { type: 'primary', label: '+ Franchise', href: '/universes/create' }
     ],
   },
 };
@@ -174,8 +174,8 @@ export const WithSearchDetail: Story = {
       variant: 'default'
     },
     actions: [
-      { type: 'primary', label: 'Add Content Item', href: '/universes/123/content/add-viewable' },
-      { type: 'secondary', label: 'Add Organisation Group', href: '/universes/123/content/organise' }
+      { type: 'primary', label: '+ Content Item', href: '/universes/123/content/add-viewable' },
+      { type: 'secondary', label: '+ Organisation Group', href: '/universes/123/content/organise' }
     ],
   },
 };

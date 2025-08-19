@@ -55,27 +55,22 @@ npm run release             # Build and create minor release
 
 ## Version Management
 
-CanonCore uses **Phase-Based Semantic Versioning** with automated version management:
+CanonCore uses **Semantic Versioning** (SemVer) with automated version management:
 
 ### Current Version Strategy
-- **Major (x.0.0)**: Phase number (5 = Phase 5, 6 = Phase 6, 7 = Phase 7)
-- **Minor (5.x.0)**: Sub-phase letter (1=a, 2=b, 3=c) - Phase 5c = 5.3.0
-- **Patch (5.3.x)**: Bug fixes, small improvements, documentation updates
-
-### Phase to Version Mapping
-- **Phase 5c**: `5.3.0` (current - UX Review & Form Component System)
-- **Phase 6a**: `6.1.0` (next - Advanced Content Hierarchies)
-- **Phase 7**: `7.0.0` (final - Comprehensive Testing & Quality Assurance)
+- **Major (x.0.0)**: Breaking changes or major features
+- **Minor (1.x.0)**: New features, component additions, phase completions
+- **Patch (1.5.x)**: Bug fixes, small improvements, documentation updates
 
 ### Version Workflow
 ```bash
 # For bug fixes and small improvements
 npm run version:patch
 
-# For sub-phase completions (Phase 5c → 5d)
+# For new features and phase completions  
 npm run version:minor
 
-# For major phase transitions (Phase 5 → 6)
+# For breaking changes (rare)
 npm run version:major
 
 # Check current version
@@ -85,9 +80,7 @@ npm run version:check
 **Note**: Version commands automatically create git commits and tags, then push to remote.
 
 ### Version Display
-The current version is displayed in the **Footer Component**: `Version 5.3.0` at bottom of pages (dashboard, discover).
-
-Version information is sourced from `package.json` and available throughout the application via `src/lib/utils/version.ts`.
+The current version is displayed in the Navigation component (desktop only) as a discrete element next to the CanonCore brand. Version information is sourced from `package.json` and available throughout the application via `src/lib/utils/version.ts`.
 
 ## Development Data Management
 

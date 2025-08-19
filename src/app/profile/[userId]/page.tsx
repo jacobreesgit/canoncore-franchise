@@ -204,7 +204,10 @@ export default function ProfilePage() {
         variant="detail"
         currentPage="profile"
         actions={isOwnProfile ? [
-          { type: 'secondary', label: 'Edit Profile', href: `/profile/${userId}/edit` }
+          { type: 'secondary', label: 'Edit', href: `/profile/${userId}/edit` },
+          ...(activeTab === 'favourites' && totalFavourites > 0 ? [
+            { type: 'danger' as const, label: 'Clear All Favourites', onClick: () => setShowClearFavouritesConfirm(true) }
+          ] : [])
         ] : []}
         showNavigationMenu={true}
       />
@@ -235,12 +238,6 @@ export default function ProfilePage() {
               </div>
             </div>
           }
-          actions={isOwnProfile ? [
-            { type: 'secondary' as const, label: 'Edit Profile', href: `/profile/${userId}/edit` },
-            ...(activeTab === 'favourites' && totalFavourites > 0 ? [
-              { type: 'danger' as const, label: 'Clear All Favourites', onClick: () => setShowClearFavouritesConfirm(true) }
-            ] : [])
-          ] : []}
         />
 
         {/* Tabs */}
@@ -291,9 +288,6 @@ export default function ProfilePage() {
                 variant="default"
                 title="No favourites yet"
                 description="Start exploring franchises to add them to your favourites"
-                actions={[
-                  { text: "Discover Franchises", href: "/discover", variant: "primary" }
-                ]}
               />
             ) : (
               <div className="space-y-8">
@@ -322,7 +316,6 @@ export default function ProfilePage() {
                     variant="default"
                     content={favouriteContent}
                     contentHref={(content) => `/content/${content.id}?from=profile&profileId=${profileUser?.id}`}
-                    sortContent={true}
                   />
                 )}
               </div>

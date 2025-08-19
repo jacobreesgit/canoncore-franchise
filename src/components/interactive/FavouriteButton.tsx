@@ -10,13 +10,15 @@ interface FavouriteButtonProps {
   targetType: 'universe' | 'content';
   className?: string;
   showText?: boolean;
+  size?: 'small' | 'default' | 'large';
 }
 
 export function FavouriteButton({ 
   targetId, 
   targetType, 
   className = '', 
-  showText = false 
+  showText = false,
+  size = 'default'
 }: FavouriteButtonProps) {
   const { user } = useAuth();
   const [isFavourited, setIsFavourited] = useState(false);
@@ -75,10 +77,22 @@ export function FavouriteButton({
   // Don't show button if user not logged in
   if (!user) return null;
 
+  // Get icon size classes based on size prop
+  const getIconSizeClass = () => {
+    switch (size) {
+      case 'small':
+        return 'w-4 h-4';
+      case 'large':
+        return 'w-6 h-6';
+      default:
+        return 'w-5 h-5';
+    }
+  };
+
   // Heart icon component
   const heartIcon = (
     <svg 
-      className={`w-5 h-5 transition-colors ${
+      className={`${getIconSizeClass()} transition-colors ${
         isFavourited 
           ? 'fill-red-500 text-red-500' 
           : 'fill-none text-gray-400 hover:text-red-500'

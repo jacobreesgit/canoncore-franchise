@@ -15,6 +15,7 @@ const nextConfig = {
   // Environment variables configuration
   env: {
     VERCEL_URL: process.env.VERCEL_URL,
+    npm_package_version: process.env.npm_package_version,
   },
 
   // Experimental features

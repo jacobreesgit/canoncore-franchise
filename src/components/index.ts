@@ -11,6 +11,8 @@ export { EmptyState } from './layout/EmptyState';
 export type { EmptyStateProps, EmptyStateAction } from './layout/EmptyState';
 export { DeleteConfirmationModal } from './layout/DeleteConfirmationModal';
 export type { DeleteConfirmationModalProps } from './layout/DeleteConfirmationModal';
+export { Footer } from './layout/Footer';
+export type { FooterProps } from './layout/Footer';
 
 // Form Components
 export { FormInput } from './forms/FormInput';
@@ -32,6 +34,10 @@ export { SearchBar } from './interactive/SearchBar';
 export type { SearchBarProps } from './interactive/SearchBar';
 export { ViewToggle } from './interactive/ViewToggle';
 export type { ViewToggleProps, ViewToggleOption } from './interactive/ViewToggle';
+export { Breadcrumb } from './interactive/Breadcrumb';
+export type { BreadcrumbProps, BreadcrumbItem } from './interactive/Breadcrumb';
+export { Dropdown } from './interactive/Dropdown';
+export type { DropdownProps, DropdownOption } from './interactive/Dropdown';
 
 // Content Display Components
 export { UniverseCard } from './content/UniverseCard';
@@ -42,6 +48,10 @@ export { ProgressBar } from './content/ProgressBar';
 export type { ProgressBarProps } from './content/ProgressBar';
 export { Badge } from './content/Badge';
 export type { BadgeProps } from './content/Badge';
+export { Tree } from './content/Tree';
+export type { TreeProps } from './content/Tree';
+export { ContentSection } from './content/ContentSection';
+export type { ContentSectionProps } from './content/ContentSection';
 
 // Feedback Components
 export { LoadingSpinner } from './feedback/LoadingSpinner';

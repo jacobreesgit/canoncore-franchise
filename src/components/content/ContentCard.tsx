@@ -19,7 +19,9 @@ export interface ContentCardProps {
   /** Content data to display */
   content: Content;
   /** Link destination */
-  href: string;
+  href?: string;
+  /** Click handler for non-link interactions */
+  onClick?: () => void;
   /** Show favourite button */
   showFavourite?: boolean;
   /** Show owner information */
@@ -30,6 +32,8 @@ export interface ContentCardProps {
   showOwnerBadge?: boolean;
   /** Current user ID for owner detection */
   currentUserId?: string;
+  /** Whether this item has children in hierarchy */
+  hierarchical?: boolean;
 }
 
 /**
@@ -90,11 +94,13 @@ export function ContentCard({
   className = '',
   content,
   href,
+  onClick,
   showFavourite = false,
   showOwner = false,
   ownerName,
   showOwnerBadge = false,
   currentUserId,
+  hierarchical = false,
 }: ContentCardProps) {
   // Auto-detect variant from content if not provided
   const contentVariant = variant || (content.isViewable ? 'viewable' : 'organisational');
@@ -110,30 +116,28 @@ export function ContentCard({
     .replace(/\s+/g, ' ')
     .trim();
 
-  return (
-    <Link
-      href={href}
-      className={cardClasses}
-    >
-      <div>
+  const cardContent = (
+    <div>
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-2 mr-2">
-            <h3 className="text-lg font-medium text-primary truncate">
-              {content.name}
-            </h3>
-            {showFavourite && (
-              <FavouriteButton 
-                targetId={content.id} 
-                targetType="content"
-                className="text-tertiary hover:text-red-500 flex-shrink-0"
-              />
-            )}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <h3 className="text-lg font-medium text-primary truncate">
+                {content.name}
+              </h3>
+              {showFavourite && (
+                <FavouriteButton 
+                  targetId={content.id} 
+                  targetType="content"
+                  className="text-tertiary hover:text-red-500 flex-shrink-0"
+                />
+              )}
+            </div>
+          </div>
+          <div className="flex items-center space-x-2 flex-wrap gap-1">
             <Badge variant="organisational" size="small" className="capitalize">
               {content.mediaType}
             </Badge>
-          </div>
-          <div className="flex items-center space-x-2 flex-shrink-0">
             {showOwnerBadge && currentUserId === content.userId && (
               <Badge variant="owner" size="small">
                 Your Content
@@ -164,8 +168,57 @@ export function ContentCard({
           />
         </div>
 
-      </div>
-    </Link>
+    </div>
+  );
+
+  // Use div with click handler when favourites are shown (to avoid nested buttons)
+  // Use button for onClick only when no interactive elements are present
+  if (onClick) {
+    if (showFavourite) {
+      return (
+        <div
+          onClick={onClick}
+          className={`${cardClasses} cursor-pointer`}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClick();
+            }
+          }}
+        >
+          {cardContent}
+        </div>
+      );
+    } else {
+      return (
+        <button
+          onClick={onClick}
+          className={`${cardClasses} w-full text-left`}
+        >
+          {cardContent}
+        </button>
+      );
+    }
+  }
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={cardClasses}
+      >
+        {cardContent}
+      </Link>
+    );
+  }
+
+  // Fallback div if neither href nor onClick
+  return (
+    <div className={cardClasses}>
+      {cardContent}
+    </div>
   );
 }
 

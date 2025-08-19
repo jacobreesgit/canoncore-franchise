@@ -21,6 +21,21 @@ export interface ViewToggleProps extends Omit<React.HTMLAttributes<HTMLDivElemen
   className?: string;
 }
 
+export interface SimpleViewToggleProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  /** Current view mode */
+  currentView: 'grid' | 'tree';
+  /** Callback when view changes */
+  onViewChange: (view: 'grid' | 'tree') => void;
+  /** Label for grid view button */
+  gridLabel?: string;
+  /** Label for tree view button */
+  treeLabel?: string;
+  /** Default view (determines order) */
+  defaultView?: 'grid' | 'tree';
+  /** Optional custom class names */
+  className?: string;
+}
+
 /**
  * Base toggle container styles using design system tokens
  */
@@ -32,7 +47,7 @@ const baseStyles = `
  * Button styles for toggle options using design system tokens
  */
 const buttonBaseStyles = `
-  px-3 py-2 sm:py-1 rounded-md text-sm font-medium transition-colors min-h-[40px] sm:min-h-[32px] flex items-center
+  px-3 py-2 sm:py-1 rounded-md text-sm font-medium transition-colors min-h-[40px] sm:min-h-[32px] !flex items-center flex-1 sm:flex-initial justify-center
 `;
 
 const getButtonStyles = (isActive: boolean) => `
@@ -76,5 +91,52 @@ export function ViewToggle({
     </div>
   );
 }
+
+/**
+ * Simplified ViewToggle component for grid/tree switching
+ */
+ViewToggle.Simple = function SimpleViewToggle({
+  currentView,
+  onViewChange,
+  gridLabel = 'Grid View',
+  treeLabel = 'Tree View',
+  defaultView = 'tree',
+  className = '',
+  ...props
+}: SimpleViewToggleProps) {
+  const containerClasses = ['view-toggle', baseStyles, className]
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Order buttons based on defaultView
+  const buttons = defaultView === 'tree' 
+    ? [
+        { view: 'tree' as const, label: treeLabel },
+        { view: 'grid' as const, label: gridLabel }
+      ]
+    : [
+        { view: 'grid' as const, label: gridLabel },
+        { view: 'tree' as const, label: treeLabel }
+      ];
+
+  return (
+    <div
+      className={containerClasses}
+      {...props}
+    >
+      {buttons.map(({ view, label }) => (
+        <Button
+          key={view}
+          variant={currentView === view ? 'primary' : 'secondary'}
+          onClick={() => onViewChange(view)}
+          className={getButtonStyles(currentView === view)}
+        >
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+};
 
 export default ViewToggle;

@@ -2,6 +2,8 @@ import React from 'react';
 import { Button, ButtonLink } from '../interactive/Button';
 import { ProgressBar } from '../content/ProgressBar';
 import { SearchBar } from '../interactive/SearchBar';
+import { Breadcrumb, BreadcrumbItem } from '../interactive/Breadcrumb';
+import { FavouriteButton } from '../interactive/FavouriteButton';
 
 /**
  * PageHeader component with consistent styling and behavior
@@ -72,6 +74,11 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   progressBar?: PageHeaderProgressBar;
   /** Search bar configuration */
   searchBar?: PageHeaderSearchBar;
+  /** Favourite button configuration */
+  favourite?: {
+    targetId: string;
+    targetType: 'universe' | 'content';
+  };
 }
 
 /**
@@ -124,6 +131,7 @@ export function PageHeader({
   extraContent,
   progressBar,
   searchBar,
+  favourite,
   ...props
 }: PageHeaderProps) {
   const containerClasses = [
@@ -179,36 +187,12 @@ export function PageHeader({
     ));
   };
 
-  // Render breadcrumbs
-  const renderBreadcrumbs = () => {
-    if (breadcrumbs.length === 0) return null;
-    
-    return (
-      <nav className="mb-2 overflow-x-auto">
-        <ol className="flex items-center space-x-2 text-sm text-secondary min-w-max">
-          {breadcrumbs.map((crumb, index) => (
-            <li key={index} className="flex items-center whitespace-nowrap">
-              {index > 0 && (
-                <span className="text-tertiary mr-2">/</span>
-              )}
-              {crumb.href && !crumb.isCurrentPage ? (
-                <a
-                  href={crumb.href}
-                  className="text-link hover:text-link-hover transition-colors"
-                >
-                  {crumb.label}
-                </a>
-              ) : (
-                <span className={crumb.isCurrentPage ? "text-primary font-medium" : "text-secondary"}>
-                  {crumb.label}
-                </span>
-              )}
-            </li>
-          ))}
-        </ol>
-      </nav>
-    );
-  };
+  // Convert PageHeaderBreadcrumb to BreadcrumbItem
+  const breadcrumbItems: BreadcrumbItem[] = breadcrumbs.map(crumb => ({
+    label: crumb.label,
+    href: crumb.href,
+    isCurrentPage: crumb.isCurrentPage
+  }));
 
   // Default layout with actions beneath description
   const renderDefaultLayout = () => {
@@ -238,10 +222,20 @@ export function PageHeader({
   if (variant === 'detail') {
     return (
       <div className={containerClasses} {...props}>
-        {renderBreadcrumbs()}
+        <Breadcrumb items={breadcrumbItems} />
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-4 md:space-y-0">
           <div>
-            <h1 className={getTitleClasses()}>{title}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className={getTitleClasses()}>{title}</h1>
+              {favourite && (
+                <FavouriteButton 
+                  targetId={favourite.targetId}
+                  targetType={favourite.targetType}
+                  showText={false}
+                  size="large"
+                />
+              )}
+            </div>
             {metadata && (
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 {metadata}

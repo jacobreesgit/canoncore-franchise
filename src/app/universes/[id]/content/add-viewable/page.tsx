@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/contexts/auth-context';
 import { contentService, universeService, relationshipService } from '@/lib/services';
 import { CreateContentData, Universe, Content } from '@/lib/types';
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, FormTextarea, FormSelect, PageContainer, ButtonLink } from '@/components';
 
 const viewableMediaTypes: { value: Content['mediaType']; label: string; description: string }[] = [
@@ -29,12 +29,15 @@ export default function AddViewableContentPage() {
   const { user, loading } = useAuth();
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const universeId = params.id as string;
+  const parentContentId = searchParams.get('parent');
 
   const [universe, setUniverse] = useState<Universe | null>(null);
   const [universeLoading, setUniverseLoading] = useState(true);
   const [existingContent, setExistingContent] = useState<Content[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>('');
+  const [suggestedParent, setSuggestedParent] = useState<Content | null>(null);
   const [formData, setFormData] = useState<CreateContentData>({
     name: '',
     description: '',
@@ -65,6 +68,18 @@ export default function AddViewableContentPage() {
           // Load existing content for parent selection (only organisational content)
           const content = await contentService.getByUniverse(universeId);
           setExistingContent(content);
+
+          // Validate and set suggested parent from URL parameter
+          if (parentContentId) {
+            const suggestedParentContent = content.find(c => c.id === parentContentId);
+            // Validate: parent must exist, be organisational (not viewable), same universe
+            if (suggestedParentContent && 
+                !suggestedParentContent.isViewable && 
+                suggestedParentContent.universeId === universeId) {
+              setSuggestedParent(suggestedParentContent);
+              setSelectedParentId(parentContentId);
+            }
+          }
         } catch (error) {
           console.error('Error fetching universe:', error);
           setError('Error loading universe data');
@@ -75,7 +90,7 @@ export default function AddViewableContentPage() {
 
       fetchUniverse();
     }
-  }, [user, universeId]);
+  }, [user, universeId, parentContentId]);
 
   if (loading || universeLoading) {
     return <LoadingSpinner variant="fullscreen" message="Loading..." />;
@@ -124,6 +139,20 @@ export default function AddViewableContentPage() {
         throw new Error('Content name is required');
       }
 
+      // Validate parent selection if provided
+      if (selectedParentId) {
+        const selectedParent = existingContent.find(c => c.id === selectedParentId);
+        if (!selectedParent) {
+          throw new Error('Selected parent content not found');
+        }
+        if (selectedParent.isViewable) {
+          throw new Error('Parent content must be organisational (not viewable)');
+        }
+        if (selectedParent.universeId !== universeId) {
+          throw new Error('Parent content must be in the same universe');
+        }
+      }
+
       const newContent = await contentService.create(
         user.id,
         universeId,
@@ -140,14 +169,12 @@ export default function AddViewableContentPage() {
         );
       }
 
-      // Reset form after successful creation
-      setFormData({
-        name: '',
-        description: '',
-        isViewable: true,
-        mediaType: 'video',
-      });
-      setSelectedParentId('');
+      // Navigate to parent content page if parent was selected, otherwise universe page
+      if (selectedParentId) {
+        router.push(`/content/${selectedParentId}`);
+      } else {
+        router.push(`/universes/${universeId}`);
+      }
     } catch (error) {
       console.error('Error creating content:', error);
       setError(error instanceof Error ? error.message : 'Error creating content');
@@ -243,7 +270,12 @@ export default function AddViewableContentPage() {
             {organisationalParents.length > 0 && (
               <div>
                 <FormLabel htmlFor="parentId">
-                  Part of Series/Collection (Optional)
+                  Parent Content (Optional)
+                  {suggestedParent && (
+                    <span className="ml-2 text-sm font-normal text-blue-600">
+                      • Suggested from context
+                    </span>
+                  )}
                 </FormLabel>
                 <FormSelect
                   id="parentId"
@@ -255,11 +287,18 @@ export default function AddViewableContentPage() {
                   {organisationalParents.map((content) => (
                     <option key={content.id} value={content.id}>
                       {content.name} ({content.mediaType})
+                      {content.id === suggestedParent?.id ? ' ⭐ Suggested' : ''}
                     </option>
                   ))}
                 </FormSelect>
                 <p className="mt-1 text-sm text-gray-500">
-                  Choose if this content belongs to a series, phase, or collection you&apos;ve already created.
+                  {suggestedParent ? (
+                    <>
+                      <strong>&quot;{suggestedParent.name}&quot;</strong> is pre-selected based on your navigation context. You can change this if needed.
+                    </>
+                  ) : (
+                    'Choose a parent organisational item to organise this content.'
+                  )}
                 </p>
               </div>
             )}

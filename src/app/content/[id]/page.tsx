@@ -1,13 +1,13 @@
 'use client';
 
 import { useAuth } from '@/lib/contexts/auth-context';
-import { contentService, universeService } from '@/lib/services';
+import { contentService, universeService, relationshipService } from '@/lib/services';
 import { Content, Universe } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import Link from 'next/link';
-import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, ProgressBar, Button, ButtonLink, LoadingSpinner, PageContainer, Badge } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, ProgressBar, Button, ButtonLink, LoadingSpinner, PageContainer, Badge, ContentSection } from '@/components';
 
 export default function ContentPage() {
   const { user, loading } = useAuth();
@@ -17,6 +17,8 @@ export default function ContentPage() {
 
   const [content, setContent] = useState<Content | null>(null);
   const [universe, setUniverse] = useState<Universe | null>(null);
+  const [allContent, setAllContent] = useState<Content[]>([]);
+  const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -51,6 +53,13 @@ export default function ContentPage() {
           }
 
           setUniverse(universeData);
+
+          // Fetch all content and hierarchy for contextual tree
+          const universeContent = await contentService.getByUniverseWithUserProgress(contentData.universeId, user.id);
+          setAllContent(universeContent);
+
+          const hierarchy = await relationshipService.buildHierarchyTree(contentData.universeId);
+          setHierarchyTree(hierarchy);
         } catch (error) {
           console.error('Error fetching content:', error);
           setError('Error loading content data');
@@ -131,6 +140,14 @@ export default function ContentPage() {
         variant="detail"
         currentPage="dashboard"
         showNavigationMenu={true}
+        showContentDropdown={isOwner && !content.isViewable}
+        universeId={content.universeId}
+        universeName={universe?.name}
+        parentContentId={content.id}
+        actions={isOwner ? [
+          { type: 'secondary', label: 'Edit', href: `/universes/${content.universeId}/content/${content.id}/edit` },
+          { type: 'danger', label: 'Delete', onClick: () => setShowDeleteConfirm(true) }
+        ] : []}
       />
 
       <PageContainer variant="wide">
@@ -143,14 +160,12 @@ export default function ContentPage() {
             { label: universe.name, href: `/universes/${universe.id}` },
             { label: content.name, isCurrentPage: true }
           ]}
+          favourite={{
+            targetId: content.id,
+            targetType: 'content'
+          }}
           metadata={
             <div className="flex flex-wrap items-center gap-2">
-              <FavouriteButton 
-                targetId={content.id} 
-                targetType="content"
-                className="text-gray-600 hover:text-red-500"
-                showText={true}
-              />
               <Badge variant="organisational" size="default" className="capitalize">
                 {content.mediaType}
               </Badge>
@@ -195,29 +210,34 @@ export default function ContentPage() {
 
             </div>
           }
-          actions={isOwner ? [
-            { type: 'secondary', label: 'Edit Content', href: `/universes/${content.universeId}/content/${content.id}/edit` },
-            { type: 'danger', label: 'Delete', onClick: () => setShowDeleteConfirm(true) }
-          ] : []}
         />
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Universe Context</h3>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg gap-4 sm:gap-0">
-            <div>
-              <h4 className="font-medium text-gray-900">{universe.name}</h4>
-              {universe.description && (
-                <p className="text-sm text-gray-600 mt-1">{universe.description}</p>
-              )}
-            </div>
-            <Link
-              href={`/universes/${universe.id}?from=content&contentId=${content.id}&contentName=${encodeURIComponent(content.name)}`}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-            >
-              View Universe
-            </Link>
+        {hierarchyTree.length > 0 && (
+          <div>
+            <ContentSection
+              title="Universe Context"
+              content={allContent}
+              viewMode="tree"
+              onViewModeChange={() => {}} // Content pages always show tree view
+              contentHref={(item) => `/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
+              showFavourite={true}
+              currentUserId={user?.id}
+              hierarchyTree={hierarchyTree}
+              highlightedContentId={content.id}
+              showUnorganized={false}
+              hideViewToggle={true}
+              className="content-context-section"
+              actions={
+                <Link
+                  href={`/universes/${universe.id}?from=content&contentId=${content.id}&contentName=${encodeURIComponent(content.name)}`}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+                >
+                  View Full Universe
+                </Link>
+              }
+            />
           </div>
-        </div>
+        )}
       </PageContainer>
 
       <DeleteConfirmationModal

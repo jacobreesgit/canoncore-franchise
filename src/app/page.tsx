@@ -67,11 +67,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="dashboard"
         showNavigationMenu={true}
+        actions={universes.length > 0 ? [
+          { type: 'primary', label: '+ Franchise', href: '/universes/create' }
+        ] : []}
       />
 
       <PageContainer variant="wide">
@@ -79,9 +82,6 @@ export default function Home() {
           variant="centered"
           title="Your Franchises"
           description="Manage and track your progress through your favourite fictional universes"
-          actions={universes.length > 0 ? [
-            { type: 'primary', label: 'Add Franchise', href: '/universes/create' }
-          ] : []}
           searchBar={universes.length > 0 ? {
             value: searchQuery,
             onChange: (e) => setSearchQuery(e.target.value),
@@ -100,9 +100,6 @@ export default function Home() {
               ? 'Try adjusting your search terms'
               : 'Start by adding your first franchise like Marvel, Doctor Who, or Star Wars'
             }
-            actions={searchQuery ? [] : [
-              { text: "Add Your First Franchise", href: "/universes/create", variant: "primary" }
-            ]}
           />
         ) : (
           <>

@@ -35,6 +35,8 @@ export interface ButtonLinkProps {
   href: string;
   /** Whether the link should be external */
   external?: boolean;
+  /** Optional click handler */
+  onClick?: () => void;
 }
 
 /**
@@ -135,6 +137,7 @@ export function ButtonLink({
   external = false,
   icon,
   className = '',
+  onClick,
   children
 }: ButtonLinkProps) {
   const buttonClasses = [
@@ -166,6 +169,7 @@ export function ButtonLink({
         className={buttonClasses}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={onClick}
       >
         {content}
       </a>
@@ -173,7 +177,7 @@ export function ButtonLink({
   }
 
   return (
-    <Link href={href} className={buttonClasses}>
+    <Link href={href} className={buttonClasses} onClick={onClick}>
       {content}
     </Link>
   );

@@ -2,12 +2,13 @@ import React from 'react';
 import { Content, Universe } from '@/lib/types';
 import { ContentCard } from '../content/ContentCard';
 import { UniverseCard } from '../content/UniverseCard';
+import { getContentAtLevel, buildLevelBreadcrumbs, hasChildren, BreadcrumbData } from '@/lib/utils/hierarchy';
 
 /**
  * CardGrid component following the component creation guide
  */
 
-export interface CardGridProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'content'> {
+export interface CardGridProps {
   /** CardGrid variant */
   variant?: 'default' | 'compact' | 'wide';
   /** Component size */
@@ -24,8 +25,6 @@ export interface CardGridProps extends Omit<React.HTMLAttributes<HTMLDivElement>
   contentHref?: (content: Content) => string;
   /** Base URL for universe links */
   universeHref?: (universe: Universe) => string;
-  /** Whether to sort content by viewable/organisational */
-  sortContent?: boolean;
   /** Show favourite button on content cards */
   showFavourite?: boolean;
   /** Show owner information on content cards */
@@ -36,6 +35,16 @@ export interface CardGridProps extends Omit<React.HTMLAttributes<HTMLDivElement>
   showOwnerBadge?: boolean;
   /** Current user ID for owner detection */
   currentUserId?: string;
+  /** Hierarchy tree for hierarchical navigation */
+  hierarchyTree?: any[];
+  /** Current hierarchy level ID */
+  currentLevelId?: string | null;
+  /** Callback when navigating to a different level */
+  onNavigateLevel?: (levelId: string | null) => void;
+  /** Universe name for breadcrumbs */
+  universeName?: string;
+  /** Whether to enable hierarchical mode */
+  hierarchical?: boolean;
 }
 
 /**
@@ -79,13 +88,16 @@ export function CardGrid({
   universes,
   contentHref = (item) => `/content/${item.id}`,
   universeHref = (item) => `/universes/${item.id}`,
-  sortContent = false,
   showFavourite = false,
   showOwner = false,
   ownerNames = {},
   showOwnerBadge = false,
   currentUserId,
-  ...props
+  hierarchyTree = [],
+  currentLevelId = null,
+  onNavigateLevel,
+  universeName = '',
+  hierarchical = false,
 }: CardGridProps) {
   const containerClasses = [
     'card-grid',
@@ -101,7 +113,7 @@ export function CardGrid({
   // If universes are provided, render UniverseCards
   if (universes) {
     return (
-      <div className={containerClasses} {...props}>
+      <div className={containerClasses}>
         {universes.map((universe) => (
           <UniverseCard
             key={universe.id}
@@ -118,79 +130,51 @@ export function CardGrid({
     );
   }
 
-  // If content is provided, render automatically with optional sorting
-  if (content && contentHref) {
-    if (sortContent) {
-      const viewableContent = content.filter(c => c.isViewable);
-      const organisationalContent = content.filter(c => !c.isViewable);
+  // Get content for current hierarchy level if hierarchical mode is enabled
+  const displayContent = hierarchical && hierarchyTree && content
+    ? getContentAtLevel(content, hierarchyTree, currentLevelId)
+    : content;
 
-      return (
-        <div className="space-y-8">
-          {viewableContent.length > 0 && (
-            <div>
-              <h2 className="text-xl font-bold text-primary mb-4">Viewable Content</h2>
-              <div className={containerClasses} {...props}>
-                {viewableContent.map((item) => (
-                  <ContentCard
-                    key={item.id}
-                    content={item}
-                    href={contentHref(item)}
-                    showFavourite={showFavourite}
-                    showOwner={showOwner}
-                    ownerName={ownerNames[item.userId]}
-                    showOwnerBadge={showOwnerBadge}
-                    currentUserId={currentUserId}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+  // Build breadcrumbs for hierarchical navigation
+  const breadcrumbs: BreadcrumbData[] = hierarchical && onNavigateLevel && hierarchyTree && content
+    ? buildLevelBreadcrumbs(content, hierarchyTree, currentLevelId, universeName, onNavigateLevel)
+    : [];
 
-          {organisationalContent.length > 0 && (
-            <div>
-              <h2 className="text-xl font-bold text-primary mb-4">Organisational Content</h2>
-              <div className={containerClasses} {...props}>
-                {organisationalContent.map((item) => (
-                  <ContentCard
-                    key={item.id}
-                    content={item}
-                    href={contentHref(item)}
-                    showFavourite={showFavourite}
-                    showOwner={showOwner}
-                    ownerName={ownerNames[item.userId]}
-                    showOwnerBadge={showOwnerBadge}
-                    currentUserId={currentUserId}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    } else {
-      // Render all content together without sorting
-      return (
-        <div className={containerClasses} {...props}>
-          {content.map((item) => (
-            <ContentCard
-              key={item.id}
-              content={item}
-              href={contentHref(item)}
-              showFavourite={showFavourite}
-              showOwner={showOwner}
-              ownerName={ownerNames[item.userId]}
-              showOwnerBadge={showOwnerBadge}
-              currentUserId={currentUserId}
-            />
-          ))}
-        </div>
-      );
-    }
+  // If content is provided, render all content together
+  if (displayContent && contentHref) {
+    return (
+      <div className={containerClasses}>
+          {displayContent.map((item) => {
+            const itemHasChildren = hierarchical && hierarchyTree 
+              ? hasChildren(hierarchyTree, item.id)
+              : false;
+            
+            // Always navigate to content pages - let content pages handle context/hierarchy display
+            const itemHref = contentHref(item);
+            const handleClick = undefined;
+            
+            return (
+              <ContentCard
+                key={item.id}
+                content={item}
+                href={itemHref}
+                onClick={handleClick}
+                showFavourite={showFavourite}
+                showOwner={showOwner}
+                ownerName={ownerNames[item.userId]}
+                showOwnerBadge={showOwnerBadge}
+                currentUserId={currentUserId}
+                hierarchical={itemHasChildren}
+              />
+            );
+          })}
+      </div>
+    );
   }
 
   // Fallback: render children if provided
   return (
-    <div className={containerClasses} {...props}>
+    <div className={containerClasses}>
       {children}
     </div>
   );

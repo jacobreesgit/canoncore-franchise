@@ -74,7 +74,7 @@ export default function DiscoverPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="discover"
@@ -104,9 +104,6 @@ export default function DiscoverPage() {
               ? 'Try adjusting your search terms'
               : 'Be the first to create and share a public franchise!'
             }
-            actions={user ? [
-              { text: "Create First Public Franchise", href: "/universes/create", variant: "primary" }
-            ] : []}
           />
         ) : (
           <CardGrid 

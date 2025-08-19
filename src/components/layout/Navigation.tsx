@@ -1,8 +1,12 @@
+'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { useIsMobile } from '@/lib/hooks/useScreenSize';
 import { Button, ButtonLink } from '../interactive/Button';
+import { Dropdown } from '../interactive/Dropdown';
+import type { DropdownOption } from '../interactive/Dropdown';
 
 /**
  * Navigation component with consistent styling and behavior
@@ -70,6 +74,16 @@ export interface NavigationProps {
   showNavigationMenu?: boolean;
   /** Current page for active state styling */
   currentPage?: 'dashboard' | 'discover' | 'profile';
+  /** Show sign out button - defaults to only on profile pages */
+  showSignOut?: boolean;
+  /** Show content creation dropdown */
+  showContentDropdown?: boolean;
+  /** Universe ID for content creation links */
+  universeId?: string;
+  /** Universe name for content creation context */
+  universeName?: string;
+  /** Parent content ID for nested content creation */
+  parentContentId?: string;
 }
 
 /**
@@ -113,6 +127,11 @@ export function Navigation({
   actions = [],
   showNavigationMenu = false,
   currentPage,
+  showSignOut,
+  showContentDropdown = false,
+  universeId,
+  universeName,
+  parentContentId,
   ...props
 }: NavigationProps) {
   const { user, signOut } = useAuth();
@@ -133,6 +152,33 @@ export function Navigation({
 
   // Auto-determine showNavigationMenu based on variant
   const shouldShowNavMenu = showNavigationMenu || variant === 'dashboard';
+  
+  // Auto-determine showSignOut: explicit prop or only on profile pages
+  const shouldShowSignOut = showSignOut !== undefined ? showSignOut : currentPage === 'profile';
+
+  // Content creation dropdown options
+  const contentDropdownOptions: DropdownOption[] = universeId ? [
+    {
+      label: 'Add Content Item',
+      value: 'content-item',
+      href: `/universes/${universeId}/content/add-viewable${parentContentId ? `?parent=${parentContentId}` : ''}`,
+      icon: (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Add Organisational Group',
+      value: 'organisational-group',
+      href: `/universes/${universeId}/content/organise${parentContentId ? `?parent=${parentContentId}` : ''}`,
+      icon: (
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-7H5m14 14H5" />
+        </svg>
+      ),
+    },
+  ] : [];
 
   return (
     <nav className={`${navigationClasses} relative`} {...props}>
@@ -187,28 +233,25 @@ export function Navigation({
             )}
           </div>
 
-          {/* Right side: Hamburger (mobile) + User actions */}
-          <div className="flex items-center space-x-4">
-            {/* Mobile hamburger menu button */}
-            {shouldShowNavMenu && isMobile && (
-              <Button
-                variant="secondary"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 bg-transparent hover:bg-[var(--color-interactive-secondary)] text-secondary hover:text-primary cursor-pointer"
-                aria-label="Toggle mobile menu"
-              >
-                <svg className={`h-6 w-6 transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </Button>
+          {/* Right side: User actions + Hamburger (mobile) */}
+          <div className="flex items-center space-x-2 sm:space-x-4">
+
+            {/* Content creation dropdown - Desktop only */}
+            {showContentDropdown && user && contentDropdownOptions.length > 0 && !isMobile && (
+              <Dropdown
+                label="Item"
+                variant="primary"
+                options={contentDropdownOptions}
+                icon={
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                }
+              />
             )}
 
-            {/* Custom actions */}
-            {actions.map((action, index) => (
+            {/* Custom actions - Desktop only */}
+            {!isMobile && actions.map((action, index) => (
               <React.Fragment key={index}>
                 {action.href ? (
                   <ButtonLink
@@ -241,8 +284,8 @@ export function Navigation({
                   </span>
                 )}
 
-                {/* Sign out button - hide on mobile when nav menu exists */}
-                {(!shouldShowNavMenu || !isMobile) && (
+                {/* Sign out button - hide on mobile when nav menu exists, only show on profile pages */}
+                {(!shouldShowNavMenu || !isMobile) && shouldShowSignOut && (
                   <Button
                     variant="secondary"
                     onClick={signOut}
@@ -262,6 +305,24 @@ export function Navigation({
                 </ButtonLink>
               )
             )}
+
+            {/* Mobile hamburger menu button - positioned at the end */}
+            {shouldShowNavMenu && isMobile && (
+              <Button
+                variant="secondary"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 bg-transparent hover:bg-[var(--color-interactive-secondary)] text-secondary hover:text-primary cursor-pointer"
+                aria-label="Toggle mobile menu"
+              >
+                <svg className={`h-6 w-6 transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -270,7 +331,7 @@ export function Navigation({
       {shouldShowNavMenu && isMobile && (
         <div className={`
           absolute top-full left-0 right-0 bg-surface-card  border-t border-default shadow-lg overflow-hidden transition-all duration-200 ease-out z-50
-          ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+          ${isMobileMenuOpen ? 'opacity-100' : 'max-h-0 opacity-0'}
         `}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col gap-4">
@@ -310,35 +371,84 @@ export function Navigation({
                 )}
               </div>
               
-              {/* Separator */}
-              <hr className="border-default" />
+              {/* Actions Section */}
+              {(actions.length > 0 || (showContentDropdown && user && contentDropdownOptions.length > 0) || shouldShowSignOut || !user) && (
+                <div className="flex flex-col gap-2 border-t border-default pt-4">
+                  {/* Content creation buttons */}
+                  {showContentDropdown && user && contentDropdownOptions.length > 0 && (
+                    <>
+                      <ButtonLink
+                        variant="primary"
+                        href={`/universes/${universeId}/content/add-viewable${parentContentId ? `?parent=${parentContentId}` : ''}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Add Content Item
+                      </ButtonLink>
+                      <ButtonLink
+                        variant="secondary"
+                        href={`/universes/${universeId}/content/organise${parentContentId ? `?parent=${parentContentId}` : ''}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Add Organisational Group
+                      </ButtonLink>
+                    </>
+                  )}
+                  
+                  {/* Custom actions */}
+                  {actions.map((action, index) => (
+                    <React.Fragment key={index}>
+                      {action.href ? (
+                        <ButtonLink
+                          key={index}
+                          variant={action.type === 'text' ? 'clear' : action.type}
+                          href={action.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={action.type === 'text' ? 'text-secondary hover:text-primary bg-transparent hover:bg-transparent p-0' : ''}
+                        >
+                          {action.label}
+                        </ButtonLink>
+                      ) : (
+                        <Button
+                          key={index}
+                          variant={action.type === 'text' ? 'secondary' : action.type}
+                          onClick={() => {
+                            action.onClick?.();
+                            setIsMobileMenuOpen(false);
+                          }}
+                          disabled={action.disabled}
+                          className={action.type === 'text' ? 'text-secondary hover:text-primary bg-transparent hover:bg-transparent p-0' : ''}
+                        >
+                          {action.label}
+                        </Button>
+                      )}
+                    </React.Fragment>
+                  ))}
+                  
+                  {/* Authentication actions */}
+                  {user ? (
+                    shouldShowSignOut && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          signOut();
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        Sign out
+                      </Button>
+                    )
+                  ) : (
+                    <ButtonLink
+                      variant="primary"
+                      href="/"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </ButtonLink>
+                  )}
+                </div>
+              )}
               
-              {/* Authentication Section */}
-              <div>
-                {user ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      signOut();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full justify-start text-left bg-transparent hover:bg-surface-page border-none shadow-none min-h-[44px]"
-                  >
-                    Sign out
-                  </Button>
-                ) : (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      window.location.href = '/';
-                    }}
-                    className="w-full justify-start text-left bg-transparent text-[var(--color-interactive-primary)] hover:bg-[var(--color-interactive-secondary)] border-none shadow-none min-h-[44px]"
-                  >
-                    Sign In
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </div>

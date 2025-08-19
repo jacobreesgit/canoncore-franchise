@@ -141,7 +141,7 @@
     ☒ ✅ Professional 3-environment pipeline: Created canoncore-development, canoncore-staging, canoncore-production-929c5 with complete data isolation, git branch-based deployments (develop/staging/main), and automated Vercel deployments
     ☐ Configure custom domain and SSL certificates (moved to future enhancement)
 
-**Phase 5c: UX Review & Flow Optimization** ✅ COMPLETE
+**Phase 5c: UX Review & Form Component System** ✅ COMPLETE
     ☒ ✅ Review and analyze current user flows across all pages
     ☒ ✅ Split content creation into separate viewable vs organisational flows (/content/add-viewable and /content/organise)
     ☒ ✅ Optimize navigation patterns and breadcrumb consistency
@@ -161,8 +161,22 @@
     ☒ ✅ Remove search text and count from PageHeader for minimal design
     ☒ ✅ Fix PageHeader button duplication in empty states
     ☒ ✅ Clean up unused code and variables from search text removal
-    ☐ Add "Universe Context" section to viewable content pages showing all parent hierarchies
-    ☐ Add add content button to organisational content pages
+    ☒ ✅ Microsoft Playwright MCP Integration: Complete setup with @playwright/mcp@latest, configuration files, package scripts, and comprehensive documentation for Phase 7 testing
+    ☒ ✅ Advanced Content Display Components: Created ContentSection, Tree, and TreeNode components for hierarchical content organization with tree/grid toggle and search functionality
+    ☒ ✅ Enhanced Navigation Components: Added Breadcrumb component and Dropdown component with full Storybook integration and design system consistency
+    ☒ ✅ Hierarchy Utilities: Implemented hierarchy.ts utils for tree building, content filtering, and unorganized content detection
+    ☒ ✅ Storybook Authentication Fix: Added AuthProvider decorators to content component stories to resolve "useAuth must be used within AuthProvider" errors
+    ☒ ✅ Tree Component UX Polish: Removed black borders from parent items in focused variant for cleaner visual hierarchy
+    ☒ ✅ Global Design Consistency: Updated globals.css with enhanced design tokens, improved font loading, and consistent component styling
+    ☒ ✅ Component Integration: Updated all affected pages (dashboard, discover, profile, universe detail, content detail) to use new content display components
+    ☒ ✅ Page Updates & Improvements: Enhanced universe creation, content detail, profile, and discover pages with new component system and improved layouts
+    ☒ ✅ Content Card Enhancements: Updated ContentCard and UniverseCard components with improved styling and functionality
+    ☒ ✅ Interactive Component Updates: Enhanced Button, FavouriteButton, and ViewToggle components with better UX patterns
+    ☒ ✅ Layout Component Refinements: Updated CardGrid, EmptyState, Navigation, and PageHeader components with new design system integration
+    ☒ ✅ CLAUDE.md Documentation: Updated project documentation with comprehensive MCP setup, component system details, and development workflow improvements
+    ☒ ✅ Smart Parent-Based Routing: Updated content creation forms to redirect to parent content page when parent is selected, improving hierarchical workflow UX
+    ☒ ✅ File Cleanup: Removed deprecated files (CardGrid 2.tsx, todo 2.md, content/create route) and added development utility scripts
+    ☒ ✅ Universe and content pages become more similar: Added "Universe Context" section to content pages showing hierarchical organization with highlighted current content, and content creation dropdown for organisational content pages
 
 **Phase 6a: Advanced Content Hierarchies - Infinite Nesting** ✅ COMPLETE
     ☒ ✅ Implement infinite looping nested children support
@@ -174,11 +188,86 @@
     ☒ ✅ Create consistent progress color scheme (green/blue)
     ☒ ✅ Build enhanced data scanning and validation tools
     ☐ Create drag-and-drop content organisation interface
-    ☐ Build nested content navigation and breadcrumbs  
     ☐ Add bulk operations for nested content structures
     ☐ Optimise performance for deep content hierarchies
+    ☐ SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections/deprecated methods AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE.
+    ☐ Ask for an optimisation prompt/improvement/best pratice solution prompts
+    ☐ Remove all redundant files & code
+    ☐ Update all docs
 
-**Phase 7: Testing** (Final Phase)
-    ☐ Test full end-to-end user workflows in production environment
+
+**Phase 7: Comprehensive Testing & Quality Assurance** (Final Phase)
+
+**Phase 7a: Core Testing Infrastructure**
+    ☐ Expand existing Playwright test suite (tests/example.spec.ts) with comprehensive scenarios
+    ☐ Configure Microsoft Playwright MCP for AI-assisted test generation and debugging
+    ☐ Set up test data management and cleanup procedures
+    ☐ Create test environment configurations (dev/staging/production)
+    ☐ Implement visual regression testing with screenshot comparisons
+
+**Phase 7b: Authentication & User Management Tests**
+    ☐ Test Google OAuth sign-in flow and session persistence
+    ☐ Test authentication state management across page refreshes
+    ☐ Test sign-out functionality and session cleanup
+    ☐ Test protected route redirections for unauthenticated users
+    ☐ Test account selection flow with multiple Google accounts
+
+**Phase 7c: Universe Management Testing**
+    ☐ Test universe creation with form validation
+    ☐ Test universe editing and data persistence
+    ☐ Test universe deletion with confirmation modals
+    ☐ Test public/private visibility toggles
+    ☐ Test universe search functionality
+    ☐ Test universe favourites system
+    ☐ Test progress calculation aggregation from content
+
+**Phase 7d: Content Management & Hierarchy Testing**
+    ☐ Test viewable content creation (movies, episodes, books, audio)
+    ☐ Test organisational content creation (characters, locations, collections)
+    ☐ Test infinite-depth parent-child relationships and tree building
+    ☐ Test content editing and form validation
+    ☐ Test content deletion and hierarchy cleanup
+    ☐ Test progress tracking for individual users
+    ☐ Test calculated progress propagation up hierarchies
+
+**Phase 7e: User Experience & Navigation Testing**
+    ☐ Test responsive design across mobile, tablet, and desktop breakpoints
+    ☐ Test navigation breadcrumbs and routing consistency
+    ☐ Test search functionality across dashboard and discover pages
+    ☐ Test grid/tree view toggles on universe pages
+    ☐ Test empty states and loading indicators
+    ☐ Test error handling and user feedback
+
+**Phase 7f: Performance & Accessibility Testing**
+    ☐ Test bundle size optimization and lazy loading
+    ☐ Test Lighthouse performance scores (target: 90+ on all metrics)
+    ☐ Test accessibility compliance with axe-core automated checks
+    ☐ Test keyboard navigation and screen reader compatibility
+    ☐ Test color contrast ratios and WCAG AA compliance
+    ☐ Test cross-browser compatibility (Chrome, Firefox, Safari, Edge)
+
+**Phase 7g: Data Integrity & Security Testing**
+    ☐ Test Firebase security rules enforcement
+    ☐ Test user data isolation and privacy boundaries
+    ☐ Test multi-user scenarios and data consistency
+    ☐ Test favourites system data integrity
+    ☐ Test progress tracking accuracy across users
+    ☐ Test relationship cleanup on content deletion
+
+**Phase 7h: Integration & End-to-End Workflow Testing**
+    ☐ Test complete user journey: Sign in → Create universe → Add content → Track progress
+    ☐ Test content discovery flow: Discover → Favourite → View progress
+    ☐ Test profile management: View profile → Edit details → Manage favourites
+    ☐ Test collaborative scenarios: Public universes → Multiple user progress
+    ☐ Test data export/import scenarios (if implemented)
+
+**Phase 7i: Performance & Production Environment Testing**
+    ☐ Test deployment pipeline across dev/staging/production environments
+    ☐ Test Firebase project isolation and environment separation
+    ☐ Test production performance under realistic load
+    ☐ Test error monitoring and logging systems
+    ☐ Test backup and recovery procedures
 
 **Phase 8: Scan old project for more ideas***
+* scabard
+* variations

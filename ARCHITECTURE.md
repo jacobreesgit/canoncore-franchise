@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 5a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, Vercel deployment configuration, and comprehensive performance optimization with bundle size management and dynamic imports.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 5c with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, professional 3-environment deployment pipeline, comprehensive performance optimization with bundle size management and dynamic imports, advanced content display components, Microsoft Playwright MCP integration for testing, and smart parent-based routing for hierarchical workflows.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -98,23 +98,29 @@ The design system follows industry best practices with logical component organiz
 - **`EmptyState.tsx`**: Empty state with call-to-action patterns
 - **`DeleteConfirmationModal.tsx`**: Consistent delete confirmation patterns
 
-**Form Components (`src/components/forms/` - 4 components):**
+**Form Components (`src/components/forms/` - 5 components):**
 - **`FormInput.tsx`**: Text input with validation and error states
 - **`FormLabel.tsx`**: Consistent form labeling with required indicators
 - **`FormTextarea.tsx`**: Multi-line text input with validation
+- **`FormSelect.tsx`**: Select dropdown with consistent styling and validation
 - **`FormActions.tsx`**: Form button groups (Cancel + Submit patterns)
 
-**Interactive Components (`src/components/interactive/` - 4 components):**
+**Interactive Components (`src/components/interactive/` - 6 components):**
 - **`Button.tsx`**: Multi-variant button component (primary, secondary, danger, clear)
 - **`FavouriteButton.tsx`**: Heart toggle for favouriting content/universes
 - **`SearchBar.tsx`**: Search input with real-time filtering
 - **`ViewToggle.tsx`**: Toggle switches for grid/tree views and tab navigation
+- **`Breadcrumb.tsx`**: Navigation breadcrumb component with hierarchical links
+- **`Dropdown.tsx`**: Dropdown menu component for navigation and actions
 
-**Content Display (`src/components/content/` - 4 components):**
+**Content Display (`src/components/content/` - 7 components):**
 - **`UniverseCard.tsx`**: Universe display cards with progress tracking
 - **`ContentCard.tsx`**: Content display cards with progress indicators
 - **`ProgressBar.tsx`**: Progress indicators for viewable/organisational content
 - **`Badge.tsx`**: Status badges for public/private and ownership labels
+- **`ContentSection.tsx`**: Advanced content section with tree/grid toggle and search
+- **`Tree.tsx`**: Hierarchical tree display with expandable nodes and focus modes
+- **`TreeNode.tsx`**: Individual tree node component for hierarchical content
 
 **Feedback Components (`src/components/feedback/` - 2 components):**
 - **`LoadingSpinner.tsx`**: Loading indicators with size variants
@@ -129,18 +135,34 @@ Components are organized in Storybook under logical namespaces:
 - `CanonCore/Content/` - Content display and cards
 - `CanonCore/Feedback/` - Loading states and error handling
 
-#### Deployment Architecture (Phase 5a)
+#### Professional 3-Environment Deployment Architecture (Phase 5b Complete)
+
+**Development Environment:**
+- **Branch:** develop  
+- **Firebase:** canoncore-development
+- **URL:** http://localhost:3000
+- **Config:** .env.local
+- **Purpose:** Safe development testing and feature development
+
+**Staging Environment:**
+- **Branch:** staging
+- **Firebase:** canoncore-staging
+- **URL:** https://canoncore-o3gmncb7o-jacob-rees-projects.vercel.app
+- **Config:** Vercel preview environment variables
+- **Purpose:** Production-like testing and stakeholder review
 
 **Production Environment:**
-- **Hosting:** Vercel with automatic deployments from GitHub
-- **Build:** Next.js optimized production builds with Vercel edge functions
-- **Environment Separation:** Development (.env.local) vs Production (Vercel environment variables)
-- **Performance:** Built-in image optimization, bundle analysis, security headers
+- **Branch:** main
+- **Firebase:** canoncore-production-929c5
+- **URL:** https://canoncore-4wcorlbw6-jacob-rees-projects.vercel.app
+- **Config:** Vercel production environment variables
+- **Purpose:** Live user data and production deployment
 
-**Firebase Configuration:**
-- **Development:** `canoncore-694a5` (current single environment)
-- **Production:** Separate Firebase project recommended for data isolation
-- **Security:** Environment-specific Firestore rules and authentication domains
+**Benefits:**
+- **Complete Data Isolation:** Each environment uses separate Firebase projects
+- **Risk Management:** Triple safety net before production deployment
+- **Automated Deployments:** Push-to-deploy workflow with branch detection
+- **Professional Standards:** Industry-standard enterprise deployment architecture
 
 #### Layout Layer
 - **`app/layout.tsx`**: Root layout with AuthProvider wrapper
@@ -363,7 +385,7 @@ canoncore/
 │   │   ├── globals.css        # Global styles with Tailwind CSS v4
 │   │   ├── content/
 │   │   │   └── [id]/
-│   │   │       └── page.tsx   # Content detail with complete design system
+│   │   │       └── page.tsx   # Content detail with Universe Context and tree display
 │   │   ├── discover/
 │   │   │   └── page.tsx       # Public discovery with SearchBar and CardGrid
 │   │   ├── profile/
@@ -375,12 +397,14 @@ canoncore/
 │   │       ├── create/
 │   │       │   └── page.tsx   # Universe creation with form design system
 │   │       └── [id]/
-│   │           ├── page.tsx   # Universe detail with ViewToggle and CardGrid
+│   │           ├── page.tsx   # Universe detail with ContentSection and Tree components
 │   │           ├── edit/
 │   │           │   └── page.tsx # Universe edit with design system forms
 │   │           └── content/
-│   │               ├── create/
-│   │               │   └── page.tsx # Content creation with complete form system
+│   │               ├── add-viewable/
+│   │               │   └── page.tsx # Viewable content creation with smart routing
+│   │               ├── organise/
+│   │               │   └── page.tsx # Organisational content creation with smart routing
 │   │               └── [contentId]/
 │   │                   └── edit/
 │   │                       └── page.tsx # Content edit with form design system
@@ -395,53 +419,75 @@ canoncore/
 │   │   │   ├── user-progress.service.ts # Individual user progress tracking
 │   │   │   └── index.ts            # Service exports
 │   │   ├── hooks/                  # Custom React hooks
+│   │   │   ├── index.ts            # Hook exports
 │   │   │   ├── usePageTitle.ts     # Page title management hook
 │   │   │   ├── useScreenSize.ts    # Screen size detection with Tailwind breakpoints
 │   │   │   └── useSearch.ts        # Dynamic search hook with optimized Fuse.js loading
+│   │   ├── utils/                  # Utility functions
+│   │   │   ├── accessibility.ts    # WCAG AA compliance utilities
+│   │   │   ├── accessibility.test.ts # Accessibility testing
+│   │   │   └── hierarchy.ts        # Tree building and content filtering utilities
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions + UserProgress interface
-│   ├── components/                 # Complete design system (Phase 4a-4d)
-│   │   ├── Badge.tsx              # Status badges with Storybook stories
-│   │   ├── Badge.stories.tsx      
-│   │   ├── Button.tsx             # Primary button component with variants
-│   │   ├── Button.stories.tsx     
-│   │   ├── CardGrid.tsx           # Responsive grid with content sorting
-│   │   ├── CardGrid.stories.tsx   
-│   │   ├── ContentCard.tsx        # Content display cards with progress
-│   │   ├── ContentCard.stories.tsx
-│   │   ├── DeleteConfirmationModal.tsx # Consistent delete patterns
-│   │   ├── DeleteConfirmationModal.stories.tsx
-│   │   ├── EmptyState.tsx         # Empty state with CTA patterns
-│   │   ├── EmptyState.stories.tsx 
-│   │   ├── ErrorMessage.tsx       # Form error display
-│   │   ├── ErrorMessage.stories.tsx
-│   │   ├── FavouriteButton.tsx    # Favouriting functionality
-│   │   ├── FavouriteButton.stories.tsx
-│   │   ├── FormActions.tsx        # Cancel + Submit button pairs
-│   │   ├── FormActions.stories.tsx
-│   │   ├── FormInput.tsx          # Standardised form inputs
-│   │   ├── FormInput.stories.tsx  
-│   │   ├── FormLabel.tsx          # Consistent form labels
-│   │   ├── FormLabel.stories.tsx  
-│   │   ├── FormTextarea.tsx       # Textarea with consistent styling
-│   │   ├── FormTextarea.stories.tsx
-│   │   ├── LoadingSpinner.tsx     # Loading state component
-│   │   ├── LoadingSpinner.stories.tsx
-│   │   ├── Navigation.tsx         # Unified navigation system
-│   │   ├── Navigation.stories.tsx 
-│   │   ├── PageContainer.tsx      # Consistent page layout wrapper
-│   │   ├── PageContainer.stories.tsx
-│   │   ├── PageHeader.tsx         # Page titles with breadcrumbs
-│   │   ├── PageHeader.stories.tsx 
-│   │   ├── ProgressBar.tsx        # Progress visualization
-│   │   ├── ProgressBar.stories.tsx
-│   │   ├── SearchBar.tsx          # Search functionality
-│   │   ├── SearchBar.stories.tsx  
-│   │   ├── UniverseCard.tsx       # Universe display cards
-│   │   ├── UniverseCard.stories.tsx
-│   │   ├── ViewToggle.tsx         # View switching component
-│   │   ├── ViewToggle.stories.tsx 
-│   │   └── index.ts               # Component exports
+│   ├── components/                 # Complete design system (Phase 5c)
+│   │   ├── content/                # Content display components (7 components)
+│   │   │   ├── Badge.tsx           # Status badges with variants
+│   │   │   ├── Badge.stories.tsx   
+│   │   │   ├── ContentCard.tsx     # Content display cards with progress
+│   │   │   ├── ContentCard.stories.tsx
+│   │   │   ├── ContentSection.tsx  # Advanced content section with tree/grid toggle
+│   │   │   ├── ContentSection.stories.tsx
+│   │   │   ├── ProgressBar.tsx     # Progress visualization
+│   │   │   ├── ProgressBar.stories.tsx
+│   │   │   ├── Tree.tsx            # Hierarchical tree display with focus modes
+│   │   │   ├── Tree.stories.tsx
+│   │   │   ├── TreeNode.stories.tsx # Tree node component stories
+│   │   │   ├── UniverseCard.tsx    # Universe display cards
+│   │   │   └── UniverseCard.stories.tsx
+│   │   ├── feedback/               # Loading and error states (2 components)
+│   │   │   ├── ErrorMessage.tsx    # Form error display with WCAG compliance
+│   │   │   ├── ErrorMessage.stories.tsx
+│   │   │   ├── LoadingSpinner.tsx  # Loading state component
+│   │   │   └── LoadingSpinner.stories.tsx
+│   │   ├── forms/                  # Form controls and validation (5 components)
+│   │   │   ├── FormActions.tsx     # Cancel + Submit button pairs
+│   │   │   ├── FormActions.stories.tsx
+│   │   │   ├── FormInput.tsx       # Standardised form inputs
+│   │   │   ├── FormInput.stories.tsx  
+│   │   │   ├── FormLabel.tsx       # Consistent form labels
+│   │   │   ├── FormLabel.stories.tsx  
+│   │   │   ├── FormSelect.tsx      # Select dropdown with consistent styling
+│   │   │   ├── FormSelect.stories.tsx
+│   │   │   ├── FormTextarea.tsx    # Textarea with consistent styling
+│   │   │   └── FormTextarea.stories.tsx
+│   │   ├── interactive/            # Buttons, toggles, and user interactions (6 components)
+│   │   │   ├── Breadcrumb.tsx      # Navigation breadcrumb component
+│   │   │   ├── Breadcrumb.stories.tsx
+│   │   │   ├── Button.tsx          # Primary button component with variants
+│   │   │   ├── Button.stories.tsx     
+│   │   │   ├── Dropdown.tsx        # Dropdown menu component
+│   │   │   ├── Dropdown.stories.tsx
+│   │   │   ├── FavouriteButton.tsx # Favouriting functionality
+│   │   │   ├── FavouriteButton.stories.tsx
+│   │   │   ├── SearchBar.tsx       # Search functionality
+│   │   │   ├── SearchBar.stories.tsx  
+│   │   │   ├── ViewToggle.tsx      # View switching component
+│   │   │   └── ViewToggle.stories.tsx 
+│   │   ├── layout/                 # Page structure and containers (6 components)
+│   │   │   ├── CardGrid.tsx        # Responsive grid with content sorting
+│   │   │   ├── CardGrid.stories.tsx   
+│   │   │   ├── DeleteConfirmationModal.tsx # Consistent delete patterns
+│   │   │   ├── DeleteConfirmationModal.stories.tsx
+│   │   │   ├── EmptyState.tsx      # Empty state with CTA patterns
+│   │   │   ├── EmptyState.stories.tsx 
+│   │   │   ├── Navigation.tsx      # Unified navigation system with dropdowns
+│   │   │   ├── Navigation.stories.tsx 
+│   │   │   ├── PageContainer.tsx   # Consistent page layout wrapper
+│   │   │   ├── PageContainer.stories.tsx
+│   │   │   ├── PageHeader.tsx      # Page titles with breadcrumbs
+│   │   │   └── PageHeader.stories.tsx 
+│   │   ├── DevAccessibility.tsx    # Development accessibility component
+│   │   └── index.ts                # Organized component exports
 │   ├── design-system/              # Design system foundation
 │   │   ├── COMPONENT_CREATION_GUIDE.md # Component creation guidelines
 │   │   ├── README.md              # Design system overview
@@ -457,7 +503,12 @@ canoncore/
 ├── ARCHITECTURE.md                 # System architecture documentation
 ├── CLAUDE.md                      # Development guide for Claude Code
 ├── LOVABLE_MVP_SPEC.md           # Complete MVP specification
+├── MICROSOFT_MCP_SETUP.md        # Microsoft Playwright MCP integration guide
 ├── README.md                      # Project README
+├── claude-desktop-mcp-config.json # Claude Desktop MCP configuration
+├── mcp-config.json               # Local MCP server configuration
+├── test-font-fix.js              # Development utility script
+├── test-microsoft-mcp.js         # MCP testing utility script
 ├── firebase.json                  # Firebase configuration
 ├── firestore.rules               # Firestore security rules + UserProgress collection
 ├── firestore.indexes.json       # Firestore database indexes
@@ -687,5 +738,5 @@ CanonCore implements industry-standard accessibility checking with full WCAG AA 
 
 ---
 
-**Last Updated**: Phase 5a Performance Optimization Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 17 UI Components + Unified Navigation + Mobile Responsive Design + Comprehensive WCAG AA Accessibility Implementation + Performance Optimization with Bundle Management and Dynamic Imports)  
-**Next Update**: After Phase 5b-5c: Deployment Environment Separation and UX Review (Testing moved to Phase 7 as final phase)
+**Last Updated**: Phase 5c UX Review & Form Component System Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 25+ UI Components + Unified Navigation + Mobile Responsive Design + Comprehensive WCAG AA Accessibility Implementation + Performance Optimization + Professional 3-Environment Deployment Pipeline + Advanced Content Display Components + Microsoft Playwright MCP Integration + Smart Parent-Based Routing)  
+**Next Update**: After Phase 6a: Advanced Content Hierarchies (Drag-and-drop organisation, nested content navigation) and Phase 7: Comprehensive Testing & Quality Assurance

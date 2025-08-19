@@ -95,20 +95,22 @@ export function UniverseCard({
     >
       <div>
         {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-2 mr-2">
-            <h3 className="text-lg font-medium text-primary truncate">
-              {universe.name}
-            </h3>
-            {showFavourite && (
-              <FavouriteButton 
-                targetId={universe.id} 
-                targetType="universe"
-                className="text-tertiary hover:text-red-500 flex-shrink-0"
-              />
-            )}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <h3 className="text-lg font-medium text-primary truncate">
+                {universe.name}
+              </h3>
+              {showFavourite && (
+                <FavouriteButton 
+                  targetId={universe.id} 
+                  targetType="universe"
+                  className="text-tertiary hover:text-red-500 flex-shrink-0"
+                />
+              )}
+            </div>
           </div>
-          <div className="flex items-center space-x-2 flex-shrink-0">
+          <div className="flex items-center space-x-2 flex-wrap gap-1">
             <Badge 
               variant={universe.isPublic ? 'public' : 'private'} 
               size="small"

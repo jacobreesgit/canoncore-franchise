@@ -45,14 +45,8 @@ export default function CreateUniversePage() {
       }
 
       const newUniverse = await universeService.create(user.id, formData);
-      // Reset form after successful creation
-      setFormData({
-        name: '',
-        description: '',
-        isPublic: false,
-        sourceLink: '',
-        sourceLinkName: '',
-      });
+      // Navigate to the newly created universe
+      router.push(`/universes/${newUniverse.id}`);
     } catch (error) {
       console.error('Error creating universe:', error);
       setError(error instanceof Error ? error.message : 'Error creating universe');

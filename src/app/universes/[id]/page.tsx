@@ -8,7 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { usePageTitle } from '@/lib/hooks/usePageTitle';
 import { useSearch } from '@/lib/hooks/useSearch';
 import Link from 'next/link';
-import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, EmptyState, Button, ButtonLink, ViewToggle, LoadingSpinner, PageContainer, Badge, CardGrid } from '@/components';
+import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, EmptyState, Button, ButtonLink, LoadingSpinner, PageContainer, Badge, ContentSection } from '@/components';
 
 export default function UniversePage() {
   const { user, loading } = useAuth();
@@ -23,7 +23,7 @@ export default function UniversePage() {
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'tree'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'tree'>('tree');
   const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
   
   // Fuzzy search hook for content
@@ -133,6 +133,13 @@ export default function UniversePage() {
         variant="detail"
         currentPage="dashboard"
         showNavigationMenu={true}
+        showContentDropdown={isOwner && !universeLoading && content.length > 0}
+        universeId={universe.id}
+        universeName={universe.name}
+        actions={isOwner ? [
+          { type: 'secondary', label: 'Edit', href: `/universes/${universe.id}/edit` },
+          { type: 'danger', label: 'Delete', onClick: () => setShowDeleteConfirm(true) }
+        ] : []}
       />
 
       <PageContainer variant="wide">
@@ -144,14 +151,12 @@ export default function UniversePage() {
             { label: 'Dashboard', href: '/' },
             { label: universe.name, isCurrentPage: true }
           ]}
+          favourite={{
+            targetId: universe.id,
+            targetType: 'universe'
+          }}
           metadata={
             <div className="flex flex-wrap items-center gap-2">
-              <FavouriteButton 
-                targetId={universe.id} 
-                targetType="universe"
-                className="text-secondary hover:text-red-500"
-                showText={true}
-              />
               <Badge 
                 variant={universe.isPublic ? 'public' : 'private'}
                 size="default"
@@ -198,15 +203,6 @@ export default function UniversePage() {
 
             </div>
           }
-          actions={isOwner ? [
-            // Only show content creation actions if content exists AND not loading (EmptyState handles them when empty)
-            ...(!universeLoading && content.length > 0 ? [
-              { type: 'primary' as const, label: 'Add Content Item', href: `/universes/${universe.id}/content/add-viewable` },
-              { type: 'secondary' as const, label: 'Add Organisation Group', href: `/universes/${universe.id}/content/organise` },
-            ] : []),
-            { type: 'secondary', label: 'Edit Universe', href: `/universes/${universe.id}/edit` },
-            { type: 'danger', label: 'Delete', onClick: () => setShowDeleteConfirm(true) }
-          ] : []}
           searchBar={content.length > 0 ? {
             value: searchQuery,
             onChange: (e) => setSearchQuery(e.target.value),
@@ -220,10 +216,6 @@ export default function UniversePage() {
             variant="default"
             title="No content yet"
             description="Start by adding individual content items, or create organisational groups like series and characters"
-            actions={isOwner ? [
-              { text: "Add Content Item", href: `/universes/${universe.id}/content/add-viewable`, variant: "primary" },
-              { text: "Add Organisation Group", href: `/universes/${universe.id}/content/organise`, variant: "secondary" }
-            ] : []}
           />
         ) : filteredContent.length === 0 ? (
           <EmptyState
@@ -232,107 +224,19 @@ export default function UniversePage() {
             description="Try adjusting your search terms"
           />
         ) : (
-          <div className="space-y-8">
-            {/* View Mode Toggle */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
-              <h2 className="text-xl font-bold text-primary">Content</h2>
-              <ViewToggle
-                value={viewMode}
-                onChange={(value) => setViewMode(value as 'grid' | 'tree')}
-                options={[
-                  { value: 'grid', label: 'Grid View' },
-                  { value: 'tree', label: 'Tree View' }
-                ]}
-              />
-            </div>
-
-            {viewMode === 'grid' ? (
-              <CardGrid 
-                variant="default"
-                content={filteredContent}
-                contentHref={(item) => `/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-                sortContent={true}
-                showFavourite={true}
-                currentUserId={user?.id}
-              />
-            ) : (
-              /* Tree View */
-              <div className="bg-surface-card rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-primary mb-4">
-                  {searchQuery ? 'Search Results' : 'Content Hierarchy'}
-                </h2>
-                {searchQuery ? (
-                  /* Show search results in flat list when searching */
-                  <div className="space-y-1">
-                    {filteredContent.map((item) => (
-                      <Link
-                        key={item.id}
-                        href={`/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-                        className="flex items-center hover:bg-surface-page rounded-lg transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center flex-1 p-2 hover:bg-surface-page rounded-lg transition-colors">
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-primary truncate">
-                              {item.name}
-                            </div>
-                            <div className="text-xs text-tertiary">
-                              {item.isViewable ? 'Viewable' : 'Organisational'} · {item.mediaType}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : hierarchyTree.length > 0 ? (
-                  <div className="space-y-2">
-                    {hierarchyTree.map((node, index) => (
-                      <TreeNode key={`root-${node.contentId}-${index}`} node={node} content={content} universe={universe} depth={0} />
-                    ))}
-                    
-                    {/* Show unorganized content (no parent relationships) */}
-                    {content.filter(item => {
-                      const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
-                      return !hasParent;
-                    }).length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h3 className="text-sm font-medium text-secondary mb-2">Unorganized Content</h3>
-                        <div className="space-y-1">
-                          {content.filter(item => {
-                            const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
-                            return !hasParent;
-                          }).map((item) => (
-                            <Link
-                              key={item.id}
-                              href={`/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-                              className="flex items-center p-2 hover:bg-surface-page rounded-lg transition-colors cursor-pointer"
-                            >
-                              <span className="text-sm text-secondary capitalize mr-2">{item.mediaType}</span>
-                              <span className="font-medium text-primary">{item.name}</span>
-                              {item.isViewable ? (
-                                <span className={`ml-auto text-xs ${(item.progress || 0) > 0 ? 'text-green-600' : 'text-tertiary'}`}>
-                                  {Math.round(item.progress || 0)}% watched
-                                </span>
-                              ) : (
-                                <span className={`ml-auto text-xs ${(item.calculatedProgress || 0) > 0 ? 'text-blue-600' : 'text-tertiary'}`}>
-                                  {Math.round(item.calculatedProgress || 0)}% complete
-                                </span>
-                              )}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <EmptyState
-                    variant="hierarchical"
-                    title="No hierarchical relationships defined yet. Create relationships by setting parent content when adding new items."
-                    description=""
-                  />
-                )}
-              </div>
-            )}
-          </div>
+          <ContentSection
+            title="Content"
+            content={content}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            contentHref={(item) => `/content/${item.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
+            showFavourite={true}
+            currentUserId={user?.id}
+            hierarchyTree={hierarchyTree}
+            searchQuery={searchQuery}
+            filteredContent={filteredContent}
+            showUnorganized={true}
+          />
         )}
       </PageContainer>
 
@@ -350,86 +254,4 @@ export default function UniversePage() {
   );
 }
 
-// Tree node component for hierarchical content display
-function TreeNode({ node, content, universe, depth }: { node: any; content: Content[]; universe: Universe; depth: number }) {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const nodeContent = content.find(c => c.id === node.contentId);
-  
-  if (!nodeContent) {
-    return null;
-  }
-  
-  const hasChildren = node.children && node.children.length > 0;
-  const indentation = depth * 24;
-  
-  return (
-    <div>
-      <div 
-        className="flex items-center hover:bg-surface-page rounded-lg transition-colors"
-        style={{ paddingLeft: `${indentation}px` }}
-      >
-        {hasChildren && (
-          <Button
-            variant="secondary"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 mr-1 hover:bg-[var(--color-interactive-secondary)] rounded transition-colors min-w-0 cursor-pointer"
-          >
-            <svg 
-              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Button>
-        )}
-        {!hasChildren && <div className="w-6" />}
-        
-        <Link
-          href={`/content/${nodeContent.id}?from=universe&universeId=${universe.id}&universeName=${encodeURIComponent(universe.name)}`}
-          className="flex items-center flex-1 p-2 hover:bg-surface-page rounded-lg transition-colors cursor-pointer"
-        >
-          <span className="text-sm text-secondary capitalize mr-2">{nodeContent.mediaType}</span>
-          <span className="font-medium text-primary">{nodeContent.name}</span>
-          {nodeContent.isViewable ? (
-            <span className={`ml-auto text-xs ${(nodeContent.progress || 0) > 0 ? 'text-green-600' : 'text-tertiary'}`}>
-              {Math.round(nodeContent.progress || 0)}% watched
-            </span>
-          ) : (
-            <span className={`ml-auto text-xs ${(nodeContent.calculatedProgress || 0) > 0 ? 'text-blue-600' : 'text-tertiary'}`}>
-              {Math.round(nodeContent.calculatedProgress || 0)}% complete
-            </span>
-          )}
-        </Link>
-      </div>
-      
-      {hasChildren && isExpanded && (
-        <div>
-          {node.children.map((childNode: any, index: number) => (
-            <TreeNode 
-              key={`${depth}-${childNode.contentId}-${index}`} 
-              node={childNode} 
-              content={content} 
-              universe={universe}
-              depth={depth + 1} 
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Helper function to check if content exists in tree
-function hasContentInTree(node: any, contentId: string): boolean {
-  if (node.contentId === contentId) {
-    return true;
-  }
-  
-  if (node.children) {
-    return node.children.some((child: any) => hasContentInTree(child, contentId));
-  }
-  
-  return false;
-}
+// Tree component and helper functions are now extracted to /src/components/content/Tree.tsx and /src/lib/utils/hierarchy.ts
