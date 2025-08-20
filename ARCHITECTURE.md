@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 5c with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, professional 3-environment deployment pipeline, comprehensive performance optimization with bundle size management and dynamic imports, advanced content display components, Microsoft Playwright MCP integration for testing, and smart parent-based routing for hierarchical workflows.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 6a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, professional 3-environment deployment pipeline, comprehensive performance optimization with bundle size management and dynamic imports, advanced content display components, Microsoft Playwright MCP integration for testing, smart parent-based routing for hierarchical workflows, and infinite-depth content hierarchies with recursive tree building and enhanced organisation components.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -90,10 +90,11 @@ The design system follows industry best practices with logical component organiz
 
 #### Component Organization (src/components/)
 
-**Layout Components (`src/components/layout/` - 6 components):**
+**Layout Components (`src/components/layout/` - 7 components):**
 - **`PageContainer.tsx`**: Consistent page layout wrapper (wide/narrow variants)
 - **`PageHeader.tsx`**: Page headers with titles, descriptions, breadcrumbs, and actions
 - **`Navigation.tsx`**: Unified navigation with responsive design and hamburger menu
+- **`Footer.tsx`**: Page footer with version information and branding
 - **`CardGrid.tsx`**: Responsive grid layout with automatic content sorting
 - **`EmptyState.tsx`**: Empty state with call-to-action patterns
 - **`DeleteConfirmationModal.tsx`**: Consistent delete confirmation patterns
@@ -113,14 +114,13 @@ The design system follows industry best practices with logical component organiz
 - **`Breadcrumb.tsx`**: Navigation breadcrumb component with hierarchical links
 - **`Dropdown.tsx`**: Dropdown menu component for navigation and actions
 
-**Content Display (`src/components/content/` - 7 components):**
+**Content Display (`src/components/content/` - 6 components):**
 - **`UniverseCard.tsx`**: Universe display cards with progress tracking
 - **`ContentCard.tsx`**: Content display cards with progress indicators
 - **`ProgressBar.tsx`**: Progress indicators for viewable/organisational content
 - **`Badge.tsx`**: Status badges for public/private and ownership labels
 - **`ContentSection.tsx`**: Advanced content section with tree/grid toggle and search
 - **`Tree.tsx`**: Hierarchical tree display with expandable nodes and focus modes
-- **`TreeNode.tsx`**: Individual tree node component for hierarchical content
 
 **Feedback Components (`src/components/feedback/` - 2 components):**
 - **`LoadingSpinner.tsx`**: Loading indicators with size variants
@@ -206,7 +206,8 @@ Components are organized in Storybook under logical namespaces:
   - States: Loading, form validation, submission, error handling
   - Features: Name/description fields, public/private toggle, source links, real franchise guidance
 
-- **`app/universes/[id]/content/create/page.tsx`**: Content creation form
+- **`app/universes/[id]/content/add-viewable/page.tsx`**: Viewable content creation form
+- **`app/universes/[id]/content/organise/page.tsx`**: Organisational content creation form
   - Responsibilities: Allow universe owners to add content (episodes, characters, etc.)
   - Data Flow: AuthContext + URL params + Form data → ContentService.create → Redirect to new content
   - States: Loading, permission checking, form validation, submission
@@ -429,8 +430,8 @@ canoncore/
 │   │   │   └── hierarchy.ts        # Tree building and content filtering utilities
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions + UserProgress interface
-│   ├── components/                 # Complete design system (Phase 5c)
-│   │   ├── content/                # Content display components (7 components)
+│   ├── components/                 # Complete design system (23 components)
+│   │   ├── content/                # Content display components (6 components)
 │   │   │   ├── Badge.tsx           # Status badges with variants
 │   │   │   ├── Badge.stories.tsx   
 │   │   │   ├── ContentCard.tsx     # Content display cards with progress
@@ -441,7 +442,6 @@ canoncore/
 │   │   │   ├── ProgressBar.stories.tsx
 │   │   │   ├── Tree.tsx            # Hierarchical tree display with focus modes
 │   │   │   ├── Tree.stories.tsx
-│   │   │   ├── TreeNode.stories.tsx # Tree node component stories
 │   │   │   ├── UniverseCard.tsx    # Universe display cards
 │   │   │   └── UniverseCard.stories.tsx
 │   │   ├── feedback/               # Loading and error states (2 components)
@@ -473,13 +473,15 @@ canoncore/
 │   │   │   ├── SearchBar.stories.tsx  
 │   │   │   ├── ViewToggle.tsx      # View switching component
 │   │   │   └── ViewToggle.stories.tsx 
-│   │   ├── layout/                 # Page structure and containers (6 components)
+│   │   ├── layout/                 # Page structure and containers (7 components)
 │   │   │   ├── CardGrid.tsx        # Responsive grid with content sorting
 │   │   │   ├── CardGrid.stories.tsx   
 │   │   │   ├── DeleteConfirmationModal.tsx # Consistent delete patterns
 │   │   │   ├── DeleteConfirmationModal.stories.tsx
 │   │   │   ├── EmptyState.tsx      # Empty state with CTA patterns
 │   │   │   ├── EmptyState.stories.tsx 
+│   │   │   ├── Footer.tsx          # Page footer with version information
+│   │   │   ├── Footer.stories.tsx
 │   │   │   ├── Navigation.tsx      # Unified navigation system with dropdowns
 │   │   │   ├── Navigation.stories.tsx 
 │   │   │   ├── PageContainer.tsx   # Consistent page layout wrapper
@@ -738,5 +740,5 @@ CanonCore implements industry-standard accessibility checking with full WCAG AA 
 
 ---
 
-**Last Updated**: Phase 5c UX Review & Form Component System Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 25+ UI Components + Unified Navigation + Mobile Responsive Design + Comprehensive WCAG AA Accessibility Implementation + Performance Optimization + Professional 3-Environment Deployment Pipeline + Advanced Content Display Components + Microsoft Playwright MCP Integration + Smart Parent-Based Routing)  
-**Next Update**: After Phase 6a: Advanced Content Hierarchies (Drag-and-drop organisation, nested content navigation) and Phase 7: Comprehensive Testing & Quality Assurance
+**Last Updated**: Phase 6a Advanced Content Hierarchies Complete (Foundation + Service Layer + All Core Pages + Data Management Forms + Edit & Delete Operations + Individual User Progress + Favourites System + Advanced Hierarchical Content Organisation + Complete Design System with 23 UI Components + Unified Navigation + Mobile Responsive Design + Comprehensive WCAG AA Accessibility Implementation + Performance Optimization + Professional 3-Environment Deployment Pipeline + Advanced Content Display Components + Microsoft Playwright MCP Integration + Smart Parent-Based Routing + Infinite-Depth Content Hierarchies + Recursive Tree Building + Enhanced Organisation Components)  
+**Next Update**: After Phase 7: Comprehensive Testing & Quality Assurance

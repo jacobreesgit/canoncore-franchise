@@ -222,21 +222,6 @@ export default function EditContentPage() {
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe this content, its role in the franchise, key details..."
-                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
-              />
-            </div>
-
-            <div>
               <FormLabel htmlFor="mediaType">
                 Content Type *
               </FormLabel>
@@ -260,6 +245,21 @@ export default function EditContentPage() {
                   }
                 </p>
               )}
+            </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows={4}
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Describe this content, its role in the franchise, key details..."
+                className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:border-focus"
+              />
             </div>
 
             <div>

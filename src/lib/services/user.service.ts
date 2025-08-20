@@ -143,41 +143,6 @@ export class UserService {
   }
 
   /**
-   * Get user's favourite universe IDs for quick checking
-   */
-  async getFavouriteUniverseIds(userId: string): Promise<string[]> {
-    const favourites = await this.getFavouriteUniverses(userId);
-    return favourites.map(fav => fav.targetId);
-  }
-
-  /**
-   * Get user's favourite content IDs for quick checking
-   */
-  async getFavouriteContentIds(userId: string): Promise<string[]> {
-    const favourites = await this.getFavouriteContent(userId);
-    return favourites.map(fav => fav.targetId);
-  }
-
-  /**
-   * Get user's activity summary (total favourites, etc.)
-   */
-  async getActivitySummary(userId: string): Promise<{
-    totalFavourites: number;
-    favouriteUniverses: number;
-    favouriteContent: number;
-  }> {
-    const allFavourites = await this.getFavourites(userId);
-    const universeFavourites = allFavourites.filter(fav => fav.targetType === 'universe');
-    const contentFavourites = allFavourites.filter(fav => fav.targetType === 'content');
-
-    return {
-      totalFavourites: allFavourites.length,
-      favouriteUniverses: universeFavourites.length,
-      favouriteContent: contentFavourites.length
-    };
-  }
-
-  /**
    * Clear all favourites for a user (useful for account cleanup)
    */
   async clearAllFavourites(userId: string): Promise<void> {

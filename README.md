@@ -4,7 +4,7 @@ A franchise organisation platform for cataloguing REAL existing fictional franch
 
 ## Current Status
 
-**Phase 5c Complete** - Comprehensive UX Review & Form Component System with advanced content display components, Microsoft Playwright MCP integration, and professional 3-environment deployment pipeline.
+**Phase 6a Complete** - Advanced Content Hierarchies with infinite-depth parent-child relationships, recursive tree building, enhanced organisation components, and comprehensive data validation tools.
 
 ## Features Implemented
 
@@ -34,7 +34,7 @@ A franchise organisation platform for cataloguing REAL existing fictional franch
 - **Advanced Tree Components**: Tree, TreeNode, and ContentSection with focus modes and expandable hierarchies
 
 ### ✅ Design System
-- **25+ UI Components**: Organized in 5 categories (Layout, Forms, Interactive, Content, Feedback)
+- **23 UI Components**: Organized in 5 categories (Layout, Forms, Interactive, Content, Feedback)
 - **Storybook Integration**: Comprehensive component documentation with realistic stories
 - **WCAG AA Compliance**: 100% accessibility compliant with automated testing
 - **Responsive Design**: Mobile-first with React-based responsive navigation

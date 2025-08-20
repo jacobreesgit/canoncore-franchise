@@ -17,9 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen flex flex-col">
         <AuthProvider>
-          <div className="flex-1">
+          <main className="flex-1 bg-surface-page">
             {children}
-          </div>
+          </main>
           <Footer />
         </AuthProvider>
       </body>

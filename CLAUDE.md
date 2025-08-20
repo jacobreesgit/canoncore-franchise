@@ -63,9 +63,9 @@ CanonCore uses **Phase-Based Semantic Versioning** with automated version manage
 - **Patch (5.3.x)**: Bug fixes, small improvements, documentation updates
 
 ### Phase to Version Mapping
-- **Phase 5c**: `5.3.0` (current - UX Review & Form Component System)
-- **Phase 6a**: `6.1.0` (next - Advanced Content Hierarchies)
-- **Phase 7**: `7.0.0` (final - Comprehensive Testing & Quality Assurance)
+- **Phase 5c**: `5.3.0` (completed - UX Review & Form Component System)
+- **Phase 6a**: `6.1.0` (current - Advanced Content Hierarchies)
+- **Phase 7**: `7.0.0` (next - Comprehensive Testing & Quality Assurance)
 
 ### Version Workflow
 ```bash
@@ -85,7 +85,7 @@ npm run version:check
 **Note**: Version commands automatically create git commits and tags, then push to remote.
 
 ### Version Display
-The current version is displayed in the **Footer Component**: `Version 5.3.0` at bottom of pages (dashboard, discover).
+The current version is displayed in the **Footer Component**: `Version 6.1.0` at bottom of pages (dashboard, discover).
 
 Version information is sourced from `package.json` and available throughout the application via `src/lib/utils/version.ts`.
 
@@ -150,8 +150,10 @@ src/
 │           ├── edit/
 │           │   └── page.tsx # Universe edit form
 │           └── content/
-│               ├── create/
-│               │   └── page.tsx # Content creation form
+│               ├── add-viewable/
+│               │   └── page.tsx # Viewable content creation form
+│               ├── organise/
+│               │   └── page.tsx # Organisational content creation form
 │               └── [contentId]/
 │                   └── edit/
 │                       └── page.tsx # Content edit form
@@ -168,19 +170,21 @@ src/
 │   │   └── accessibility.test.ts # Accessibility testing
 │   ├── firebase.ts        # Firebase configuration
 │   └── types.ts           # TypeScript interfaces
-├── components/            # Organized component system (17 components)
-│   ├── layout/            # Page structure & containers (6 components)
-│   │   ├── PageContainer, PageHeader, Navigation
+├── components/            # Organized component system (23 components)
+│   ├── layout/            # Page structure & containers (7 components)
+│   │   ├── PageContainer, PageHeader, Navigation, Footer
 │   │   ├── CardGrid, EmptyState, DeleteConfirmationModal
 │   │   └── *.stories.tsx  # Storybook stories for each component
-│   ├── forms/             # Form controls & validation (4 components)
-│   │   ├── FormInput, FormLabel, FormTextarea, FormActions
+│   ├── forms/             # Form controls & validation (5 components)
+│   │   ├── FormInput, FormLabel, FormTextarea, FormSelect, FormActions
 │   │   └── *.stories.tsx  # Storybook stories for each component
-│   ├── interactive/       # Buttons, toggles, inputs (4 components)
+│   ├── interactive/       # Buttons, toggles, inputs (6 components)
 │   │   ├── Button, FavouriteButton, SearchBar, ViewToggle
+│   │   ├── Breadcrumb, Dropdown
 │   │   └── *.stories.tsx  # Storybook stories for each component
-│   ├── content/          # Cards, badges, progress (4 components)
+│   ├── content/          # Cards, badges, progress, trees (6 components)
 │   │   ├── UniverseCard, ContentCard, ProgressBar, Badge
+│   │   ├── ContentSection, Tree
 │   │   └── *.stories.tsx  # Storybook stories for each component
 │   ├── feedback/         # Loading, errors, empty states (2 components)
 │   │   ├── LoadingSpinner, ErrorMessage
@@ -203,7 +207,8 @@ The application follows **hierarchical routing** that mirrors the data relations
 /universes/create                                    # Create new universe
 /universes/[id]                                      # View universe details
 /universes/[id]/edit                                 # Edit universe
-/universes/[id]/content/create                       # Add content to universe
+/universes/[id]/content/add-viewable                  # Add viewable content (movies, episodes)
+/universes/[id]/content/organise                     # Add organisational content (characters, locations)
 /universes/[id]/content/[contentId]/edit             # Edit universe content
 
 # Direct Content Access
@@ -242,7 +247,7 @@ The application follows **hierarchical routing** that mirrors the data relations
 
 ### Current Implementation Status
 
-**Completed (Foundation + Phase 1-4d Complete):**
+**Completed (Foundation + Phase 1-6a Complete):**
 - Next.js 15 + React 19 + TypeScript setup
 - Firebase Auth + Firestore configuration with deployed security rules
 - AuthContext with Google OAuth integration and account selection
@@ -277,9 +282,9 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Deployment Configuration** - Vercel deployment setup with environment separation, optimized build configuration, and comprehensive deployment documentation
 - **Phase 5a Performance Optimization Complete** - Bundle size optimization maintaining 99.5 kB shared bundle, dynamic imports for Fuse.js and axe-core, image optimization with WebP/AVIF formats, security headers, and comprehensive caching strategies
 - **Professional 3-Environment Pipeline Complete** - Enterprise-grade deployment architecture with development/staging/production separation using canoncore-development, canoncore-staging, and canoncore-production-929c5 Firebase projects with complete data isolation and automated branch-based deployments
+- **Phase 6a Advanced Content Hierarchies Complete** - Infinite-depth parent-child relationships with recursive tree building, expandable tree navigation, smart parent-based routing, enhanced content organisation components (ContentSection, Tree, TreeNode), consistent progress color schemes, comprehensive data scanning and validation tools
 
 **Next Implementation Phases (see todo.md):**
-6. **Phase 6a: Advanced Content Hierarchies** - Drag-and-drop organisation, nested content navigation
 7. **Phase 7: Comprehensive Testing & Quality Assurance** (Final Phase) - End-to-end Playwright testing, Microsoft MCP integration, accessibility compliance, performance optimization, security testing, multi-environment validation
 
 ## Data Model
@@ -394,12 +399,12 @@ import { Navigation, PageContainer, PageHeader, Button, LoadingSpinner } from '@
 </PageContainer>
 ```
 
-**Organized Design System (17 Components in 5 Categories):**
+**Organized Design System (23 Components in 5 Categories):**
 
-- **Layout Components (6)**: PageContainer, PageHeader, Navigation, CardGrid, EmptyState, DeleteConfirmationModal
-- **Form Components (4)**: FormInput, FormLabel, FormTextarea, FormActions  
-- **Interactive Components (4)**: Button, FavouriteButton, SearchBar, ViewToggle
-- **Content Display (4)**: UniverseCard, ContentCard, ProgressBar, Badge
+- **Layout Components (7)**: PageContainer, PageHeader, Navigation, Footer, CardGrid, EmptyState, DeleteConfirmationModal
+- **Form Components (5)**: FormInput, FormLabel, FormTextarea, FormSelect, FormActions  
+- **Interactive Components (6)**: Button, FavouriteButton, SearchBar, ViewToggle, Breadcrumb, Dropdown
+- **Content Display (6)**: UniverseCard, ContentCard, ProgressBar, Badge, ContentSection, Tree
 - **Feedback Components (2)**: LoadingSpinner, ErrorMessage
 - **Design Tokens**: CSS custom properties for colors, spacing, and typography throughout
 

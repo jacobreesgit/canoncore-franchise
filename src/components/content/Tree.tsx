@@ -141,7 +141,6 @@ export function Tree({
                       href={contentHref(item)}
                       className="flex items-center flex-1 cursor-pointer"
                     >
-                      <span className="text-sm text-secondary capitalize mr-2">{item.mediaType}</span>
                       <span className="font-medium text-primary">{item.name}</span>
                       {item.isViewable ? (
                         <span className={`ml-auto text-xs ${(item.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
@@ -166,6 +165,37 @@ export function Tree({
               </div>
             </div>
           )}
+        </div>
+      ) : content.length > 0 ? (
+        /* Show all content as unorganized when no hierarchies exist */
+        <div className="space-y-1">
+          {content.map((item) => (
+            <div key={item.id} className="flex items-center p-2 hover:bg-surface-page rounded-lg transition-colors">
+              <Link
+                href={contentHref(item)}
+                className="flex items-center flex-1 cursor-pointer"
+              >
+                <span className="font-medium text-primary">{item.name}</span>
+                {item.isViewable ? (
+                  <span className={`ml-auto text-xs ${(item.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
+                    {Math.round(item.progress || 0)}% watched
+                  </span>
+                ) : (
+                  <span className={`ml-auto text-xs ${(item.calculatedProgress || 0) > 0 ? 'text-[var(--color-status-progress-organisational)]' : 'text-tertiary'}`}>
+                    {Math.round(item.calculatedProgress || 0)}% complete
+                  </span>
+                )}
+              </Link>
+              <div className="flex-shrink-0 px-2">
+                <FavouriteButton
+                  targetId={item.id}
+                  targetType="content"
+                  size="small"
+                  className="opacity-60 hover:opacity-100 transition-opacity"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <EmptyState
@@ -264,7 +294,6 @@ function TreeItem({
           }`}
         >
           <div className="flex items-center sm:flex-1 min-w-0">
-            <span className="text-sm text-secondary capitalize mr-2 flex-shrink-0">{content.mediaType}</span>
             <span className="font-medium text-primary truncate">{content.name}</span>
           </div>
           <div className="mt-1 sm:mt-0 sm:ml-auto flex-shrink-0">

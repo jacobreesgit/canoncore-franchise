@@ -109,7 +109,7 @@ export default function ContentPage() {
 
   if (error || !content || !universe) {
     return (
-      <div className="min-h-screen bg-surface-page">
+      <div className="bg-surface-page">
         <Navigation variant="detail" />
 
         <PageContainer variant="wide">
@@ -135,7 +135,7 @@ export default function ContentPage() {
   const progressPercent = content.progress || 0;
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="dashboard"

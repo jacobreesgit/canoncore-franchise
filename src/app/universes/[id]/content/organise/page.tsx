@@ -113,7 +113,7 @@ export default function OrganiseContentPage() {
 
   if (error || !universe) {
     return (
-      <div className="min-h-screen bg-surface-page">
+      <div className="bg-surface-page">
         <Navigation 
           variant="detail"
           currentPage="dashboard"
@@ -206,7 +206,7 @@ export default function OrganiseContentPage() {
   const organisationalParents = existingContent.filter(content => !content.isViewable);
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="dashboard"
@@ -248,6 +248,24 @@ export default function OrganiseContentPage() {
             </div>
 
             <div>
+              <FormLabel htmlFor="mediaType">
+                Organisation Type *
+              </FormLabel>
+              <FormSelect
+                id="mediaType"
+                name="mediaType"
+                value={formData.mediaType}
+                onChange={handleInputChange}
+              >
+                {organisationalMediaTypes.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </FormSelect>
+            </div>
+
+            <div>
               <FormLabel htmlFor="description">
                 Description
               </FormLabel>
@@ -266,24 +284,6 @@ export default function OrganiseContentPage() {
                   'Describe this content and its role in the franchise...'
                 }
               />
-            </div>
-
-            <div>
-              <FormLabel htmlFor="mediaType">
-                Organisation Type *
-              </FormLabel>
-              <FormSelect
-                id="mediaType"
-                name="mediaType"
-                value={formData.mediaType}
-                onChange={handleInputChange}
-              >
-                {organisationalMediaTypes.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </FormSelect>
             </div>
 
             {organisationalParents.length > 0 && (
@@ -306,7 +306,7 @@ export default function OrganiseContentPage() {
                   {organisationalParents.map((content) => (
                     <option key={content.id} value={content.id}>
                       {content.name} ({content.mediaType})
-                      {content.id === suggestedParent?.id ? ' ⭐ Suggested' : ''}
+                      {content.id === suggestedParent?.id ? '' : ''}
                     </option>
                   ))}
                 </FormSelect>

@@ -101,24 +101,6 @@ export class ContentService {
   }
 
   /**
-   * Get organisational content (series, phases) for a universe
-   */
-  async getOrganisationalContent(universeId: string): Promise<Content[]> {
-    const q = query(
-      this.collection,
-      where('universeId', '==', universeId),
-      where('isViewable', '==', false),
-      orderBy('createdAt', 'asc')
-    );
-    
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Content));
-  }
-
-  /**
    * Get a single content item by ID
    */
   async getById(id: string): Promise<Content | null> {
@@ -173,27 +155,6 @@ export class ContentService {
       contentId,
       universeId: content.universeId,
       progress
-    });
-  }
-
-  /**
-   * Update calculated progress for organisational holders
-   */
-  async updateCalculatedProgress(id: string, calculatedProgress: number): Promise<void> {
-    const content = await this.getById(id);
-    
-    if (!content) {
-      throw new Error('Content not found');
-    }
-
-    if (content.isViewable) {
-      throw new Error('Cannot update calculated progress on viewable content');
-    }
-
-    const docRef = doc(this.collection, id);
-    await updateDoc(docRef, {
-      calculatedProgress,
-      updatedAt: Timestamp.now()
     });
   }
 
@@ -295,16 +256,5 @@ export class ContentService {
     };
   }
 
-  /**
-   * Search content within a universe by name
-   */
-  async search(universeId: string, searchTerm: string): Promise<Content[]> {
-    const allContent = await this.getByUniverse(universeId);
-    
-    return allContent.filter(content =>
-      content.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      content.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
 
 }

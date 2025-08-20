@@ -103,7 +103,7 @@ export default function AddViewableContentPage() {
 
   if (error || !universe) {
     return (
-      <div className="min-h-screen bg-surface-page">
+      <div className="bg-surface-page">
         <Navigation 
           variant="detail"
           currentPage="dashboard"
@@ -196,7 +196,7 @@ export default function AddViewableContentPage() {
   const organisationalParents = existingContent.filter(content => !content.isViewable);
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="dashboard"
@@ -236,20 +236,6 @@ export default function AddViewableContentPage() {
             </div>
 
             <div>
-              <FormLabel htmlFor="description">
-                Description
-              </FormLabel>
-              <FormTextarea
-                id="description"
-                name="description"
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe what happens in this episode/movie, key plot points, characters introduced..."
-              />
-            </div>
-
-            <div>
               <FormLabel htmlFor="mediaType">
                 Content Type *
               </FormLabel>
@@ -265,6 +251,20 @@ export default function AddViewableContentPage() {
                   </option>
                 ))}
               </FormSelect>
+            </div>
+
+            <div>
+              <FormLabel htmlFor="description">
+                Description
+              </FormLabel>
+              <FormTextarea
+                id="description"
+                name="description"
+                rows={4}
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Describe what happens in this episode/movie, key plot points, characters introduced..."
+              />
             </div>
 
             {organisationalParents.length > 0 && (
@@ -287,7 +287,7 @@ export default function AddViewableContentPage() {
                   {organisationalParents.map((content) => (
                     <option key={content.id} value={content.id}>
                       {content.name} ({content.mediaType})
-                      {content.id === suggestedParent?.id ? ' ⭐ Suggested' : ''}
+                      {content.id === suggestedParent?.id ? '' : ''}
                     </option>
                   ))}
                 </FormSelect>

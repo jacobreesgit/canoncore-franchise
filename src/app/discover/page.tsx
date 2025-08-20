@@ -79,6 +79,9 @@ export default function DiscoverPage() {
         variant="detail"
         currentPage="discover"
         showNavigationMenu={true}
+        actions={user ? [
+          { type: 'primary', label: '+ Franchise', href: '/universes/create' }
+        ] : []}
       />
 
       <PageContainer variant="wide">

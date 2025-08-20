@@ -225,15 +225,18 @@ export function PageHeader({
         <Breadcrumb items={breadcrumbItems} />
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-4 md:space-y-0">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <h1 className={getTitleClasses()}>{title}</h1>
               {favourite && (
-                <FavouriteButton 
-                  targetId={favourite.targetId}
-                  targetType={favourite.targetType}
-                  showText={false}
-                  size="large"
-                />
+                <div className="group hover:text-red-500">
+                  <FavouriteButton 
+                    targetId={favourite.targetId}
+                    targetType={favourite.targetType}
+                    showText={false}
+                    size="large"
+                    className="group-hover:text-red-500"
+                  />
+                </div>
               )}
             </div>
             {metadata && (

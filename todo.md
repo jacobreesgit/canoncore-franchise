@@ -187,16 +187,18 @@
     ☒ ✅ Add smart progress display logic for organisational content
     ☒ ✅ Create consistent progress color scheme (green/blue)
     ☒ ✅ Build enhanced data scanning and validation tools
-    ☐ Create drag-and-drop content organisation interface
-    ☐ Add bulk operations for nested content structures
-    ☐ Optimise performance for deep content hierarchies
-    ☐ SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections/deprecated methods AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE.
-    ☐ Ask for an optimisation prompt/improvement/best pratice solution prompts
-    ☐ Remove all redundant files & code
-    ☐ Update all docs
+    ☒ ✅ Fix tree view to show content when no hierarchies exist (prevent empty state message for first organisational groups)
+    ☒ ✅ Remove content type labels from tree nodes for cleaner display  
+    ☒ ✅ Fix form field ordering: move content/organisation type fields above description in all creation/edit forms
+    ☒ ✅ Remove "⭐ Suggested" indicators from parent selection dropdowns
+    ☒ ✅ Fix Firebase permissions for content deletion (resolve "Missing or insufficient permissions" errors)
+    ☒ ✅ Clean up duplicate files (removed backup files with " 2" suffix)
+    ☒ ✅ Update Firestore security rules for proper user progress deletion when content is deleted
+    ☒ ✅ SCAN FOR ALL UNUSED BACKEND/CODE/SERVICE/METHODS/HOOKS/Firebase features/collections/deprecated methods AND THEN PUT THEM IN A FILE FOR US TO DECIDE IF WE SHOULD IMPLEMENT OR REMOVE (analysis completed - minimal unused code found)
+    ☒ ✅ Update all documentation with Phase 6a completion status
 
 
-**Phase 7: Comprehensive Testing & Quality Assurance** (Final Phase)
+**Phase 7: Code Cleanup & Optimization**
 
 **Phase 7a: Core Testing Infrastructure**
     ☐ Expand existing Playwright test suite (tests/example.spec.ts) with comprehensive scenarios
@@ -268,6 +270,13 @@
     ☐ Test error monitoring and logging systems
     ☐ Test backup and recovery procedures
 
-**Phase 8: Scan old project for more ideas***
-* scabard
-* variations
+**Phase 8: Advanced UI Features**
+    ☐ Create drag-and-drop content organisation interface (implement reorderChildren method from RelationshipService)
+    ☐ Add bulk operations for nested content structures
+    ☐ Optimise performance for deep content hierarchies
+
+**Phase 9: Legacy Project Analysis**
+    ☐ Scan old project for more ideas (scabard, variations)
+    ☐ Analyze scabard features for potential integration
+    ☐ Identify unique features not yet implemented in CanonCore
+    ☐ Plan implementation roadmap for scabard-inspired features

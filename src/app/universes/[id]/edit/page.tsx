@@ -119,7 +119,7 @@ export default function EditUniversePage() {
   if (!universe) return null;
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="dashboard"

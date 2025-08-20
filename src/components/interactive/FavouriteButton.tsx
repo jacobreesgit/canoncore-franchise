@@ -95,7 +95,7 @@ export function FavouriteButton({
       className={`${getIconSizeClass()} transition-colors ${
         isFavourited 
           ? 'fill-red-500 text-red-500' 
-          : 'fill-none text-gray-400 hover:text-red-500'
+          : 'fill-none text-gray-400 hover:text-red-500 group-hover:text-red-500'
       }`}
       stroke="currentColor" 
       viewBox="0 0 24 24"

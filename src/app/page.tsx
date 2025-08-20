@@ -43,7 +43,7 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-page">
+      <div className="flex items-center justify-center bg-surface-page min-h-screen">
         <div className="max-w-md w-full bg-surface-card rounded-lg shadow-md p-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-primary mb-2">
@@ -72,9 +72,9 @@ export default function Home() {
         variant="detail"
         currentPage="dashboard"
         showNavigationMenu={true}
-        actions={universes.length > 0 ? [
+        actions={[
           { type: 'primary', label: '+ Franchise', href: '/universes/create' }
-        ] : []}
+        ]}
       />
 
       <PageContainer variant="wide">

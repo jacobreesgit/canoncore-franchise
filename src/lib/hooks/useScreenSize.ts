@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 
 export const useScreenSize = () => {
+  // Initialize with undefined to avoid hydration mismatches
+  // Will be set properly after first render
   const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+    width: 0,
+    height: 0,
   });
 
   useEffect(() => {
@@ -39,5 +41,17 @@ const TAILWIND_BREAKPOINTS = {
 
 export const useIsMobile = (breakpoint: keyof typeof TAILWIND_BREAKPOINTS = 'md') => {
   const { width } = useScreenSize();
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  useEffect(() => {
+    setIsInitialized(true);
+  }, []);
+  
+  // Return false during SSR and initial hydration to avoid mismatches
+  // This assumes desktop-first approach for SSR
+  if (!isInitialized) {
+    return false;
+  }
+  
   return width < TAILWIND_BREAKPOINTS[breakpoint];
 };

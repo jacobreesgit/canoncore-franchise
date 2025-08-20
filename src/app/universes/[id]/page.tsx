@@ -103,7 +103,7 @@ export default function UniversePage() {
 
   if (error || !universe) {
     return (
-      <div className="min-h-screen bg-surface-page">
+      <div className="bg-surface-page">
         <Navigation variant="detail" />
 
         <PageContainer variant="wide">
@@ -128,12 +128,12 @@ export default function UniversePage() {
   const isOwner = universe.userId === user.id;
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="dashboard"
         showNavigationMenu={true}
-        showContentDropdown={isOwner && !universeLoading && content.length > 0}
+        showContentDropdown={isOwner && !universeLoading}
         universeId={universe.id}
         universeName={universe.name}
         actions={isOwner ? [
@@ -172,6 +172,18 @@ export default function UniversePage() {
                   By {universeOwner?.displayName || 'Unknown User'}
                 </span>
               )}
+              {universe.sourceLink && (
+                <a 
+                  href={universe.sourceLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <Badge variant="info" size="default" className="!text-blue-700 hover:!text-blue-900">
+                    Source: {universe.sourceLinkName || 'Reference'}
+                  </Badge>
+                </a>
+              )}
             </div>
           }
           progressBar={{
@@ -179,30 +191,6 @@ export default function UniversePage() {
             value: universe.progress || 0,
             label: 'Overall Progress'
           }}
-          extraContent={
-            <div>
-              {universe.sourceLink && (
-                <div className="mb-4 p-3 bg-[var(--color-status-info-background)] border border-blue-200 rounded-lg">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <svg className="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 2l6 6m0 0l-3-3m3 3l-3 3" />
-                    </svg>
-                    <span className="text-sm text-[var(--color-status-info-text)] font-medium">Source Reference</span>
-                  </div>
-                  <a 
-                    href={universe.sourceLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-link hover:text-link-hover underline mt-1 block"
-                  >
-                    {universe.sourceLinkName || universe.sourceLink}
-                  </a>
-                </div>
-              )}
-
-
-            </div>
-          }
           searchBar={content.length > 0 ? {
             value: searchQuery,
             onChange: (e) => setSearchQuery(e.target.value),

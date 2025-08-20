@@ -241,28 +241,6 @@ export class RelationshipService {
   }
 
   /**
-   * Get content path (breadcrumbs) from root to specific content
-   */
-  async getContentPath(contentId: string): Promise<ContentRelationship[]> {
-    const path: ContentRelationship[] = [];
-    let currentContentId = contentId;
-
-    while (true) {
-      const parents = await this.getParents(currentContentId);
-      if (parents.length === 0) {
-        break; // Reached root
-      }
-      
-      // Take first parent (in case of multiple parents)
-      const parent = parents[0];
-      path.unshift(parent);
-      currentContentId = parent.parentId;
-    }
-
-    return path;
-  }
-
-  /**
    * Reorder children under a parent
    */
   async reorderChildren(parentId: string, userId: string, childOrder: string[]): Promise<void> {

@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
   if (error || !profileUser) {
     return (
-      <div className="min-h-screen bg-surface-page">
+      <div className="bg-surface-page">
         <Navigation variant="detail" />
 
         <PageContainer variant="wide">
@@ -199,7 +199,7 @@ export default function ProfilePage() {
   const totalFavourites = favourites.length;
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="bg-surface-page">
       <Navigation 
         variant="detail"
         currentPage="profile"

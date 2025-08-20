@@ -53,12 +53,12 @@ export function PageContainer({
     .trim();
 
   return (
-    <main
+    <div
       className={containerClasses}
       {...props}
     >
       {children}
-    </main>
+    </div>
   );
 }
 

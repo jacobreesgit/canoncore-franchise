@@ -61,25 +61,6 @@ class UserProgressService {
     }
   }
 
-  // Get all progress for a user across all universes
-  async getAllUserProgress(userId: string): Promise<UserProgress[]> {
-    try {
-      const q = query(
-        this.collection,
-        where('userId', '==', userId),
-        orderBy('updatedAt', 'desc')
-      );
-      const querySnapshot = await getDocs(q);
-      
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as UserProgress[];
-    } catch (error) {
-      console.error('Error getting all user progress:', error);
-      throw error;
-    }
-  }
 
   // Create or update user progress for content
   async setUserProgress(userId: string, data: CreateUserProgressData): Promise<UserProgress> {
@@ -122,64 +103,6 @@ class UserProgressService {
       }
     } catch (error) {
       console.error('Error setting user progress:', error);
-      throw error;
-    }
-  }
-
-  // Update existing user progress
-  async updateUserProgress(userId: string, contentId: string, data: UpdateUserProgressData): Promise<void> {
-    try {
-      const existingProgress = await this.getUserProgress(userId, contentId);
-      
-      if (!existingProgress) {
-        throw new Error('Progress record not found');
-      }
-      
-      const updatedData = {
-        progress: data.progress,
-        lastAccessedAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-      };
-      
-      await updateDoc(doc(this.collection, existingProgress.id), updatedData);
-    } catch (error) {
-      console.error('Error updating user progress:', error);
-      throw error;
-    }
-  }
-
-  // Delete user progress for specific content
-  async deleteUserProgress(userId: string, contentId: string): Promise<void> {
-    try {
-      const existingProgress = await this.getUserProgress(userId, contentId);
-      
-      if (existingProgress) {
-        await deleteDoc(doc(this.collection, existingProgress.id));
-      }
-    } catch (error) {
-      console.error('Error deleting user progress:', error);
-      throw error;
-    }
-  }
-
-  // Delete all user progress for a universe (when universe is deleted)
-  async deleteUserProgressByUniverse(userId: string, universeId: string): Promise<void> {
-    try {
-      const userProgressList = await this.getUserProgressByUniverse(userId, universeId);
-      
-      if (userProgressList.length === 0) {
-        return;
-      }
-      
-      const batch = writeBatch(db);
-      
-      userProgressList.forEach((progress) => {
-        batch.delete(doc(this.collection, progress.id));
-      });
-      
-      await batch.commit();
-    } catch (error) {
-      console.error('Error deleting user progress by universe:', error);
       throw error;
     }
   }
