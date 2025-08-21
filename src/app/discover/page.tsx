@@ -1,131 +1,98 @@
-'use client';
+import type { Metadata } from 'next';
+import { universeService } from '@/lib/services';
+import { 
+  generateCollectionPageJSONLD, 
+  generateBreadcrumbJSONLD, 
+  injectJSONLD,
+  getBaseUrl,
+  createCanonicalUrl,
+  createOpenGraphMetadata,
+  createTwitterMetadata
+} from '@/lib/metadata';
+import DiscoverPageClient from './discover-page-client';
 
-import { useAuth } from '@/lib/contexts/auth-context';
-import { universeService, userService } from '@/lib/services';
-import { Universe, User } from '@/lib/types';
-import { useEffect, useState, useMemo } from 'react';
-import { usePageTitle } from '@/lib/hooks/usePageTitle';
-import { useSearch } from '@/lib/hooks/useSearch';
-import { Navigation, PageHeader, EmptyState, UniverseCard, LoadingSpinner, PageContainer, CardGrid } from '@/components';
-
-export default function DiscoverPage() {
-  const { user, loading } = useAuth();
-  
-  // Set page title
-  usePageTitle('Discover');
-  const [publicUniverses, setPublicUniverses] = useState<Universe[]>([]);
-  const [universesLoading, setUniversesLoading] = useState(true);
-  const [universeOwners, setUniverseOwners] = useState<Record<string, User>>({});
-  
-  // Fuzzy search hook
-  const { searchQuery, setSearchQuery, filteredResults: filteredUniverses } = useSearch(publicUniverses, {
-    keys: ['name', 'description']
-  });
-
-
-  useEffect(() => {
-    const fetchPublicUniverses = async () => {
-      try {
-        let universes;
-        if (user) {
-          // Fetch with user progress for authenticated users
-          universes = await universeService.getPublicUniversesWithUserProgress(user.id);
-        } else {
-          // Fetch without progress for non-authenticated users
-          universes = await universeService.getPublicUniverses();
-        }
-        setPublicUniverses(universes);
-        
-        // Fetch owner information for universes not owned by current user
-        if (user) {
-          const ownersToFetch = [...new Set(
-            universes
-              .filter(universe => universe.userId !== user.id)
-              .map(universe => universe.userId)
-          )];
-          
-          const owners: Record<string, User> = {};
-          await Promise.all(
-            ownersToFetch.map(async (userId) => {
-              try {
-                const ownerData = await userService.getById(userId);
-                if (ownerData) {
-                  owners[userId] = ownerData;
-                }
-              } catch (error) {
-                console.error(`Error fetching owner ${userId}:`, error);
-              }
-            })
-          );
-          setUniverseOwners(owners);
-        }
-      } catch (error) {
-        console.error('Error fetching public universes:', error);
-      } finally {
-        setUniversesLoading(false);
-      }
-    };
-
-    fetchPublicUniverses();
-  }, [user]);
-
-  if (loading) {
-    return <LoadingSpinner variant="fullscreen" message="Loading..." />;
+async function getPublicUniverses() {
+  try {
+    return await universeService.getPublicUniverses();
+  } catch (error) {
+    console.error('Error fetching public universes:', error);
+    return [];
   }
+}
 
-  return (
-    <div className="bg-surface-page">
-      <Navigation 
-        variant="detail"
-        currentPage="discover"
-        showNavigationMenu={true}
-        actions={user ? [
-          { type: 'primary', label: '+ Franchise', href: '/universes/create' }
-        ] : []}
-      />
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = getBaseUrl();
+  const canonicalUrl = createCanonicalUrl('/discover');
+  const title = 'Discover Franchises | CanonCore';
+  const description = 'Explore public franchise universes created by the community. Find Marvel, Doctor Who, Star Wars universes and more.';
 
-      <PageContainer variant="wide">
-        <PageHeader
-          variant="centered"
-          title="Discover Franchises"
-          description="Explore public franchise collections created by the community"
-          searchBar={publicUniverses.length > 0 ? {
-            value: searchQuery,
-            onChange: (e) => setSearchQuery(e.target.value),
-            placeholder: 'Search Marvel, Doctor Who, Star Wars...',
-            variant: 'default'
-          } : undefined}
-        />
+  // Get universes for structured data
+  const universes = await getPublicUniverses();
+  const franchiseItems = universes.map(universe => ({
+    name: universe.name,
+    url: `${baseUrl}/universes/${universe.id}`,
+    description: universe.description || `Explore ${universe.name} franchise content`
+  }));
 
-        {universesLoading ? (
-          <LoadingSpinner variant="inline" message="Loading public franchises..." />
-        ) : filteredUniverses.length === 0 ? (
-          <EmptyState
-            variant="default"
-            title={searchQuery ? 'No matching franchises found' : 'No public franchises yet'}
-            description={searchQuery 
-              ? 'Try adjusting your search terms'
-              : 'Be the first to create and share a public franchise!'
-            }
-          />
-        ) : (
-          <CardGrid 
-            variant="default"
-            universes={filteredUniverses}
-            universeHref={(universe) => `/universes/${universe.id}?from=discover`}
-            showFavourite={user ? true : false}
-            showOwner={true}
-            ownerNames={Object.fromEntries(
-              Object.entries(universeOwners).map(([userId, userData]) => [
-                userId, 
-                userData?.displayName || userData?.email || 'Unknown User'
-              ])
-            )}
-            showOwnerBadge={true}
-            currentUserId={user?.id}
-          />
-        )}
-      </PageContainer>
-    </div>
+  // Generate structured data
+  const collectionJsonLd = generateCollectionPageJSONLD(
+    title,
+    description,
+    franchiseItems,
+    baseUrl,
+    canonicalUrl
   );
+  
+  const breadcrumbJsonLd = generateBreadcrumbJSONLD([
+    { name: 'Home', url: '/' },
+    { name: 'Discover Franchises', url: '/discover' }
+  ], baseUrl);
+
+  return {
+    title,
+    description,
+    keywords: [
+      'franchise discovery',
+      'Marvel',
+      'Doctor Who', 
+      'Star Wars',
+      'DC Comics',
+      'fictional universes',
+      'entertainment catalog',
+      'viewing order',
+      'franchise exploration'
+    ],
+    alternates: {
+      canonical: canonicalUrl
+    },
+    openGraph: createOpenGraphMetadata(
+      title,
+      description,
+      canonicalUrl,
+      'website',
+      {
+        section: 'Discovery'
+      }
+    ),
+    twitter: createTwitterMetadata(
+      title,
+      'Explore public franchise universes created by the community.',
+      'summary_large_image'
+    ),
+    other: injectJSONLD([collectionJsonLd, breadcrumbJsonLd])
+  };
+}
+
+export default async function DiscoverPage() {
+  // Server-side data fetching for public universes
+  const rawUniverses = await getPublicUniverses();
+  
+  // Serialize Firebase Timestamps for client component
+  const initialUniverses = rawUniverses.map(universe => ({
+    ...universe,
+    createdAt: universe.createdAt.toDate(),
+    updatedAt: universe.updatedAt?.toDate() || universe.createdAt.toDate()
+  }));
+  
+  return <DiscoverPageClient initialUniverses={initialUniverses} />;
 }

@@ -33,7 +33,7 @@ export function EmulatorSignIn() {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-2 mb-4">
         <p className="text-red-700 text-xs">
-          Debug: USE_EMULATOR = '{process.env.NEXT_PUBLIC_USE_EMULATOR}' (should be 'true')
+          Debug: USE_EMULATOR = &apos;{process.env.NEXT_PUBLIC_USE_EMULATOR}&apos; (should be &apos;true&apos;)
         </p>
       </div>
     );
