@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CanonCore is a franchise organisation platform for cataloguing REAL existing fictional franchises (Marvel, Doctor Who, Star Wars, etc.). This is a ground-up rebuild of an existing project, following the MVP specification in LOVABLE_MVP_SPEC.md.
+CanonCore is a franchise organisation platform for cataloguing REAL existing fictional franchises (Marvel, Doctor Who, Star Wars, etc.). This is a ground-up rebuild focusing on core franchise organisation features.
 
 **Critical Constraint**: Users can ONLY organise existing fictional franchises - NEVER create original content. The platform is purely for cataloguing established franchise universes and tracking viewing progress.
 
@@ -112,18 +112,13 @@ npm run clear-data --force
 
 ## Project Documentation
 
-This project includes comprehensive documentation across multiple files:
+This project includes focused documentation:
 
-- **ARCHITECTURE.md** - Complete system architecture, data flows, and component organisation
-- **ACCESSIBILITY.md** - WCAG AA compliance guidelines and accessibility testing procedures  
-- **DEPLOYMENT.md** - Step-by-step Vercel deployment guide and environment setup
-- **LOVABLE_MVP_SPEC.md** - Original MVP specification and technical requirements
 - **README.md** - Project overview and quick start guide
 - **todo.md** - Implementation roadmap and completed phases
+- **CLAUDE.md** - Complete development guide (this file)
 
 ## Architecture Overview
-
-**For complete architecture details, data flows, and component responsibilities, see ARCHITECTURE.md**
 
 ### Tech Stack
 - **Frontend**: Next.js 15 (App Router) + React 19 + TypeScript
@@ -250,52 +245,6 @@ The application follows **hierarchical routing** that mirrors the data relations
 - `[contentId]` - Content identifiers when nested under universe context
 - Route parameters are extracted via `useParams()` with TypeScript casting
 
-### Current Implementation Status
-
-**Completed (Foundation + Phase 1-6a Complete):**
-- Next.js 15 + React 19 + TypeScript setup
-- Firebase Auth + Firestore configuration with deployed security rules
-- AuthContext with Google OAuth integration and account selection
-- Complete TypeScript interfaces for franchise data including UserProgress
-- Basic app layout with sign-in/dashboard flow
-- **Service Layer** - All 5 core services implemented (UniverseService, ContentService, UserService, RelationshipService, UserProgressService)
-- **Franchise Dashboard** - Lists user's universes with user-specific progress tracking, responsive grid layout, navigation
-- **Universe Detail Pages** - Shows universe details, content by type (viewable/organisational), owner permissions, tree/grid view toggle, hierarchical navigation
-- **Content Detail Pages** - Individual content viewing with user-specific progress tracking, breadcrumb navigation
-- **Public Discovery** - Browse and search all public franchises with responsive interface
-- **User Profiles** - Display public franchises and favourites with tabbed interface (favourites functionality fully implemented)
-- **Universe Creation Forms** - Complete form for creating new franchises with validation and Firebase integration
-- **Content Creation Forms** - Comprehensive forms for adding content with media type selection, parent selection for hierarchies, and permissions
-- **Universe Edit Forms** - Complete edit functionality for updating franchise details with pre-populated data
-- **Content Edit Forms** - Full content editing with media type selection and automatic viewable detection
-- **Delete Operations** - Universe and content deletion with confirmation modals and proper error handling
-- **Individual User Progress** - Per-user progress tracking with UserProgress collection, same content shows different progress per user
-- **Advanced Hierarchical Content Organisation** - Infinite depth parent-child relationships, recursive tree building, expandable tree navigation, calculated progress for organisational content
-- **Polished UI & Progress Indicators** - Consistent progress bar colors (green for viewable, blue for organisational), smart progress display logic, consistent ordering across grid/tree views, conditional progress text colors
-- **Complete Design System Foundation** - 17 reusable UI components with Storybook stories, design tokens, and consistent patterns
-- **Navigation Component System** - Unified Navigation component with breadcrumbs, source context support, and consistent patterns across all pages
-- **Form Component System** - FormInput, FormLabel, FormTextarea, FormActions with validation and error handling
-- **Layout Components** - PageContainer, PageHeader, CardGrid, ViewToggle for consistent page structure
-- **Interactive Components** - Button, Badge, SearchBar, ProgressBar, FavouriteButton with design token integration
-- **State Components** - LoadingSpinner, ErrorMessage, EmptyState, DeleteConfirmationModal for user feedback
-- **Content Display** - UniverseCard, ContentCard with progress tracking and responsive design
-- **Mobile Responsive Design** - Mobile-first design patterns with React-based responsive navigation across all 10 pages
-- **Navigation Responsive System** - Hamburger menu for mobile screens, desktop navigation menu, React-based screen size detection with useIsMobile hook
-- **Comprehensive Accessibility Implementation** - WCAG AA compliant design with automated checking via @axe-core/react, ESLint accessibility rules, and custom contrast validation
-- **Fixed Critical Accessibility Issues** - ErrorMessage contrast compliance (5.91:1 ratio), enhanced ViewToggle with blue active states and white text
-- **Component Organisation & Structure** - Logical component folders (layout, forms, interactive, content, feedback) with organized Storybook hierarchy
-- **Deployment Configuration** - Vercel deployment setup with environment separation, optimized build configuration, and comprehensive deployment documentation
-- **Phase 5a Performance Optimization Complete** - Bundle size optimization maintaining 99.5 kB shared bundle, dynamic imports for Fuse.js and axe-core, image optimization with WebP/AVIF formats, security headers, and comprehensive caching strategies
-- **Professional 3-Environment Pipeline Complete** - Enterprise-grade deployment architecture with development/staging/production separation using canoncore-development, canoncore-staging, and canoncore-production-929c5 Firebase projects with complete data isolation and automated branch-based deployments
-- **Phase 6a Advanced Content Hierarchies Complete** - Infinite-depth parent-child relationships with recursive tree building, expandable tree navigation, smart parent-based routing, enhanced content organisation components (ContentSection, Tree, TreeNode), consistent progress color schemes, comprehensive data scanning and validation tools
-- **Phase 7e Hierarchical Depth Strategy Complete** - Hybrid display system with levels 1-5 using normal tree view with indentation, levels 6+ rendering in flat style within tree structure using breadcrumbs, mobile always uses full flat display for optimal UX
-- **Phase 7a MCP Development Environment Setup Complete** - Microsoft Playwright MCP server integration with live browser automation, real-time testing workflow, screenshot capture, responsive design validation
-- **Phase 7b Firebase Auth Emulator + MCP Authentication Testing Complete** - Comprehensive authentication flow testing via emulator, protected route redirections, sign-out functionality validation, session management verification
-
-**Current Implementation Phase (see todo.md):**
-7. **Phase 7: MCP-First Interactive Testing & Quality Assurance** ✅ COMPLETE - Comprehensive testing through Microsoft Playwright MCP integration including form component testing, UI component interactive testing, accessibility validation, performance auditing, and multi-environment testing with real Google OAuth and Firebase Auth Emulator
-8. **Phase 8: Context7** 🚧 IN PROGRESS - UI consistency improvements (progress colors unified, private badges red, streamlined interfaces) and Context7 MCP integration for advanced React optimization
-
 ## Data Model
 
 The system uses a hierarchical franchise organisation model:
@@ -306,34 +255,6 @@ The system uses a hierarchical franchise organisation model:
 - **User**: Fan accounts with Google OAuth
 - **Favourite**: User bookmarks for franchises/content
 - **ContentRelationship**: Hierarchical links between content items
-
-### Key TypeScript Interfaces
-
-```typescript
-// Franchise container
-interface Universe {
-  id: string;
-  name: string;
-  description: string;
-  userId: string;        // Owner
-  isPublic: boolean;     // Visibility
-  progress?: number;     // Viewing progress
-  // ... timestamps
-}
-
-// Franchise elements (viewable and organisational content)
-interface Content {
-  id: string;
-  name: string;
-  universeId: string;
-  isViewable: boolean;          // true for viewable content, false for organisational content
-  mediaType: 'video' | 'audio' | 'text' | 'character' | 'location' | ...;
-  progress?: number;            // Only for viewable content
-  calculatedProgress?: number;  // For organisational holders
-  // ... other fields
-}
-```
-
 ## Authentication Flow
 
 1. Google OAuth via Firebase Auth
@@ -408,30 +329,6 @@ interface Content {
 - Users can only catalogue and organise existing, established franchise properties
 
 ## Component System (Phase 4a-4d Complete)
-
-### Navigation Component
-Unified navigation system with consistent patterns across all pages:
-
-```typescript
-import { Navigation, PageContainer, PageHeader, Button, LoadingSpinner } from '@/components';
-
-// Example page structure with design system
-<PageContainer>
-  <Navigation variant="dashboard" currentPage="dashboard" showNavigationMenu={true} />
-  <PageHeader 
-    title="Dashboard"
-    breadcrumbs={[
-      { label: 'Dashboard', href: '/' }
-    ]}
-    actions={
-      <Button variant="primary" href="/universes/create">
-        Create Universe
-      </Button>
-    }
-  />
-  {loading ? <LoadingSpinner /> : <Content />}
-</PageContainer>
-```
 
 **Organized Design System (23 Components in 5 Categories):**
 
@@ -634,23 +531,6 @@ npm run emulator:start
 - **Performance Monitoring**: Lighthouse audits, bundle analysis, loading metrics
 - **Cross-Browser Testing**: Chrome, Firefox, WebKit, Edge compatibility
 
-### **Phase 7: MCP-First Testing Strategy**
-
-Instead of traditional test suites, Phase 7 uses **live, conversational testing**:
-- **Real-Time Feedback**: Claude navigates CanonCore and reports issues immediately
-- **Visual Validation**: Screenshots capture UI states for comparison and review
-- **Interactive Debugging**: Live problem-solving as issues are discovered
-- **Context-Aware Testing**: Testing adapts to current development focus
-- **Immediate Iteration**: Fix issues and re-test instantly in the same conversation
-
-**Coverage Areas:**
-- Authentication flows (Google OAuth, session persistence, protected routes)
-- Universe management (CRUD operations, visibility toggles, search functionality)
-- Content hierarchies (infinite depth, parent-child relationships, progress tracking)
-- User experience (responsive design, navigation, accessibility, error handling)
-- Performance (Lighthouse scores, bundle optimization, loading metrics)
-- Data integrity (Firebase security rules, multi-user scenarios, favourites system)
-- Production validation (staging and production environment testing)
 
 ### **Critical MCP Development Insights**
 
@@ -678,4 +558,4 @@ Instead of traditional test suites, Phase 7 uses **live, conversational testing*
 
 ## Next Steps
 
-Refer to todo.md for the current implementation roadmap. Each phase is designed as manageable tasks for iterative development. The LOVABLE_MVP_SPEC.md contains the complete technical specification for the rebuild.
+Refer to todo.md for the current implementation roadmap. Each phase is designed as manageable tasks for iterative development.
