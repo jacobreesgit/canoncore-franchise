@@ -233,17 +233,18 @@
 - ✅ Real-time progress tracking and favourites system validation
 - ✅ Cross-browser compatibility and responsive design verification
 
-**Phase 8: Advanced UI Features**
-    ☐ Make progress colours the same 
-    ☐ private badge should be red
-    ☐ remove 'update progress' heading
-    ☐ Figure out MCP Playwright prompt for when a new phase is finished
-    ☐ Optimise performance for deep content hierarchies
+**Phase 8: Context7**
+    ✅ Make progress colours the same (blue and green, not grey)
+    ✅ private badge should be red
+    ✅ remove 'update progress' heading
     ☐ context7 and best react
+    ☐ Optimise performance for deep content hierarchies
+
+
+**Phase 9: Next Steps**
+    ☐ design token audit
     ☐ Create drag-and-drop content organisation interface (implement reorderChildren method from RelationshipService)
     ☐ Add bulk operations for nested content structures
-
-**Phase 9: Legacy Project Analysis**
     ☐ search and same relationship spotting when adding new items
     ☐ Scan old project for more ideas (scabard, variations)
     ☐ Analyze scabard features for potential integration

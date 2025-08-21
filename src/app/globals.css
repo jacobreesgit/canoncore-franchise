@@ -65,7 +65,7 @@
   --color-border-error: var(--color-red-200);
 
   --color-status-progress-track: var(--color-gray-200);
-  --color-status-progress-viewable: var(--color-green-600);
+  --color-status-progress-viewable: var(--color-blue-600);
   --color-status-progress-organisational: var(--color-blue-600);
   --color-status-success-background: var(--color-green-100);
   --color-status-success-text: var(--color-green-800);
