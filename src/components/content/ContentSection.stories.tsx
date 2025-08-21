@@ -140,8 +140,7 @@ export const Default: Story = {
     hierarchyTree: mockHierarchyTree,
     showFavourite: true,
     currentUserId: 'user123',
-    showUnorganized: true
-  }
+      }
 };
 
 /**
@@ -158,8 +157,7 @@ export const CustomTitle: Story = {
     hierarchyTree: mockHierarchyTree,
     showFavourite: true,
     currentUserId: 'user123',
-    showUnorganized: true
-  }
+      }
 };
 
 /**
@@ -177,8 +175,7 @@ export const ContextualTree: Story = {
     highlightedContentId: 'ironman',
     showFavourite: true,
     currentUserId: 'user123',
-    showUnorganized: false
-  }
+      }
 };
 
 /**
@@ -197,8 +194,7 @@ export const WithSearch: Story = {
     filteredContent: mockContent.filter(c => c.name.includes('Iron')),
     showFavourite: true,
     currentUserId: 'user123',
-    showUnorganized: true
-  }
+      }
 };
 
 /**
@@ -214,8 +210,7 @@ export const WithoutFavourites: Story = {
     contentHref,
     hierarchyTree: mockHierarchyTree,
     showFavourite: false,
-    showUnorganized: true
-  }
+      }
 };
 
 /**
@@ -232,6 +227,5 @@ export const Empty: Story = {
     hierarchyTree: [],
     showFavourite: true,
     currentUserId: 'user123',
-    showUnorganized: true
-  }
+      }
 };

@@ -218,3 +218,59 @@ export function buildLevelBreadcrumbs(
   
   return breadcrumbs;
 }
+
+/**
+ * Calculate the maximum depth of a hierarchy tree
+ */
+export function calculateMaxDepth(hierarchyTree: HierarchyNode[]): number {
+  if (!hierarchyTree || hierarchyTree.length === 0) {
+    return 0;
+  }
+  
+  const getDepth = (nodes: HierarchyNode[], currentDepth: number = 1): number => {
+    let maxDepth = currentDepth;
+    
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        const childDepth = getDepth(node.children, currentDepth + 1);
+        maxDepth = Math.max(maxDepth, childDepth);
+      }
+    }
+    
+    return maxDepth;
+  };
+  
+  return getDepth(hierarchyTree);
+}
+
+/**
+ * Flatten hierarchy tree into a list with parent context
+ * Used for flat display mode in deep hierarchies or mobile
+ */
+export function flattenHierarchy(hierarchyTree: HierarchyNode[], content: Content[]): Array<{
+  content: Content;
+  parentPath: string[];
+  depth: number;
+}> {
+  const flattened: Array<{ content: Content; parentPath: string[]; depth: number }> = [];
+  
+  const flatten = (nodes: HierarchyNode[], parentPath: string[] = [], depth: number = 0) => {
+    for (const node of nodes) {
+      const nodeContent = content.find(c => c.id === node.contentId);
+      if (nodeContent) {
+        flattened.push({
+          content: nodeContent,
+          parentPath: [...parentPath],
+          depth
+        });
+        
+        if (node.children && node.children.length > 0) {
+          flatten(node.children, [...parentPath, nodeContent.name], depth + 1);
+        }
+      }
+    }
+  };
+  
+  flatten(hierarchyTree);
+  return flattened;
+}

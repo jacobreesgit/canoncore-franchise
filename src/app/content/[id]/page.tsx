@@ -5,7 +5,7 @@ import { contentService, universeService, relationshipService } from '@/lib/serv
 import { Content, Universe } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { usePageTitle } from '@/lib/hooks/usePageTitle';
+import { usePageTitle, useContentProgress } from '@/lib/hooks';
 import Link from 'next/link';
 import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, ProgressBar, Button, ButtonLink, LoadingSpinner, PageContainer, Badge, ContentSection } from '@/components';
 
@@ -15,7 +15,7 @@ export default function ContentPage() {
   const router = useRouter();
   const contentId = params.id as string;
 
-  const [content, setContent] = useState<Content | null>(null);
+  const [initialContent, setInitialContent] = useState<Content | null>(null);
   const [universe, setUniverse] = useState<Universe | null>(null);
   const [allContent, setAllContent] = useState<Content[]>([]);
   const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
@@ -23,6 +23,9 @@ export default function ContentPage() {
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Use the progress hook for optimistic updates
+  const { content, updateProgress, isUpdating, setContent } = useContentProgress(initialContent, user?.id || '');
 
   // Set dynamic page title
   usePageTitle(content?.name || 'Content', content);
@@ -39,7 +42,7 @@ export default function ContentPage() {
             return;
           }
 
-          setContent(contentData);
+          setInitialContent(contentData);
 
           const universeData = await universeService.getById(contentData.universeId);
           if (!universeData) {
@@ -73,11 +76,14 @@ export default function ContentPage() {
   }, [user, contentId]);
 
   const handleProgressUpdate = async (newProgress: number) => {
-    if (!content || !content.isViewable || !user) return;
-    
     try {
-      await contentService.updateUserProgress(contentId, user.id, newProgress);
-      setContent({ ...content, progress: newProgress });
+      await updateProgress(newProgress);
+      
+      // After successful progress update, refresh context data for UI consistency
+      if (content && universe) {
+        const updatedUniverseContent = await contentService.getByUniverseWithUserProgress(content.universeId, user!.id);
+        setAllContent(updatedUniverseContent);
+      }
     } catch (error) {
       console.error('Error updating progress:', error);
     }
@@ -193,16 +199,18 @@ export default function ContentPage() {
                     <Button
                       variant={progressPercent === 0 ? "secondary" : "secondary"}
                       onClick={() => handleProgressUpdate(0)}
+                      disabled={isUpdating}
                       className={progressPercent === 0 ? 'bg-gray-300 text-gray-800' : ''}
                     >
-                      Not Started
+                      {isUpdating && progressPercent === 0 ? 'Updating...' : 'Not Started'}
                     </Button>
                     <Button
                       variant={progressPercent === 100 ? "primary" : "secondary"}
                       onClick={() => handleProgressUpdate(100)}
+                      disabled={isUpdating}
                       className={progressPercent === 100 ? 'bg-green-300 text-green-800' : 'bg-green-200 hover:bg-green-300 text-green-800 cursor-pointer'}
                     >
-                      Completed
+                      {isUpdating && progressPercent !== 100 ? 'Updating...' : 'Completed'}
                     </Button>
                   </div>
                 </div>
@@ -224,7 +232,6 @@ export default function ContentPage() {
               currentUserId={user?.id}
               hierarchyTree={hierarchyTree}
               highlightedContentId={content.id}
-              showUnorganized={false}
               hideViewToggle={true}
               className="content-context-section"
               actions={

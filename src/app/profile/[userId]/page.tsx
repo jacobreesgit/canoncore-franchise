@@ -46,8 +46,15 @@ export default function ProfilePage() {
 
         setProfileUser(userData);
 
-        // Get user's public universes
-        const universes = await universeService.getUserUniverses(userId);
+        // Get user's public universes with progress calculation
+        let universes;
+        if (currentUser && currentUser.id === userId) {
+          // For own profile, use user-specific progress
+          universes = await universeService.getUserUniversesWithProgress(userId);
+        } else {
+          // For other users' profiles, use basic universe data
+          universes = await universeService.getUserUniverses(userId);
+        }
         const publicUniverses = universes.filter(u => u.isPublic);
         setUserUniverses(publicUniverses);
 
@@ -67,10 +74,10 @@ export default function ProfilePage() {
               .filter(fav => fav.targetType === 'content')
               .map(fav => fav.targetId);
             
-            // Fetch universe details
+            // Fetch universe details with user-specific progress
             if (universeIds.length > 0) {
               const favouriteUniverseDetails = await Promise.all(
-                universeIds.map(id => universeService.getById(id))
+                universeIds.map(id => universeService.getByIdWithUserProgress(id, currentUser.id))
               );
               const validUniverses = favouriteUniverseDetails.filter(Boolean) as Universe[];
               setFavouriteUniverses(validUniverses);

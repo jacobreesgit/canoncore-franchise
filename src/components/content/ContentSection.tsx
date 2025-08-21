@@ -30,8 +30,6 @@ export interface ContentSectionProps {
   searchQuery?: string;
   /** Filtered content for search results */
   filteredContent?: Content[];
-  /** Whether to show unorganized content in tree view */
-  showUnorganized?: boolean;
   /** Content ID to highlight for focused tree variant */
   highlightedContentId?: string;
   /** Hide the view toggle (for single-view contexts) */
@@ -56,7 +54,6 @@ export function ContentSection({
   hierarchyTree = [],
   searchQuery = '',
   filteredContent = [],
-  showUnorganized = true,
   highlightedContentId,
   hideViewToggle = false,
   actions,
@@ -106,7 +103,6 @@ export function ContentSection({
             contentHref={contentHref}
             searchQuery={searchQuery}
             filteredContent={filteredContent}
-            showUnorganized={showUnorganized}
             highlightedContentId={highlightedContentId}
           />
         )}

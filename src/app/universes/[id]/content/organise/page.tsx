@@ -6,6 +6,7 @@ import { CreateContentData, Universe, Content } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { FormActions, Navigation, PageHeader, LoadingSpinner, ErrorMessage, FormLabel, FormInput, FormTextarea, FormSelect, PageContainer, ButtonLink } from '@/components';
+import { calculateMaxDepth, buildContentPath } from '@/lib/utils/hierarchy';
 
 const organisationalMediaTypes: { value: Content['mediaType']; label: string; description: string }[] = [
   { 
@@ -46,6 +47,7 @@ export default function OrganiseContentPage() {
   const [universe, setUniverse] = useState<Universe | null>(null);
   const [universeLoading, setUniverseLoading] = useState(true);
   const [existingContent, setExistingContent] = useState<Content[]>([]);
+  const [hierarchyTree, setHierarchyTree] = useState<any[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>('');
   const [suggestedParent, setSuggestedParent] = useState<Content | null>(null);
   const [formData, setFormData] = useState<CreateContentData>({
@@ -78,6 +80,10 @@ export default function OrganiseContentPage() {
           // Load existing content for parent selection (only organisational content)
           const content = await contentService.getByUniverse(universeId);
           setExistingContent(content);
+
+          // Load hierarchy tree for depth validation
+          const hierarchy = await relationshipService.buildHierarchyTree(universeId);
+          setHierarchyTree(hierarchy);
 
           // Validate and set suggested parent from URL parameter
           if (parentContentId) {
@@ -163,6 +169,8 @@ export default function OrganiseContentPage() {
         }
       }
 
+      // No depth restrictions - unlimited hierarchy depth
+
       const newContent = await contentService.create(
         user.id,
         universeId,
@@ -179,12 +187,8 @@ export default function OrganiseContentPage() {
         );
       }
 
-      // Navigate to parent content page if parent was selected, otherwise universe page
-      if (selectedParentId) {
-        router.push(`/content/${selectedParentId}`);
-      } else {
-        router.push(`/universes/${universeId}`);
-      }
+      // Navigate to newly created content page
+      router.push(`/content/${newContent.id}`);
     } catch (error) {
       console.error('Error creating content:', error);
       setError(error instanceof Error ? error.message : 'Error creating content');

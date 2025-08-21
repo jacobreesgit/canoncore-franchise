@@ -5,7 +5,7 @@ import { universeService, contentService, relationshipService, userService } fro
 import { Universe, Content, User } from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { usePageTitle } from '@/lib/hooks/usePageTitle';
+import { usePageTitle, useUniverseProgress } from '@/lib/hooks';
 import { useSearch } from '@/lib/hooks/useSearch';
 import Link from 'next/link';
 import { FavouriteButton, Navigation, PageHeader, DeleteConfirmationModal, EmptyState, Button, ButtonLink, LoadingSpinner, PageContainer, Badge, ContentSection } from '@/components';
@@ -31,6 +31,9 @@ export default function UniversePage() {
     keys: ['name', 'description', 'mediaType']
   });
 
+  // Use universe progress hook for real-time updates
+  const { universeProgress, setUniverseProgress } = useUniverseProgress(universeId, universe?.progress || 0, user?.id || '');
+
   // Set dynamic page title
   usePageTitle(universe?.name || 'Universe', universe);
 
@@ -52,6 +55,11 @@ export default function UniversePage() {
           }
 
           setUniverse(universeData);
+
+          // Update universe progress hook with loaded data
+          if (universeData.progress !== undefined) {
+            setUniverseProgress(universeData.progress);
+          }
 
           // Fetch universe owner information if not the current user
           if (universeData.userId !== user.id) {
@@ -188,7 +196,7 @@ export default function UniversePage() {
           }
           progressBar={{
             variant: 'organisational',
-            value: universe.progress || 0,
+            value: universeProgress,
             label: 'Overall Progress'
           }}
           searchBar={content.length > 0 ? {
@@ -223,7 +231,6 @@ export default function UniversePage() {
             hierarchyTree={hierarchyTree}
             searchQuery={searchQuery}
             filteredContent={filteredContent}
-            showUnorganized={true}
           />
         )}
       </PageContainer>

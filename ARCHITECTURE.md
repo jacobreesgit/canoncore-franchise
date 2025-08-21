@@ -2,7 +2,7 @@
 
 ## Current System Overview
 
-CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 6a with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, professional 3-environment deployment pipeline, comprehensive performance optimization with bundle size management and dynamic imports, advanced content display components, Microsoft Playwright MCP integration for testing, smart parent-based routing for hierarchical workflows, and infinite-depth content hierarchies with recursive tree building and enhanced organisation components.
+CanonCore is a franchise organisation platform built with Next.js 15, React 19, TypeScript, and Firebase. Currently implemented through Phase 7 with complete core functionality including authentication, service layer, dashboard, universe details, content details, discovery, user profiles, data management forms, individual user progress tracking, favourites system, advanced hierarchical content organisation with infinite depth support, comprehensive design system foundation with organized component architecture, unified Navigation component system across all pages, professional 3-environment deployment pipeline, comprehensive performance optimization with bundle size management and dynamic imports, advanced content display components, Microsoft Playwright MCP integration for testing, smart parent-based routing for hierarchical workflows, infinite-depth content hierarchies with recursive tree building and enhanced organisation components, and complete MCP-First interactive testing and quality assurance validation.
 
 **Note**: This is a ground-up rebuild of an existing project. The LOVABLE_MVP_SPEC.md contains the full specification for rebuilding the system as an MVP, focusing on core franchise organisation features while maintaining the same technical stack and architecture patterns.
 
@@ -13,8 +13,8 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 - **Backend**: Firebase (Auth + Firestore)
 - **Authentication**: Google OAuth via Firebase Auth
 - **Deployment**: Vercel with environment separation
-- **Design System**: Storybook with organized component hierarchy
-- **Testing**: Vitest + Accessibility testing via @axe-core/react
+- **Design System**: Storybook with organized component hierarchy  
+- **Testing**: MCP-First Interactive Testing via Microsoft Playwright MCP + Accessibility testing via @axe-core/react
 
 ## Current Architecture Diagram
 
@@ -24,14 +24,14 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │    Pages    │  │Design System│  │  Contexts   │             │
-│  │             │  │(17 Components)│  │             │             │
+│  │             │  │(23 Components)│  │             │             │
 │  │ Dashboard   │  │ Navigation  │  │ AuthContext │             │
 │  │ Universe    │  │ Button      │  │ - User mgmt │             │
 │  │ Content     │  │ PageHeader  │  │ - Sign in/  │             │
 │  │ Discovery   │  │ CardGrid    │  │   out       │             │
 │  │ Profile     │  │ FormInput   │  │             │             │
 │  │ Forms (5)   │  │ SearchBar   │  │             │             │
-│  │             │  │ + 11 more   │  │             │             │
+│  │             │  │ + 17 more   │  │             │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                           │                │                    │
 │  ┌─────────────────────────────────────────────────────────┐   │
@@ -74,12 +74,28 @@ CanonCore is a franchise organisation platform built with Next.js 15, React 19, 
 │  │             │  │ - relations │                              │
 │  │             │  │ - userProgress                             │
 │  └─────────────┘  └─────────────┘                              │
+├─────────────────────────────────────────────────────────────────┤
+│                    Testing Layer (Phase 7)                     │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │           MCP-First Interactive Testing                 │   │
+│  │                                                         │   │
+│  │  • Microsoft Playwright MCP Server Integration         │   │
+│  │  • Real Google OAuth Testing (Primary Method)          │   │
+│  │  • Firebase Auth Emulator (Authentication Flows)       │   │
+│  │  • Live Browser Automation during Development          │   │
+│  │  • Form Validation + UI Component Testing              │   │
+│  │  • Accessibility + Performance Validation              │   │
+│  │  • Multi-Environment Testing (Dev/Staging/Production)  │   │
+│  │  • Visual Regression Testing with Screenshots          │   │
+│  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 
 Current Data Flow:
 User Action → Design System Components → Service Layer → Firestore → UI Update
 Auth: Firebase Auth → onAuthStateChanged → User State → Context consumers
 Design: Component Props → Design Tokens → Consistent Styling → Responsive UI
+Testing: MCP Commands → Live Browser → Real User Interactions → Validation → Feedback
 ```
 
 ## Component Structure (Current State)
@@ -421,13 +437,16 @@ canoncore/
 │   │   │   └── index.ts            # Service exports
 │   │   ├── hooks/                  # Custom React hooks
 │   │   │   ├── index.ts            # Hook exports
+│   │   │   ├── useContentProgress.ts # Content progress update hooks
 │   │   │   ├── usePageTitle.ts     # Page title management hook
 │   │   │   ├── useScreenSize.ts    # Screen size detection with Tailwind breakpoints
-│   │   │   └── useSearch.ts        # Dynamic search hook with optimized Fuse.js loading
+│   │   │   ├── useSearch.ts        # Dynamic search hook with optimized Fuse.js loading
+│   │   │   └── useUniverseProgress.ts # Universe progress update hooks
 │   │   ├── utils/                  # Utility functions
 │   │   │   ├── accessibility.ts    # WCAG AA compliance utilities
 │   │   │   ├── accessibility.test.ts # Accessibility testing
-│   │   │   └── hierarchy.ts        # Tree building and content filtering utilities
+│   │   │   ├── hierarchy.ts        # Tree building and content filtering utilities
+│   │   │   └── version.ts          # Version utility functions
 │   │   ├── firebase.ts             # Firebase config
 │   │   └── types.ts                # TypeScript definitions + UserProgress interface
 │   ├── components/                 # Complete design system (23 components)
@@ -442,6 +461,7 @@ canoncore/
 │   │   │   ├── ProgressBar.stories.tsx
 │   │   │   ├── Tree.tsx            # Hierarchical tree display with focus modes
 │   │   │   ├── Tree.stories.tsx
+│   │   │   ├── TreeNode.stories.tsx # TreeNode component stories
 │   │   │   ├── UniverseCard.tsx    # Universe display cards
 │   │   │   └── UniverseCard.stories.tsx
 │   │   ├── feedback/               # Loading and error states (2 components)
@@ -488,7 +508,8 @@ canoncore/
 │   │   │   ├── PageContainer.stories.tsx
 │   │   │   ├── PageHeader.tsx      # Page titles with breadcrumbs
 │   │   │   └── PageHeader.stories.tsx 
-│   │   ├── DevAccessibility.tsx    # Development accessibility component
+│   │   ├── development/            # Development utilities (1 component)
+│   │   │   └── EmulatorSignIn.tsx  # Firebase Auth Emulator component
 │   │   └── index.ts                # Organized component exports
 │   ├── design-system/              # Design system foundation
 │   │   ├── COMPONENT_CREATION_GUIDE.md # Component creation guidelines
@@ -500,12 +521,11 @@ canoncore/
 │   └── index.html                 # Firebase default page
 ├── .storybook/                     # Storybook configuration
 │   ├── main.ts                    # Storybook main configuration
-│   ├── preview.ts                 # Storybook preview configuration
-│   └── vitest.setup.ts            # Vitest setup for Storybook
+│   └── preview.ts                 # Storybook preview configuration
 ├── ARCHITECTURE.md                 # System architecture documentation
 ├── CLAUDE.md                      # Development guide for Claude Code
 ├── LOVABLE_MVP_SPEC.md           # Complete MVP specification
-├── MICROSOFT_MCP_SETUP.md        # Microsoft Playwright MCP integration guide
+├── MCP_FIRST_TESTING_STRATEGY.md # Complete MCP-First testing strategy and results
 ├── README.md                      # Project README
 ├── claude-desktop-mcp-config.json # Claude Desktop MCP configuration
 ├── mcp-config.json               # Local MCP server configuration
@@ -522,8 +542,6 @@ canoncore/
 ├── todo.md                     # Implementation roadmap
 ├── tsconfig.json              # TypeScript config
 ├── tsconfig.tsbuildinfo       # TypeScript build cache
-├── vitest.config.ts           # Vitest configuration for testing
-├── vitest.shims.d.ts          # Vitest type shims
 ├── vercel.json                 # Vercel deployment configuration
 ├── .vercelignore              # Vercel deployment exclusions
 └── .env.production            # Production environment template

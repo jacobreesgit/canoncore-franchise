@@ -285,6 +285,23 @@ export class RelationshipService {
   }
 
   /**
+   * Get child relationships for a parent content ID
+   */
+  async getChildRelationships(parentId: string): Promise<ContentRelationship[]> {
+    return this.getChildren(parentId);
+  }
+
+  /**
+   * Get content relationships to find parent IDs in hierarchy
+   */
+  async getContentRelationships(contentId: string): Promise<{ parentIds: string[] }> {
+    const parents = await this.getParents(contentId);
+    const parentIds = parents.map(rel => rel.parentId);
+    return { parentIds };
+  }
+
+
+  /**
    * Verify content ownership before creating relationships
    */
   private async verifyContentOwnership(contentId: string, userId: string): Promise<Content> {

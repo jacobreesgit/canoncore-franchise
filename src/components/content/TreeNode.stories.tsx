@@ -134,8 +134,7 @@ export const Default: Story = {
     variant: 'full',
     hierarchyTree: mockHierarchyTree,
     content: mockContent,
-    contentHref,
-    showUnorganized: true
+    contentHref
   }
 };
 
@@ -148,8 +147,7 @@ export const Focused: Story = {
     hierarchyTree: mockHierarchyTree,
     content: mockContent,
     contentHref,
-    highlightedContentId: 'ironman',
-    showUnorganized: false
+    highlightedContentId: 'ironman'
   }
 };
 
@@ -163,8 +161,7 @@ export const WithSearch: Story = {
     content: mockContent,
     contentHref,
     searchQuery: 'Iron',
-    filteredContent: mockContent.filter(c => c.name.includes('Iron')),
-    showUnorganized: true
+    filteredContent: mockContent.filter(c => c.name.includes('Iron'))
   }
 };
 
@@ -176,8 +173,7 @@ export const Empty: Story = {
     variant: 'full',
     hierarchyTree: [],
     content: [],
-    contentHref,
-    showUnorganized: true
+    contentHref
   }
 };
 
@@ -189,7 +185,6 @@ export const MixedProgress: Story = {
     variant: 'full',
     hierarchyTree: mockHierarchyTree,
     content: mockContent,
-    contentHref,
-    showUnorganized: true
+    contentHref
   }
 };

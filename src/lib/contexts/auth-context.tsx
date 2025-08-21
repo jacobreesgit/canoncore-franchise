@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { 
   onAuthStateChanged, 
   signInWithPopup, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
   updateProfile,
@@ -34,17 +36,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, []);
 
-  const signIn = async () => {
-    const provider = new GoogleAuthProvider();
-    // Force account selection prompt for multiple Google accounts
-    provider.setCustomParameters({
-      prompt: 'select_account'
-    });
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Sign in error:', error);
-      throw error;
+  const signIn = async (testUser?: { email: string; displayName: string }) => {
+    // Use emulator authentication for testing
+    if (process.env.NEXT_PUBLIC_USE_EMULATOR === 'true' && testUser) {
+      try {
+        // Try to sign in with existing user first
+        try {
+          await signInWithEmailAndPassword(auth, testUser.email, 'testpassword123');
+        } catch (signInError: any) {
+          // If user doesn't exist, create them
+          if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+            const userCredential = await createUserWithEmailAndPassword(auth, testUser.email, 'testpassword123');
+            // Update display name after creation
+            await updateProfile(userCredential.user, {
+              displayName: testUser.displayName
+            });
+          } else {
+            throw signInError;
+          }
+        }
+      } catch (error) {
+        console.error('Emulator sign in error:', error);
+        throw error;
+      }
+    } else {
+      // Use Google OAuth for production/real testing
+      const provider = new GoogleAuthProvider();
+      // Force account selection prompt for multiple Google accounts
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error('Sign in error:', error);
+        throw error;
+      }
     }
   };
 

@@ -109,7 +109,7 @@ export interface UpdateUserProgressData {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: () => Promise<void>;
+  signIn: (testUser?: { email: string; displayName: string }) => Promise<void>;
   signOut: () => Promise<void>;
   updateDisplayName: (newDisplayName: string) => Promise<void>;
 }

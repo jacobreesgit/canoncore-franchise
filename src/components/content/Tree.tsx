@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Content } from '@/lib/types';
 import { Button } from '../interactive/Button';
@@ -25,8 +25,6 @@ export interface TreeProps {
   searchQuery?: string;
   /** Filtered content for search results */
   filteredContent?: Content[];
-  /** Whether to show unorganized content section */
-  showUnorganized?: boolean;
   /** Content ID to highlight for focused variant */
   highlightedContentId?: string;
   /** Optional custom class names */
@@ -43,12 +41,14 @@ export function Tree({
   contentHref,
   searchQuery = '',
   filteredContent = [],
-  showUnorganized = true,
   highlightedContentId,
   className = ''
 }: TreeProps) {
+  // Track expansion state across all nodes
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+
   // Helper function to find path to highlighted content
-  const findContentPath = (tree: any[], targetId: string): string[] => {
+  const findContentPath = React.useCallback((tree: any[], targetId: string): string[] => {
     for (const node of tree) {
       if (node.contentId === targetId) {
         return [node.contentId];
@@ -62,15 +62,97 @@ export function Tree({
       }
     }
     return [];
+  }, []);
+
+  // Initialize expanded nodes based on variant and highlighted path
+  useEffect(() => {
+    const initializeExpandedNodes = () => {
+      const initialExpanded = new Set<string>();
+      
+      // Helper function to get initial expansion state for a node
+      const getInitialExpansionForNode = (node: any, highlightedPath: string[]) => {
+        const hasChildren = node.children && node.children.length > 0;
+        const isInHighlightedPath = highlightedPath.includes(node.contentId);
+        const isHighlighted = highlightedContentId === node.contentId;
+        
+        if (variant === 'focused' && highlightedContentId) {
+          return isInHighlightedPath || (isHighlighted && hasChildren);
+        }
+        return true; // Default expansion for full variant
+      };
+      
+      // Recursively traverse tree and set initial expansion states
+      const traverseTree = (nodes: any[], currentHighlightedPath: string[]) => {
+        nodes.forEach(node => {
+          if (getInitialExpansionForNode(node, currentHighlightedPath)) {
+            initialExpanded.add(node.contentId);
+          }
+          if (node.children && node.children.length > 0) {
+            traverseTree(node.children, currentHighlightedPath);
+          }
+        });
+      };
+      
+      const highlightedPath = highlightedContentId ? findContentPath(hierarchyTree, highlightedContentId) : [];
+      traverseTree(hierarchyTree, highlightedPath);
+      
+      setExpandedNodes(initialExpanded);
+    };
+    
+    initializeExpandedNodes();
+  }, [hierarchyTree, highlightedContentId, variant, findContentPath]);
+
+  // Function to toggle expansion state
+  const toggleNodeExpansion = (nodeId: string) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
   };
 
   // Get path of content IDs from root to highlighted content
   const highlightedPath = highlightedContentId ? findContentPath(hierarchyTree, highlightedContentId) : [];
 
-  const displayTree = hierarchyTree;
+  // No special display logic - always use normal tree view with horizontal scrolling
+  // Add unorganized content as root-level nodes in the tree
+  const unorganizedContent = content.filter(item => {
+    const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
+    return !hasParent;
+  });
+
+  // Create pseudo tree nodes for unorganized content
+  const unorganizedNodes = unorganizedContent.map(item => ({
+    contentId: item.id,
+    children: []
+  }));
+
+  // Filter out any nodes that don't have corresponding content
+  const validateNode = (node: any): boolean => {
+    return content.some(item => item.id === node.contentId);
+  };
+
+  const filterValidNodes = (nodes: any[]): any[] => {
+    return nodes.filter(node => {
+      if (!validateNode(node)) return false;
+      if (node.children && node.children.length > 0) {
+        node.children = filterValidNodes(node.children);
+      }
+      return true;
+    });
+  };
+
+  const validHierarchyTree = filterValidNodes(hierarchyTree);
+  const validUnorganizedNodes = unorganizedNodes.filter(validateNode);
+  
+  const displayTree = [...validHierarchyTree, ...validUnorganizedNodes];
 
   const containerClasses = [
-    'tree',
+    'tree', // Remove global horizontal scrolling - now handled per item
     variant === 'focused' ? 'tree-focused' : '',
     className
   ]
@@ -90,7 +172,7 @@ export function Tree({
                 className="flex items-center flex-1 p-2 cursor-pointer"
               >
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-primary truncate">
+                  <div className="text-sm font-medium text-primary break-words whitespace-normal">
                     {item.name}
                   </div>
                   <div className="text-xs text-tertiary">
@@ -102,100 +184,53 @@ export function Tree({
                 <FavouriteButton
                   targetId={item.id}
                   targetType="content"
-                  size="small"
-                  className="opacity-60 hover:opacity-100 transition-opacity"
+                  className="text-tertiary hover:text-red-500 flex-shrink-0"
                 />
               </div>
             </div>
           ))}
         </div>
       ) : displayTree.length > 0 ? (
-        <div className="space-y-2">
-          {displayTree.map((node, index) => (
-            <TreeNode 
-              key={`root-${node.contentId}-${index}`} 
-              node={node} 
-              content={content} 
-              contentHref={contentHref}
-              depth={0}
-              highlightedContentId={highlightedContentId}
-              highlightedPath={highlightedPath}
-              variant={variant}
-            />
-          ))}
+        /* Split layout: Tree on left, Progress on right */
+        <div className="flex">
+          {/* Left side: Scrollable tree structure */}
+          <div className="flex-1 overflow-x-auto min-w-0">
+            <div className="min-w-max">
+              {displayTree.map((node, index) => (
+                <div key={`root-${node.contentId}-${index}`} className={index > 0 ? "mt-2" : ""}>
+                  <TreeNode 
+                    node={node} 
+                    content={content} 
+                    contentHref={contentHref}
+                    depth={0}
+                    highlightedContentId={highlightedContentId}
+                    highlightedPath={highlightedPath}
+                    variant={variant}
+                    showProgressColumn={false}
+                    expandedNodes={expandedNodes}
+                    onToggleExpansion={toggleNodeExpansion}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
           
-          {/* Show unorganized content (no parent relationships) */}
-          {showUnorganized && content.filter(item => {
-            const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
-            return !hasParent;
-          }).length > 0 && (
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-secondary mb-2">Unorganized Content</h3>
-              <div className="space-y-1">
-                {content.filter(item => {
-                  const hasParent = hierarchyTree.some(node => hasContentInTree(node, item.id));
-                  return !hasParent;
-                }).map((item) => (
-                  <div key={item.id} className="flex items-center p-2 hover:bg-surface-page rounded-lg transition-colors">
-                    <Link
-                      href={contentHref(item)}
-                      className="flex items-center flex-1 cursor-pointer"
-                    >
-                      <span className="font-medium text-primary">{item.name}</span>
-                      {item.isViewable ? (
-                        <span className={`ml-auto text-xs ${(item.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
-                          {Math.round(item.progress || 0)}% watched
-                        </span>
-                      ) : (
-                        <span className={`ml-auto text-xs ${(item.calculatedProgress || 0) > 0 ? 'text-[var(--color-status-progress-organisational)]' : 'text-tertiary'}`}>
-                          {Math.round(item.calculatedProgress || 0)}% complete
-                        </span>
-                      )}
-                    </Link>
-                    <div className="flex-shrink-0 px-2">
-                      <FavouriteButton
-                        targetId={item.id}
-                        targetType="content"
-                        size="small"
-                        className="opacity-60 hover:opacity-100 transition-opacity"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {/* Right side: Fixed progress column */}
+          <div className="flex-shrink-0 w-32 ml-4">
+            <div>
+              {displayTree.map((node, index) => (
+                <div key={`progress-${node.contentId}-${index}`} className={index > 0 ? "mt-2" : ""}>
+                  <ProgressColumn
+                    node={node}
+                    content={content}
+                    depth={0}
+                    isExpanded={expandedNodes.has(node.contentId)}
+                    expandedNodes={expandedNodes}
+                  />
+                </div>
+              ))}
             </div>
-          )}
-        </div>
-      ) : content.length > 0 ? (
-        /* Show all content as unorganized when no hierarchies exist */
-        <div className="space-y-1">
-          {content.map((item) => (
-            <div key={item.id} className="flex items-center p-2 hover:bg-surface-page rounded-lg transition-colors">
-              <Link
-                href={contentHref(item)}
-                className="flex items-center flex-1 cursor-pointer"
-              >
-                <span className="font-medium text-primary">{item.name}</span>
-                {item.isViewable ? (
-                  <span className={`ml-auto text-xs ${(item.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
-                    {Math.round(item.progress || 0)}% watched
-                  </span>
-                ) : (
-                  <span className={`ml-auto text-xs ${(item.calculatedProgress || 0) > 0 ? 'text-[var(--color-status-progress-organisational)]' : 'text-tertiary'}`}>
-                    {Math.round(item.calculatedProgress || 0)}% complete
-                  </span>
-                )}
-              </Link>
-              <div className="flex-shrink-0 px-2">
-                <FavouriteButton
-                  targetId={item.id}
-                  targetType="content"
-                  size="small"
-                  className="opacity-60 hover:opacity-100 transition-opacity"
-                />
-              </div>
-            </div>
-          ))}
+          </div>
         </div>
       ) : (
         <EmptyState
@@ -228,6 +263,8 @@ interface TreeItemProps {
   onToggleExpand?: () => void;
   /** Indentation depth for hierarchy display */
   depth?: number;
+  /** Whether to show progress column (false for left tree, true for standalone) */
+  showProgressColumn?: boolean;
   /** Optional custom class names */
   className?: string;
 }
@@ -244,6 +281,7 @@ function TreeItem({
   isExpanded = false,
   onToggleExpand,
   depth = 0,
+  showProgressColumn = true,
   className = ''
 }: TreeItemProps) {
   // Responsive indentation: none on mobile, larger on desktop
@@ -259,65 +297,76 @@ function TreeItem({
         marginLeft: `${indentation}px`
       } as React.CSSProperties & { '--mobile-indent': string; '--desktop-indent': string }}
     >
-      <div className={`flex items-center rounded-lg ${
+      <div className={`flex items-center rounded-lg h-full ${
         isHighlighted 
           ? 'bg-[var(--color-blue-50)] border-2 border-[var(--color-blue-100)] shadow-sm' 
           : isInPath
           ? 'bg-[var(--color-blue-25)]'
           : 'hover:bg-surface-page transition-colors'
       } ${className}`}>
-        {/* Expand/collapse button */}
-        {hasChildren ? (
-          <Button
-            variant="clear"
-            onClick={onToggleExpand}
-            className="p-1 mr-1 min-w-0 cursor-pointer"
-          >
-            <svg 
-              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+        
+        {/* Left side: Expand button + Scrollable content title */}
+        <div className="flex items-center flex-1 min-w-0">
+          {/* Expand/collapse button */}
+          {hasChildren ? (
+            <Button
+              variant="clear"
+              onClick={onToggleExpand}
+              className="p-1 mr-1 min-w-0 cursor-pointer flex-shrink-0"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Button>
-        ) : (
-          <div className="w-6" />
-        )}
-        
-        {/* Content link */}
-        <Link
-          href={contentHref(content)}
-          className={`flex flex-col sm:flex-row sm:items-center flex-1 p-2 cursor-pointer ${
-            isHighlighted ? '' : 'rounded-lg'
-          }`}
-        >
-          <div className="flex items-center sm:flex-1 min-w-0">
-            <span className="font-medium text-primary truncate">{content.name}</span>
+              <svg 
+                className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Button>
+          ) : (
+            <div className="w-6 flex-shrink-0" />
+          )}
+          
+          {/* Scrollable content title area */}
+          <div className="flex-1 overflow-x-auto min-w-0">
+            <Link
+              href={contentHref(content)}
+              className={`flex items-center h-12 px-2 cursor-pointer ${
+                isHighlighted ? '' : 'rounded-lg'
+              }`}
+              style={{ minWidth: 'max-content' }}
+            >
+              <span className="font-medium text-primary whitespace-nowrap">{content.name}</span>
+            </Link>
           </div>
-          <div className="mt-1 sm:mt-0 sm:ml-auto flex-shrink-0">
-            {content.isViewable ? (
-              <span className={`text-xs ${(content.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
-                {Math.round(content.progress || 0)}% watched
-              </span>
-            ) : (
-              <span className={`text-xs ${(content.calculatedProgress || 0) > 0 ? 'text-[var(--color-status-progress-organisational)]' : 'text-tertiary'}`}>
-                {Math.round(content.calculatedProgress || 0)}% complete
-              </span>
-            )}
-          </div>
-        </Link>
-        
-        {/* Favourite button */}
-        <div className="flex-shrink-0 px-2">
-          <FavouriteButton
-            targetId={content.id}
-            targetType="content"
-            size="small"
-            className="opacity-60 hover:opacity-100 transition-opacity"
-          />
         </div>
+        
+        {/* Right side: Fixed progress text + Favourite button (only when showProgressColumn is true) */}
+        {showProgressColumn && (
+          <div className="flex items-center flex-shrink-0 ml-4">
+            {/* Fixed progress text */}
+            <div className="px-2">
+              {content.isViewable ? (
+                <span className={`font-medium ${(content.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
+                  {Math.round(content.progress || 0)}% watched
+                </span>
+              ) : (
+                <span className={`font-medium ${(content.calculatedProgress || 0) > 0 ? 'text-[var(--color-status-progress-organisational)]' : 'text-tertiary'}`}>
+                  {Math.round(content.calculatedProgress || 0)}% complete
+                </span>
+              )}
+            </div>
+            
+            {/* Favourite button */}
+            <div className="px-2">
+              <FavouriteButton
+                targetId={content.id}
+                targetType="content"
+                className="text-tertiary hover:text-red-500 flex-shrink-0"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -334,35 +383,27 @@ interface TreeNodeProps {
   highlightedContentId?: string;
   highlightedPath?: string[];
   variant?: 'full' | 'focused';
+  showProgressColumn?: boolean;
+  expandedNodes?: Set<string>;
+  onToggleExpansion?: (nodeId: string) => void;
 }
 
-function TreeNode({ node, content, contentHref, depth, highlightedContentId, highlightedPath = [], variant }: TreeNodeProps) {
+function TreeNode({ node, content, contentHref, depth, highlightedContentId, highlightedPath = [], variant, showProgressColumn = true, expandedNodes, onToggleExpansion }: TreeNodeProps) {
   const hasChildren = node.children && node.children.length > 0;
   
   // Determine if this node is in the highlighted path
   const isInHighlightedPath = highlightedPath.includes(node.contentId);
   const isHighlighted = highlightedContentId === node.contentId;
   
-  // Smart expansion logic for focused variant
-  const getInitialExpansionState = useCallback(() => {
-    if (variant === 'focused' && highlightedContentId) {
-      // Auto-expand if this node is in the path to highlighted content
-      // or if this is the highlighted content with children
-      return isInHighlightedPath || (isHighlighted && hasChildren);
-    }
-    // Default expansion for full variant
-    return true;
-  }, [variant, highlightedContentId, isInHighlightedPath, isHighlighted, hasChildren]);
+  // Use shared expansion state if available, otherwise fall back to local state
+  const isExpanded = expandedNodes ? expandedNodes.has(node.contentId) : true;
   
-  // Use smart initial state
-  const [isExpanded, setIsExpanded] = useState(getInitialExpansionState);
-  
-  // Update expansion state when highlighted content changes
-  useEffect(() => {
-    if (variant === 'focused') {
-      setIsExpanded(getInitialExpansionState());
+  // Toggle function that uses shared state if available
+  const handleToggleExpansion = () => {
+    if (onToggleExpansion) {
+      onToggleExpansion(node.contentId);
     }
-  }, [highlightedContentId, variant, isInHighlightedPath, isHighlighted, hasChildren, getInitialExpansionState]);
+  };
   
   const nodeContent = content.find(c => c.id === node.contentId);
   
@@ -375,31 +416,111 @@ function TreeNode({ node, content, contentHref, depth, highlightedContentId, hig
   
   return (
     <div>
-      <TreeItem
-        content={nodeContent}
-        contentHref={contentHref}
-        isHighlighted={isHighlightedItem}
-        isInPath={isInHighlightedPath}
-        hasChildren={hasChildren}
-        isExpanded={isExpanded}
-        onToggleExpand={() => setIsExpanded(!isExpanded)}
-        depth={depth}
-      />
+      {/* TreeItem for current node */}
+      <div className="h-12">
+        <TreeItem
+          content={nodeContent}
+          contentHref={contentHref}
+          isHighlighted={isHighlightedItem}
+          isInPath={isInHighlightedPath}
+          hasChildren={hasChildren}
+          isExpanded={isExpanded}
+          onToggleExpand={handleToggleExpansion}
+          depth={depth}
+          showProgressColumn={showProgressColumn}
+        />
+      </div>
       
+      {/* TreeNodes for children (only if expanded and has actual children) */}
       {hasChildren && isExpanded && (
-        <div>
+        <div className="mt-2">
           {node.children.map((childNode: any, index: number) => (
-            <TreeNode 
-              key={`${depth}-${childNode.contentId}-${index}`} 
-              node={childNode} 
-              content={content} 
-              contentHref={contentHref}
-              depth={depth + 1}
-              highlightedContentId={highlightedContentId}
-              highlightedPath={highlightedPath}
-              variant={variant}
-            />
+            <div key={`${depth}-${childNode.contentId}-${index}`} className={index > 0 ? "mt-2" : ""}>
+              <TreeNode 
+                node={childNode} 
+                content={content} 
+                contentHref={contentHref}
+                depth={depth + 1}
+                highlightedContentId={highlightedContentId}
+                highlightedPath={highlightedPath}
+                variant={variant}
+                showProgressColumn={showProgressColumn}
+                expandedNodes={expandedNodes}
+                onToggleExpansion={onToggleExpansion}
+              />
+            </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+/**
+ * Progress column component for the right side of split tree
+ */
+interface ProgressColumnProps {
+  node: any;
+  content: Content[];
+  depth: number;
+  isExpanded?: boolean;
+  expandedNodes?: Set<string>;
+}
+
+function ProgressColumn({ node, content, depth, isExpanded = true, expandedNodes }: ProgressColumnProps) {
+  const nodeContent = content.find(c => c.id === node.contentId);
+  
+  if (!nodeContent) {
+    return null;
+  }
+  
+  return (
+    <div>
+      {/* Progress for current node */}
+      <div className="h-12 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          {/* Progress text */}
+          <div>
+            {nodeContent.isViewable ? (
+              <span className={`font-medium ${(nodeContent.progress || 0) > 0 ? 'text-[var(--color-status-progress-viewable)]' : 'text-tertiary'}`}>
+                {Math.round(nodeContent.progress || 0)}%
+              </span>
+            ) : (
+              <span className={`font-medium ${(nodeContent.calculatedProgress || 0) > 0 ? 'text-[var(--color-status-progress-organisational)]' : 'text-tertiary'}`}>
+                {Math.round(nodeContent.calculatedProgress || 0)}%
+              </span>
+            )}
+          </div>
+          
+          {/* Favourite button */}
+          <div>
+            <FavouriteButton
+              targetId={nodeContent.id}
+              targetType="content"
+              className="text-tertiary hover:text-red-500 flex-shrink-0"
+            />
+          </div>
+        </div>
+      </div>
+      
+      {/* Progress for children (only if expanded and has actual children) */}
+      {node.children && node.children.length > 0 && isExpanded && (
+        <div className="mt-2">
+          {node.children.map((childNode: any, index: number) => {
+            const childIsExpanded = expandedNodes ? expandedNodes.has(childNode.contentId) : false;
+            return (
+              <div key={`progress-child-${childNode.contentId}-${index}`} className={index > 0 ? "mt-2" : ""}>
+                <ProgressColumn 
+                  node={childNode}
+                  content={content}
+                  depth={depth + 1}
+                  isExpanded={childIsExpanded}
+                  expandedNodes={expandedNodes}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

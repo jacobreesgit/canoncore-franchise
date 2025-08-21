@@ -44,10 +44,6 @@ const meta = {
       description: 'Filtered content for search results',
       control: 'object'
     },
-    showUnorganized: {
-      description: 'Whether to show unorganized content section',
-      control: 'boolean'
-    }
   }
 } satisfies Meta<typeof Tree>;
 
@@ -125,8 +121,7 @@ export const Default: Story = {
   args: {
     hierarchyTree: sampleHierarchy,
     content: sampleContent,
-    contentHref: (item: Content) => `/content/${item.id}`,
-    showUnorganized: true
+    contentHref: (item: Content) => `/content/${item.id}`
   }
 };
 
@@ -136,8 +131,7 @@ export const WithSearch: Story = {
     content: sampleContent,
     contentHref: (item: Content) => `/content/${item.id}`,
     searchQuery: 'Spider-Man',
-    filteredContent: [sampleContent[1]], // Spider-Man movie
-    showUnorganized: true
+    filteredContent: [sampleContent[1]] // Spider-Man movie
   }
 };
 
@@ -145,17 +139,15 @@ export const EmptyHierarchy: Story = {
   args: {
     hierarchyTree: [],
     content: sampleContent,
-    contentHref: (item: Content) => `/content/${item.id}`,
-    showUnorganized: true
+    contentHref: (item: Content) => `/content/${item.id}`
   }
 };
 
-export const NoUnorganized: Story = {
+export const OnlyHierarchical: Story = {
   args: {
     hierarchyTree: sampleHierarchy,
-    content: sampleContent,
-    contentHref: (item: Content) => `/content/${item.id}`,
-    showUnorganized: false
+    content: sampleContent.slice(0, 3), // Only content that's in the hierarchy
+    contentHref: (item: Content) => `/content/${item.id}`
   }
 };
 
@@ -176,8 +168,7 @@ export const DeepHierarchy: Story = {
       }
     ],
     content: sampleContent,
-    contentHref: (item: Content) => `/content/${item.id}`,
-    showUnorganized: true
+    contentHref: (item: Content) => `/content/${item.id}`
   }
 };
 
@@ -187,7 +178,6 @@ export const FocusedVariant: Story = {
     hierarchyTree: sampleHierarchy,
     content: sampleContent,
     contentHref: (item: Content) => `/content/${item.id}`,
-    highlightedContentId: '2', // Spider-Man movie
-    showUnorganized: true
+    highlightedContentId: '2' // Spider-Man movie
   }
 };

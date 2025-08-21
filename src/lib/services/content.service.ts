@@ -256,5 +256,38 @@ export class ContentService {
     };
   }
 
+  /**
+   * Get child content for a given parent content ID
+   */
+  async getChildContent(parentId: string, currentUserId: string): Promise<Content[]> {
+    const { relationshipService } = await import('./index');
+    
+    // Get all relationships where this content is the parent
+    const relationships = await relationshipService.getChildRelationships(parentId);
+    const childIds = relationships.map(rel => rel.contentId);
+    
+    if (childIds.length === 0) {
+      return [];
+    }
+    
+    // Get all child content with user progress
+    const allChildren = await Promise.all(
+      childIds.map(async (childId) => {
+        return await this.getByIdWithUserProgress(childId, currentUserId);
+      })
+    );
+    
+    // Filter out null results
+    return allChildren.filter((child): child is Content => child !== null);
+  }
+
+  /**
+   * Check if content belongs to a specific universe
+   */
+  async checkContentUniverse(contentId: string, universeId: string): Promise<boolean> {
+    const content = await this.getById(contentId);
+    return content?.universeId === universeId;
+  }
+
 
 }

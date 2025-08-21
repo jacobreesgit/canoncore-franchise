@@ -21,9 +21,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+firebase-debug.log
+firestore-debug.log
 
 # Local env files
 .env*.local
+.env.emulator
+.env*.backup
 
 # Vercel
 .vercel
@@ -41,3 +45,9 @@ next-env.d.ts
 
 *storybook.log
 storybook-static
+
+# MCP Testing
+.playwright-mcp/
+
+# Firebase Emulator
+emulator-data/

@@ -45,6 +45,11 @@ npm run lighthouse          # Run Lighthouse performance audit
 npm run mcp:start           # Start Microsoft Playwright MCP server
 npm run mcp:test            # Test MCP server with CanonCore (requires dev server)
 
+# Firebase Emulator commands
+npm run emulator:start      # Start Firebase Auth/Firestore emulators
+npm run emulator:dev        # Start emulators with data import/export
+npm run dev:emulator        # Start development server with emulator mode enabled
+
 # Version management commands
 npm run version:check       # Display current version
 npm run version:patch       # Increment patch version (1.5.0 → 1.5.1)
@@ -64,8 +69,8 @@ CanonCore uses **Phase-Based Semantic Versioning** with automated version manage
 
 ### Phase to Version Mapping
 - **Phase 5c**: `5.3.0` (completed - UX Review & Form Component System)
-- **Phase 6a**: `6.1.0` (current - Advanced Content Hierarchies)
-- **Phase 7**: `7.0.0` (next - Comprehensive Testing & Quality Assurance)
+- **Phase 6a**: `6.1.0` (completed - Advanced Content Hierarchies)
+- **Phase 7**: `7.0.0` (completed - Comprehensive Testing & Quality Assurance)
 
 ### Version Workflow
 ```bash
@@ -283,9 +288,12 @@ The application follows **hierarchical routing** that mirrors the data relations
 - **Phase 5a Performance Optimization Complete** - Bundle size optimization maintaining 99.5 kB shared bundle, dynamic imports for Fuse.js and axe-core, image optimization with WebP/AVIF formats, security headers, and comprehensive caching strategies
 - **Professional 3-Environment Pipeline Complete** - Enterprise-grade deployment architecture with development/staging/production separation using canoncore-development, canoncore-staging, and canoncore-production-929c5 Firebase projects with complete data isolation and automated branch-based deployments
 - **Phase 6a Advanced Content Hierarchies Complete** - Infinite-depth parent-child relationships with recursive tree building, expandable tree navigation, smart parent-based routing, enhanced content organisation components (ContentSection, Tree, TreeNode), consistent progress color schemes, comprehensive data scanning and validation tools
+- **Phase 7e Hierarchical Depth Strategy Complete** - Hybrid display system with levels 1-5 using normal tree view with indentation, levels 6+ rendering in flat style within tree structure using breadcrumbs, mobile always uses full flat display for optimal UX
+- **Phase 7a MCP Development Environment Setup Complete** - Microsoft Playwright MCP server integration with live browser automation, real-time testing workflow, screenshot capture, responsive design validation
+- **Phase 7b Firebase Auth Emulator + MCP Authentication Testing Complete** - Comprehensive authentication flow testing via emulator, protected route redirections, sign-out functionality validation, session management verification
 
-**Next Implementation Phases (see todo.md):**
-7. **Phase 7: Comprehensive Testing & Quality Assurance** (Final Phase) - End-to-end Playwright testing, Microsoft MCP integration, accessibility compliance, performance optimization, security testing, multi-environment validation
+**Current Implementation Phase (see todo.md):**
+7. **Phase 7: MCP-First Interactive Testing & Quality Assurance** ✅ COMPLETE - Comprehensive testing through Microsoft Playwright MCP integration including form component testing, UI component interactive testing, accessibility validation, performance auditing, and multi-environment testing with real Google OAuth and Firebase Auth Emulator
 
 ## Data Model
 
@@ -360,6 +368,33 @@ interface Content {
 - Use **"Organisational Content"** for characters, locations, collections, series (content that helps organise)
 - Never use old terms: ~~"Watchable Content"~~, ~~"Characters & Locations"~~, ~~"Reference Material"~~
 - This terminology must be consistent across all UI, documentation, and code comments
+
+### Phase Completion Testing
+- **ALWAYS** use Microsoft Playwright MCP testing at the end of each phase completion
+- Refer to the comprehensive testing checklist in `MCP_FIRST_TESTING_STRATEGY.md`
+- **Primary Testing Method**: Real Google OAuth authentication
+- **Firebase Emulator**: Only for authentication flow testing (Google popup limitations prevent MCP automation)
+- **Required MCP Tests Before Phase Sign-Off**:
+  - Core feature functionality validation
+  - User interface interaction testing  
+  - Data persistence verification
+  - Error handling and edge cases
+  - Visual regression with screenshots
+- **Testing Environment Setup**:
+  ```bash
+  # Standard testing with real Google OAuth (recommended)
+  npm run dev
+  npm run mcp:start
+  
+  # Only for authentication flow testing
+  npm run dev:emulator
+  npm run emulator:start
+  npm run mcp:start
+  ```
+- **Testing Approach**:
+  - **Real Google OAuth**: All functionality testing (universe management, profiles, content, navigation)
+  - **Firebase Emulator**: Only when testing authentication flows that can't be automated due to Google popup restrictions
+- **Documentation**: Update testing status in `MCP_FIRST_TESTING_STRATEGY.md` checklist after completion
 
 ## Franchise Content Rules
 
@@ -528,9 +563,23 @@ git push  # Deploy to production
 - **Complete isolation:** No cross-contamination between environments
 - **Consistent rules:** Same Firestore security rules deployed to all environments
 
-## Microsoft Playwright MCP Integration (Phase 7 Ready)
+## Microsoft Playwright MCP Integration (Phase 7: MCP-First Development)
 
-CanonCore includes Microsoft's official Playwright MCP server for AI-assisted browser automation and testing.
+CanonCore implements **MCP-First Development** using Microsoft's official Playwright MCP server for live, interactive testing during development conversations.
+
+### **MCP-First Development Philosophy**
+
+**Traditional Approach (What We Don't Do):**
+- ❌ Write static test files (.spec.ts)
+- ❌ Manual test execution via npm run commands
+- ❌ Separate testing from development workflow
+
+**MCP-First Approach (Our Method):**
+- ✅ Live browser automation during Claude Code conversations
+- ✅ Interactive testing where Claude controls the browser directly
+- ✅ Real-time debugging by navigating and inspecting the app live
+- ✅ Dynamic test generation based on conversation context
+- ✅ Visual feedback with screenshots and UI inspection
 
 ### **MCP Setup Complete**
 
@@ -539,37 +588,96 @@ CanonCore includes Microsoft's official Playwright MCP server for AI-assisted br
 - Local MCP configuration (`mcp-config.json`) for development use
 - Claude Desktop integration ready (`claude-desktop-mcp-config.json`)
 - Package.json scripts for MCP operations
-- Comprehensive test infrastructure ready for Phase 7
+- Development workflow optimized for live testing
 
-### **MCP Capabilities**
+**Firebase Auth Emulator Integration:**
+- Firebase Auth Emulator (port 9099) and Firestore Emulator (port 8080) for limited authentication testing
+- Environment-based configuration switching (`NEXT_PUBLIC_USE_EMULATOR`)
+- Test user accounts (Alice, Bob) for authentication flow testing only
+- **Critical Limitation**: Emulator incompatible with Next.js App Router SSR for dynamic routes (`/universes/[id]`, `/profile/[userId]`, `/content/[id]`)
+- **Primary Testing Method**: Real Google OAuth for all functionality testing
+- **Emulator Use Cases**: Authentication flow testing when Google popup prevents MCP automation
+- **Real OAuth Required For**: All comprehensive feature testing (universe management, profiles, content, navigation)
+- Automated cache clearing for reliable MCP browser testing
 
-With Microsoft's Playwright MCP integration, AI can:
-- **Accessibility-First Automation**: Use Playwright's accessibility tree for reliable, fast automation
-- **Visual Testing**: Take screenshots, compare visual changes, detect UI regressions
-- **Test Generation**: Create comprehensive test suites in natural language
-- **Multi-Browser Testing**: Automated testing across Chrome, Firefox, WebKit, and Edge
-- **Performance Testing**: Measure page load times and Lighthouse metrics
-- **Accessibility Testing**: WCAG compliance validation and keyboard navigation
-- **Data Integrity**: Validate Firebase security rules and multi-user scenarios
+### **MCP-First Workflow**
 
-### **Testing Documentation**
+**Typical Development Session:**
+```bash
+# Standard development (real Google OAuth)
+npm run dev
 
-See **MICROSOFT_MCP_SETUP.md** for:
-- Complete setup instructions and configuration details
-- Usage examples for AI-assisted testing with CanonCore
-- Microsoft MCP vs other implementations comparison
-- Browser automation capabilities and options
+# Emulator development (test users Alice/Bob)
+npm run dev:emulator
 
-### **Phase 7 Testing Strategy**
+# Start Firebase emulators (separate terminal)
+npm run emulator:start
 
-The comprehensive testing phase leverages Microsoft's MCP server for:
-- Authentication flows (Google OAuth, session persistence)
-- Universe management (CRUD operations, visibility, search, favourites)
+# Start MCP server (separate terminal)
+npm run mcp:start
+
+# Then in Claude Code conversation:
+"Claude, navigate to localhost:3000 and test the sign-in flow"
+"Claude, create a new universe and verify the form validation"
+"Claude, test the mobile responsive navigation"
+"Claude, check the accessibility of the content hierarchy"
+```
+
+**Key MCP Development Commands:**
+- `npm run dev` - Standard development with real Google OAuth
+- `npm run dev:emulator` - Development with Firebase Auth Emulator and test users
+- `npm run emulator:start` - Start Firebase Auth/Firestore emulators
+- `npm run mcp:start` - Launch Microsoft Playwright MCP server for browser automation
+
+**Live Testing Capabilities:**
+- **Interactive Form Testing**: Fill out forms, validate submissions, test error handling
+- **Responsive Design Validation**: Switch viewports, test mobile navigation, capture screenshots
+- **Authentication Flows**: Test Google OAuth, session management, protected routes
+- **Accessibility Checking**: Keyboard navigation, screen reader compatibility, contrast validation
+- **Performance Monitoring**: Lighthouse audits, bundle analysis, loading metrics
+- **Cross-Browser Testing**: Chrome, Firefox, WebKit, Edge compatibility
+
+### **Phase 7: MCP-First Testing Strategy**
+
+Instead of traditional test suites, Phase 7 uses **live, conversational testing**:
+- **Real-Time Feedback**: Claude navigates CanonCore and reports issues immediately
+- **Visual Validation**: Screenshots capture UI states for comparison and review
+- **Interactive Debugging**: Live problem-solving as issues are discovered
+- **Context-Aware Testing**: Testing adapts to current development focus
+- **Immediate Iteration**: Fix issues and re-test instantly in the same conversation
+
+**Coverage Areas:**
+- Authentication flows (Google OAuth, session persistence, protected routes)
+- Universe management (CRUD operations, visibility toggles, search functionality)
 - Content hierarchies (infinite depth, parent-child relationships, progress tracking)
-- User experience (responsive design, navigation, accessibility, cross-browser)
+- User experience (responsive design, navigation, accessibility, error handling)
 - Performance (Lighthouse scores, bundle optimization, loading metrics)
 - Data integrity (Firebase security rules, multi-user scenarios, favourites system)
-- Production environment validation (dev/staging/production pipeline testing)
+- Production validation (staging and production environment testing)
+
+### **Critical MCP Development Insights**
+
+**Environment Variable Management:**
+- Environment variables must be prefixed with `NEXT_PUBLIC_` for client-side access
+- Changes to `.env.local` require development server restart to take effect
+- Use `npm run dev:emulator` command to enable emulator mode rather than permanent `.env.local` settings
+
+**Browser Caching Issues in MCP:**
+- MCP browser automation requires explicit cache clearing for reliable testing
+- Equivalent to Chrome DevTools "Empty Cache and Hard Reload" 
+- Implement comprehensive cache clearing: localStorage, sessionStorage, cookies, service workers
+- Essential when environment variables or Firebase configuration changes
+
+**Hydration Mismatch Prevention:**
+- Server-side rendering must match client-side rendering exactly
+- Version numbers and dynamic content can cause SSR/client mismatches
+- Convert client components to server components when possible to eliminate hydration issues
+
+**Firebase Emulator Best Practices:**
+- Use consistent test user accounts (Alice, Bob) for predictable testing scenarios
+- Emulator provides fast, offline authentication without rate limits
+- Hybrid approach: emulator for development speed, real OAuth for production validation
+- Emulator data persists between restarts for consistent test scenarios
 
 ## Next Steps
 
