@@ -235,14 +235,13 @@
 
 **Phase 8: Advanced UI Features**
     ☐ Make progress colours the same 
-    ☐ Figure out MCP Playwright prompt for when a new phase is finished
     ☐ private badge should be red
-    ☐ favourited should be filled in and also same size (font size prop for tree node as percent font-size)
     ☐ remove 'update progress' heading
-    ☐ Create drag-and-drop content organisation interface (implement reorderChildren method from RelationshipService)
-    ☐ Add bulk operations for nested content structures
+    ☐ Figure out MCP Playwright prompt for when a new phase is finished
     ☐ Optimise performance for deep content hierarchies
     ☐ context7 and best react
+    ☐ Create drag-and-drop content organisation interface (implement reorderChildren method from RelationshipService)
+    ☐ Add bulk operations for nested content structures
 
 **Phase 9: Legacy Project Analysis**
     ☐ search and same relationship spotting when adding new items
