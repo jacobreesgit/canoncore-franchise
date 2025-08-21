@@ -19,8 +19,6 @@
     "vercel:build": "npm run type-check && npm run build",
     "analyze": "ANALYZE=true npm run build",
     "lighthouse": "lighthouse http://localhost:3000 --output html --output-path ./lighthouse-report.html",
-    "mcp:start": "npx @playwright/mcp@latest",
-    "mcp:test": "node test-microsoft-mcp.js",
     "emulator:start": "firebase emulators:start --only auth,firestore",
     "emulator:dev": "firebase emulators:start --only auth,firestore --import=./emulator-data --export-on-exit=./emulator-data",
     "dev:emulator": "NEXT_PUBLIC_USE_EMULATOR=true npm run dev",

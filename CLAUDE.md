@@ -41,9 +41,8 @@ npm run build-storybook    # Build Storybook for deployment
 npm run analyze             # Analyze bundle size and dependencies
 npm run lighthouse          # Run Lighthouse performance audit
 
-# Microsoft Playwright MCP commands
-npm run mcp:start           # Start Microsoft Playwright MCP server
-npm run mcp:test            # Test MCP server with CanonCore (requires dev server)
+# Microsoft Playwright MCP (Global Configuration)
+# MCP server is configured globally on this system
 
 # Firebase Emulator commands
 npm run emulator:start      # Start Firebase Auth/Firestore emulators
@@ -371,7 +370,6 @@ interface Content {
 
 ### Phase Completion Testing
 - **ALWAYS** use Microsoft Playwright MCP testing at the end of each phase completion
-- Refer to the comprehensive testing checklist in `MCP_FIRST_TESTING_STRATEGY.md`
 - **Primary Testing Method**: Real Google OAuth authentication
 - **Firebase Emulator**: Only for authentication flow testing (Google popup limitations prevent MCP automation)
 - **Required MCP Tests Before Phase Sign-Off**:
@@ -384,17 +382,16 @@ interface Content {
   ```bash
   # Standard testing with real Google OAuth (recommended)
   npm run dev
-  npm run mcp:start
+  # MCP server runs globally
   
   # Only for authentication flow testing
   npm run dev:emulator
   npm run emulator:start
-  npm run mcp:start
+  # MCP server runs globally
   ```
 - **Testing Approach**:
   - **Real Google OAuth**: All functionality testing (universe management, profiles, content, navigation)
   - **Firebase Emulator**: Only when testing authentication flows that can't be automated due to Google popup restrictions
-- **Documentation**: Update testing status in `MCP_FIRST_TESTING_STRATEGY.md` checklist after completion
 
 ## Franchise Content Rules
 
@@ -581,14 +578,13 @@ CanonCore implements **MCP-First Development** using Microsoft's official Playwr
 - ✅ Dynamic test generation based on conversation context
 - ✅ Visual feedback with screenshots and UI inspection
 
-### **MCP Setup Complete**
+### **MCP Setup (Global Configuration)**
 
-**Components Installed:**
-- `@playwright/mcp@latest` - Microsoft's official Playwright MCP server (Version 0.0.34)
-- Local MCP configuration (`mcp-config.json`) for development use
-- Claude Desktop integration ready (`claude-desktop-mcp-config.json`)
-- Package.json scripts for MCP operations
-- Development workflow optimized for live testing
+**Global MCP Configuration:**
+- Microsoft Playwright MCP server configured globally on system
+- No local MCP configuration files needed
+- Playwright dependency maintained for browser automation compatibility
+- Development workflow optimized for live testing with global MCP
 
 **Firebase Auth Emulator Integration:**
 - Firebase Auth Emulator (port 9099) and Firestore Emulator (port 8080) for limited authentication testing
@@ -613,8 +609,7 @@ npm run dev:emulator
 # Start Firebase emulators (separate terminal)
 npm run emulator:start
 
-# Start MCP server (separate terminal)
-npm run mcp:start
+# MCP server runs globally - no separate startup needed
 
 # Then in Claude Code conversation:
 "Claude, navigate to localhost:3000 and test the sign-in flow"
@@ -627,7 +622,7 @@ npm run mcp:start
 - `npm run dev` - Standard development with real Google OAuth
 - `npm run dev:emulator` - Development with Firebase Auth Emulator and test users
 - `npm run emulator:start` - Start Firebase Auth/Firestore emulators
-- `npm run mcp:start` - Launch Microsoft Playwright MCP server for browser automation
+- MCP server runs globally - no local startup needed
 
 **Live Testing Capabilities:**
 - **Interactive Form Testing**: Fill out forms, validate submissions, test error handling

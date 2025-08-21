@@ -233,7 +233,6 @@
 - ✅ Real-time progress tracking and favourites system validation
 - ✅ Cross-browser compatibility and responsive design verification
 
-
 **Phase 8: Advanced UI Features**
     ☐ Make progress colours the same 
     ☐ Figure out MCP Playwright prompt for when a new phase is finished
@@ -243,10 +242,9 @@
     ☐ Create drag-and-drop content organisation interface (implement reorderChildren method from RelationshipService)
     ☐ Add bulk operations for nested content structures
     ☐ Optimise performance for deep content hierarchies
-    ☐ breadcrumbs work for nested children, e.g. 
+    ☐ context7 and best react
 
 **Phase 9: Legacy Project Analysis**
-    ☐ context7 and best react
     ☐ search and same relationship spotting when adding new items
     ☐ Scan old project for more ideas (scabard, variations)
     ☐ Analyze scabard features for potential integration
