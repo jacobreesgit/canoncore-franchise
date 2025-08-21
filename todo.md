@@ -238,15 +238,10 @@
     ✅ private badge should be red
     ✅ remove 'update progress' heading
     ☐ context7 and best react
-    ☐ Optimise performance for deep content hierarchies
-
 
 **Phase 9: Next Steps**
     ☐ design token audit
     ☐ Create drag-and-drop content organisation interface (implement reorderChildren method from RelationshipService)
     ☐ Add bulk operations for nested content structures
     ☐ search and same relationship spotting when adding new items
-    ☐ Scan old project for more ideas (scabard, variations)
     ☐ Analyze scabard features for potential integration
-    ☐ Identify unique features not yet implemented in CanonCore
-    ☐ Plan implementation roadmap for scabard-inspired features
