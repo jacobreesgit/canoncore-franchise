@@ -194,7 +194,6 @@ export default function ContentPage() {
             <div>
               {content.isViewable && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">Update Progress</h3>
                   <div className="flex gap-3">
                     <Button
                       variant={progressPercent === 0 ? "secondary" : "secondary"}
